@@ -1,10 +1,13 @@
 import uuid
+from typing import Optional
 
 from pydantic import BaseModel, Field, EmailStr
 
+from model_utils import PyObjectId
+
 
 class User(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
     email: EmailStr
     password_hash: str
