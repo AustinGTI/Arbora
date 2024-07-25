@@ -83,6 +83,12 @@ export function convertPaletteStringToPalette(palette: PiButtonPalette): ButtonP
                 secondary: "white",
                 hover: chroma("#007AFF").brighten(0.25).hex(),
             }
+        case PiButtonPalette.PURE_GREEN:
+            return {
+                primary: "green.500",
+                secondary: "green.100",
+                hover: "green.300"
+            }
         default:
             throw new Error(`Invalid palette string: ${palette}`)
     }
@@ -111,13 +117,16 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
                 color: palette.secondary,
                 _hover: {
                     backgroundColor: palette.hover,
+                    borderColor: 'transparent',
                 },
                 _active: {
                     backgroundColor: palette.hover,
+                    borderColor: 'transparent',
                 },
-                height: '35px',
+                // height: '35px',
+                fontSize: '14px',
                 borderRadius: '10px',
-                py: '10px',
+                py: '20px',
                 px: '20px'
             }
         // case PiButtonVariant.OUTLINE:
@@ -136,16 +145,20 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
             return {
                 bg: "transparent",
                 color: palette.primary,
-                border: `1px solid ${chroma(palette.primary).alpha(0.5).hex()}`,
+                borderWidth: '2px',
+                borderColor: palette.primary,
                 _hover: {
                     color: palette.hover,
+                    borderColor: palette.primary,
                 },
                 _active: {
                     color: palette.hover,
+                    borderColor: palette.primary,
                 },
                 borderRadius: '10px',
+                fontSize: '14px',
                 height: '35px',
-                py: '10px',
+                py: '20px',
                 px: '20px'
             }
         case PiButtonVariant.GHOST:
@@ -207,10 +220,16 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
                 height: '30px',
                 bg: 'transparent',
                 placeItems: 'center',
-                _hover: {color: 'gray.600'},
-                _active: {color: 'gray.600'},
-                color: 'black',
-                icon_size: '15px'
+                _hover: {
+                    color: palette.hover,
+                    borderColor: 'transparent',
+                },
+                _active: {
+                    color: palette.hover,
+                    borderColor: 'transparent',
+                },
+                color: palette.primary,
+                icon_size: '30px'
             }
 
         case PiButtonVariant.SOFT_OUTLINE:

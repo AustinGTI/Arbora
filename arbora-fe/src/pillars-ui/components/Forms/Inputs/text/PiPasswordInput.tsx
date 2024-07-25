@@ -6,17 +6,17 @@ import {inputVariantToTextInputStyling} from "./helpers";
 import {ConditionalInputContainer} from "../helper-components/PiInputContainer.tsx";
 import {IoIosEye, IoIosEyeOff} from "react-icons/io";
 
-export type PiPasswordTextInputProps =
-    InputSpecifications<string | number | undefined>
+export type PiPasswordTextInputProps<FormObject> =
+    InputSpecifications<string | number | undefined, FormObject>
     & Omit<InputProps, "isRequired" | "type" | "value" | "onChange">
 
 
-export default function PiPasswordInput
+export default function PiPasswordInput<FormObject extends Object = any>
 ({
      input_type = 'form', input_variant = InputVariant.ROUNDED,
      name, label, is_required, onInputChange,
      in_input_container, ...props
- }: PiPasswordTextInputProps) {
+ }: PiPasswordTextInputProps<FormObject>) {
 
     const {
         form_value, error, onBlur,
@@ -26,7 +26,7 @@ export default function PiPasswordInput
     const [curr_value, setCurrValue] = React.useState<string | number>(form_value ?? '')
     const [password_shown, setPasswordShown] = React.useState<boolean>(false)
 
-    const {borderRadius} = React.useMemo(() => {
+    const variant_styling_props = React.useMemo(() => {
         return inputVariantToTextInputStyling(input_variant)
     }, [input_variant]);
 
@@ -59,7 +59,6 @@ export default function PiPasswordInput
                     ref={ref}
                     bg={"white"}
                     m={0}
-                    borderRadius={borderRadius}
                     border={"1px"}
                     fontSize={"sm"}
                     type={password_shown ? 'text' : 'password'}
@@ -68,6 +67,7 @@ export default function PiPasswordInput
                     }}
                     onBlur={onBlur}
                     value={input_value}
+                    {...variant_styling_props}
                     {...props}/>
                 <InputRightElement
                     width={'40px'}

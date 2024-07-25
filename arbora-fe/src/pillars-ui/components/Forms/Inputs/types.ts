@@ -5,8 +5,8 @@ export interface InputDimensionSpecifications {
     h?: string,
 }
 
-export interface GenericInputProps {
-    name: string;
+export interface GenericInputProps<FormObject = any> {
+    name: keyof FormObject;
     label?: string;
     description?: string;
     is_required?: boolean;
@@ -24,7 +24,7 @@ type NonArrayObject<T, Fallback> = T extends any[] ? Fallback : T extends object
 /**
  * these are the props required when the input_type is 'form'
  */
-type FormInputSpecifications = {
+type FormInputSpecifications<FormObject> = {
     /**
      * the type of the input, this is used to determine how the data is returned either through the form or
      * directly using onSelectedChoicesChange, this is the default value
@@ -36,7 +36,7 @@ type FormInputSpecifications = {
      * by default is true
      */
     in_input_container?: boolean
-} & GenericInputProps
+} & GenericInputProps<FormObject>
 /**
  * these are the props required when the input_type is 'generic'
  */
@@ -56,7 +56,9 @@ type GenericInputSpecifications<InitialInput> = {
     initial_value?: InitialInput
 } & { [key in keyof GenericInputProps]?: never }
 
-export type InputSpecifications<InputType = any> = (FormInputSpecifications | GenericInputSpecifications<InputType>) & {
+export type InputSpecifications<InputType = any, FormObject = any> =
+    (FormInputSpecifications<FormObject> | GenericInputSpecifications<InputType>)
+    & {
     /**
      * a function that is called when the input value changes, the new value is passed as an argument
      * @param value

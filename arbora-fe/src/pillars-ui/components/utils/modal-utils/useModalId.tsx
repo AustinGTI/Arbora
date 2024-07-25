@@ -1,6 +1,6 @@
 import React from 'react'
-import {StandardConsole} from "@leta-frontend/common/global-utils/helpers/logging";
 import {getParentModalId} from "./helpers";
+import {StandardConsole} from "../../../../core/helpers/logging.ts";
 
 export function calculateZIndexAboveModal(modal_id: string): number {
     // z index is the number of sections in the modal_id * 1000

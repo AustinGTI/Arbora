@@ -70,10 +70,6 @@ export default function PiForm<Data extends FieldValues>
         methods.handleSubmit(onSubmit)(e)
     }, [methods, onSubmit]);
 
-    const form_errors = React.useMemo(() => {
-        return methods.formState.errors
-    }, [methods.formState.errors])
-
     const form_values = methods.watch()
 
     React.useEffect(() => {
@@ -83,10 +79,10 @@ export default function PiForm<Data extends FieldValues>
 
     React.useEffect(() => {
         // print out the form errors when the form errors change if there are form errors
-        if (Object.keys(form_errors).length > 0) {
-            StandardConsole.log('%c[FormErrors] The errors in the current form are ', 'background: black; color: #EC3B83', form_errors)
+        if (Object.keys(methods.formState.errors).length > 0) {
+            StandardConsole.log('%c[FormErrors] The errors in the current form are ', 'background: black; color: #EC3B83', methods.formState.errors)
         }
-    }, [form_errors]);
+    }, [methods.formState]);
 
     return (
         <FormProvider {...methods}>

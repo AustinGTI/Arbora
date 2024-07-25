@@ -10,6 +10,9 @@ export function inputVariantToTextInputStyling(variant: InputVariant): InputProp
         case InputVariant.ROUNDED:
             return {
                 borderRadius: '10px',
+                borderWidth: '2px',
+                borderColor: 'green.500',
+                fontSize: '13px'
             }
         default:
             throw new Error(`Unknown input variant: ${variant}`)

@@ -5,7 +5,7 @@ export interface GenericServiceRequest {
 export interface GenericServiceResponse<ResponseData extends GenericServiceResponseData = GenericServiceResponseData> {
     data: ResponseData | null;
     is_successful: boolean;
-    error_message: boolean
+    error_message: string
 }
 
 export interface GenericServiceResponseData {

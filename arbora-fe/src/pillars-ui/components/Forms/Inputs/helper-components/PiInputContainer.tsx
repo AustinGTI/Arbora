@@ -1,7 +1,7 @@
 import React from "react";
 import {Flex, FormControl, FormControlProps, VStack} from "@chakra-ui/react";
 import PiInputLabel from "./PiInputLabel.tsx";
-import BaseInputError from "./BaseInputError";
+import PiInputError from "./PiInputError.tsx";
 import {InputType} from "../types";
 import PiInputDescription from "./PiInputDescription.tsx";
 
@@ -53,7 +53,7 @@ export default function PiInputContainer({
                     )}
                 </Flex>
                 {(error) && (
-                    <BaseInputError error={error}/>
+                    <PiInputError error={error}/>
                 )}
             </VStack>
         </FormControl>

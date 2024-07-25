@@ -11,8 +11,8 @@ import PiDropdownButton, {PiDropdownButtonContext} from "../../../buttons/modal-
 import PiPlainText from "../../../text/PiPlainText.tsx";
 import {PiButtonVariant} from "../../../buttons/types.ts";
 
-export type PiTextInputProps =
-    InputSpecifications<string | number | undefined>
+export type PiTextInputProps<FormObject> =
+    InputSpecifications<string | number | undefined, FormObject>
     & Omit<InputProps, "isRequired" | "type" | "value" | "onChange">
     & {
     /**
@@ -69,13 +69,13 @@ function OptionsDropdownList({options, setInputValue}: OptionsDropdownListProps)
     )
 }
 
-export default function PiTextInput
+export default function PiTextInput<FormObject extends Object = any>
 ({
      input_type = 'form', type = 'text',
      name, label, is_required, onInputChange,
      in_input_container, input_variant = InputVariant.ROUNDED, initial_value,
-     textModifier, options, to_uppercase = true, max_value, ...props
- }: PiTextInputProps) {
+     textModifier, options, to_uppercase = false, max_value, ...props
+ }: PiTextInputProps<FormObject>) {
 
     const {
         form_value, error, onBlur,
@@ -88,7 +88,7 @@ export default function PiTextInput
     const [curr_value, setCurrValue] = React.useState<string | number>(form_value ?? initial_value ?? '')
     const [cursor_position, setCursorPosition] = React.useState<number | null>(null)
 
-    const {borderRadius} = React.useMemo(() => {
+    const variant_styling_props = React.useMemo(() => {
         return inputVariantToTextInputStyling(input_variant)
     }, [input_variant]);
 
@@ -132,7 +132,6 @@ export default function PiTextInput
                     ref={mergeRefs([ref, local_ref])}
                     bg={"white"}
                     m={0}
-                    borderRadius={borderRadius}
                     border={"1px"}
                     fontSize={"sm"}
                     type={type}
@@ -176,6 +175,7 @@ export default function PiTextInput
                     onBlur={onBlur}
                     // value={input_type === 'form' ? form_value : curr_value}
                     value={input_value}
+                    {...variant_styling_props}
                     {...props}/>
                 {options?.length && (
                     <InputRightElement w={'40px'}>

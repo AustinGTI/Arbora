@@ -14,7 +14,7 @@ export default function PiInputLabel({name, label, info, ...label_props}: PiInpu
         <HStack w={"100%"}>
             <FormLabel
                 htmlFor={name}
-                fontSize={"12px"}
+                fontSize={"13px"}
                 fontWeight={700}
                 textTransform={"capitalize"} {...label_props}>{label}</FormLabel>
             {info && (

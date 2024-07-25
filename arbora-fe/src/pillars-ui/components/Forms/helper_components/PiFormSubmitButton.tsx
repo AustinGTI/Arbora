@@ -2,9 +2,9 @@ import React from 'react'
 import {ExtraFormContext} from "../PiForm.tsx";
 import PiButton, {PiButtonProps} from "../../buttons/PiButton.tsx";
 
-type SubmitButtonProps = PiButtonProps & {}
+type PiFormSubmitButtonProps = PiButtonProps & {}
 
-export default function SubmitButton(button_props: SubmitButtonProps) {
+export default function PiFormSubmitButton(button_props: PiFormSubmitButtonProps) {
     const {
         form_button_loading
     } = React.useContext(ExtraFormContext)

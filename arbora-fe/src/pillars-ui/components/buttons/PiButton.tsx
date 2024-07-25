@@ -21,7 +21,7 @@ const PiButton = React.forwardRef<HTMLButtonElement, PiButtonProps>
                        },
 
                        variant = PiButtonVariant.SOLID,
-                       palette = PiButtonPalette.BLACK_WHITE,
+                       palette = PiButtonPalette.PURE_GREEN,
                        icon_position = "left",
                        icon_props,
 

@@ -50,14 +50,24 @@ export async function makeServiceCall<Request extends Object, Response extends G
         logServiceRequest(service_name, request);
     }
 
-    let response = await fetch(url, {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': with_access_token ? `Bearer ${getAccessToken()}` : ''
-        },
-        body: request ? JSON.stringify(request) : undefined
-    });
+    let response = null
+    try {
+        response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': with_access_token ? `Bearer ${getAccessToken()}` : ''
+            },
+            body: request ? JSON.stringify(request) : undefined
+        });
+    } catch (e) {
+        StandardConsole.error('Error occurred while making service call: ', e)
+        return {
+            data: null,
+            is_successful: false,
+            error_message: 'An error occurred while making the service call: ' + e
+        }
+    }
 
     // if the status code is 401, it likely means the access token has expired, if so, we need to refresh the access token
     if (response.status === 401 && with_access_token) {
@@ -85,6 +95,16 @@ export async function makeServiceCall<Request extends Object, Response extends G
     if (log_response) {
         logServiceResponse(service_name, response_json, !response.ok);
     }
+
+    // if ((!response.ok || !response_json.is_successful) && display_error_alert) {
+    //     // todo: make this message customizable
+    //     showErrorAlert(response_json.message ?? 'An error occurred')
+    // }
+    //
+    // if (response.ok && response_json.is_successful && display_success_alert) {
+    //     showSuccessAlert(response_json.message ?? 'Success')
+    // }
+
 
     return {
         data: response.ok ? response_json : null,

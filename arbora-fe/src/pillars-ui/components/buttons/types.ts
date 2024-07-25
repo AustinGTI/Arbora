@@ -43,6 +43,8 @@ export enum PiButtonPalette {
     GRAY_WHITE = "gray-white",
     ORANGE_WHITE = "orange-white",
     BLUE_WHITE = "blue-white",
+
+    PURE_GREEN = "pure-green",
 }
 
 

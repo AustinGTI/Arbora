@@ -18,7 +18,7 @@ class CreateUserRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
-    password_confirm: str
+    password_confirmation: str
 
 
 class CreateUserResponse(BaseModel):
@@ -28,8 +28,8 @@ class CreateUserResponse(BaseModel):
 
 @user_router.post("/create-user", description="create a user", response_model=CreateUserResponse, status_code=status.HTTP_201_CREATED)
 async def createUser(request: Request, user_params: CreateUserRequest):
-    # check that the password and the confirm password are the same
-    if user_params.password != user_params.password_confirm:
+    # check that the password and the password confirmation are the same
+    if user_params.password != user_params.password_confirmation:
         response = CreateUserResponse(is_successful=False, message="Passwords do not match")
         return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
 

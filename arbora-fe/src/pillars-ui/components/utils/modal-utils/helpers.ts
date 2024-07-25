@@ -1,4 +1,4 @@
-import {StandardConsole} from "@leta-frontend/common/global-utils/helpers/logging";
+import {StandardConsole} from "../../../../core/helpers/logging.ts";
 
 export function getParentModalId(element: HTMLElement): string {
     let parent_modal_id = ''
