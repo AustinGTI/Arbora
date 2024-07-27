@@ -1,7 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {User} from "../../services/user/types.ts";
 
 export interface GlobalAuthState {
-    user: Object | null
+    user: User | null
     access_token: string
     refresh_token: string
 }

@@ -31,7 +31,7 @@ export default function PiTextAreaInput
     const [curr_value, setCurrValue] = React.useState<string>(form_value ?? '')
     const [cursor_position, setCursorPosition] = React.useState<number | null>(null)
 
-    // when current value changes, call onChange and onInputChange if they exist
+    // when current text changes, call onChange and onInputChange if they exist
     // React.useEffect(() => {
     //     if (onInputChange) {
     //         onInputChange(curr_value)
@@ -144,7 +144,7 @@ export default function PiTextAreaInput
                         }}
                         onChange={(e) => {
                             setInputValue(e.target.value)
-                            // setCurrValue(e.target.value)
+                            // setCurrValue(e.target.text)
                         }}
                         onBlur={onBlur}
                         value={input_value}>

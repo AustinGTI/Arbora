@@ -20,7 +20,7 @@ interface ExtraFormContextProps {
 
 /**
  * The original form context makes it impossible to access the form button loading state
- * This context provides said value to the submit button
+ * This context provides said text to the submit button
  */
 export const ExtraFormContext = React.createContext<ExtraFormContextProps>({
     form_button_loading: false

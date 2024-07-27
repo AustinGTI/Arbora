@@ -25,7 +25,7 @@ export default function PiToggleInput
     const switch_toggled = React.useRef<boolean>(false);
     const [curr_value, setCurrValue] = React.useState<boolean>(form_value ?? initial_value ?? false)
 
-    // if the curr_value changes, change the form value
+    // if the curr_value changes, change the form text
     React.useEffect(() => {
         // the curr_value is not updated until the switch is first toggled
         if (!switch_toggled.current) {
@@ -50,7 +50,7 @@ export default function PiToggleInput
                     if (!switch_toggled.current) {
                         switch_toggled.current = true;
                     }
-                    // the value is converted to a boolean for the form
+                    // the text is converted to a boolean for the form
                     setCurrValue(e.target.checked);
                 }}
                 isChecked={curr_value}

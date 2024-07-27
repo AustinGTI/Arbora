@@ -1,15 +1,16 @@
 import {useNavigate} from "react-router-dom";
-import {Box, Text, Center, HStack, VStack} from "@chakra-ui/react";
+import {Box, HStack, VStack} from "@chakra-ui/react";
 import ArboraLogo from "../../core/graphics/ArboraLogo.tsx";
 import ArboraBanner from "../../core/graphics/ArboraBanner.tsx";
 import PiButton from "../../pillars-ui/components/buttons/PiButton.tsx";
 import {BiExit} from "react-icons/bi";
 import {PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
-import {useSelector} from "react-redux";
 import {StandardConsole} from "../../core/helpers/logging.ts";
+import useGlobalAuthState from "../../core/redux/auth/useGlobalAuthState.tsx";
+import {MarkdownEditor} from "../../core/components/MarkdownEditor.tsx";
 
 export default function ArboraHomePage() {
-    const auth_data = useSelector(state => state.auth)
+    const auth_data = useGlobalAuthState()
     const navigate = useNavigate()
 
     StandardConsole.log('auth data is', auth_data)
@@ -27,9 +28,10 @@ export default function ArboraHomePage() {
                             onClick={() => navigate('/login')}/>
                     </HStack>
                 </HStack>
-                <Center paddingTop={'20vh'}>
-                    <Text fontSize={'70px'}>Hello {auth_data?.user?.name ?? 'Stranger'}!</Text>
-                </Center>
+                <Box w={'70%'} h={'70%'} marginTop={'5vh'} borderColor={'green.500'} borderWidth={'4px'}
+                     borderRadius={'2rem'}>
+                    <MarkdownEditor/>
+                </Box>
             </VStack>
         </Box>
     )

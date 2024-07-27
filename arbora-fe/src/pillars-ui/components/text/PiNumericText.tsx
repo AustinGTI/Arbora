@@ -22,11 +22,11 @@ export default function PiNumericText({
                                           is_percentage = false,
                                           ...base_props
                                       }: PiNumericTextProps) {
-    // if percentage and dp is 0, round the value up
+    // if percentage and dp is 0, round the text up
     if (value && is_percentage && dp === 0) {
         value = Math.ceil(value)
     }
-    // if render value is not undefined, then round it to the specified decimal places and separate the thousands before the
+    // if render text is not undefined, then round it to the specified decimal places and separate the thousands before the
     // decimal point
     let render_value = value !== undefined ?
         insert_commas ? formatNumberWithCommas(value.toFixed(dp)) : value.toFixed(dp) : undefined;

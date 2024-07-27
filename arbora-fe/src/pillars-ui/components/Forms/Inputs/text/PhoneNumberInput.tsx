@@ -44,7 +44,7 @@ export type PhoneNumberInputProps =
 /**
  * A phone number input component, as a form, it sets the key 'name' to the phone number,
  * as a generic input, it calls the function onInputChange with the phone number, this function is also
- * available for form inputs for potential side effects when a form value is set
+ * available for form inputs for potential side effects when a form text is set
  * @constructor
  */
 export default function PhoneNumberInput
@@ -65,7 +65,7 @@ export default function PhoneNumberInput
     }, [input_variant]);
 
 
-    // if the curr_value changes, change the form value
+    // if the curr_value changes, change the form text
     React.useEffect(() => {
         if (onChange) {
             onChange(curr_value)

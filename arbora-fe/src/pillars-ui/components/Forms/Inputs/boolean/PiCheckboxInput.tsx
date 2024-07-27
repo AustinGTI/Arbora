@@ -7,8 +7,8 @@ import useFormControllerConditionally from "../../hooks/useFormControls";
 export type PiCheckboxInputProps = InputSpecifications<boolean> & CheckboxProps
 
 /**
- * A checkbox input component, as a form, it sets the key 'name' to the boolean value of the checkbox,
- * as a generic input, it calls the function onInputChange with the boolean value of the checkbox, this function is also
+ * A checkbox input component, as a form, it sets the key 'name' to the boolean text of the checkbox,
+ * as a generic input, it calls the function onInputChange with the boolean text of the checkbox, this function is also
  * available for form inputs
  * @constructor
  */
@@ -25,7 +25,7 @@ export default function PiCheckboxInput
 
     const [curr_value, setCurrValue] = React.useState<boolean>(form_value ?? initial_value ?? false)
 
-    // if the curr_value changes, change the form value
+    // if the curr_value changes, change the form text
     React.useEffect(() => {
         if (onChange) {
             onChange(curr_value)
@@ -42,7 +42,7 @@ export default function PiCheckboxInput
                 ref={ref}
                 onBlur={onBlur}
                 onChange={(e) => {
-                    // the value is converted to a boolean for the form
+                    // the text is converted to a boolean for the form
                     setCurrValue(e.target.checked);
                 }}
                 isChecked={curr_value}

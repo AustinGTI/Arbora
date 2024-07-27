@@ -27,7 +27,7 @@ type NonArrayObject<T, Fallback> = T extends any[] ? Fallback : T extends object
 type FormInputSpecifications<FormObject> = {
     /**
      * the type of the input, this is used to determine how the data is returned either through the form or
-     * directly using onSelectedChoicesChange, this is the default value
+     * directly using onSelectedChoicesChange, this is the default text
      */
     input_type?: 'form'
     initial_value?: never
@@ -49,8 +49,8 @@ type GenericInputSpecifications<InitialInput> = {
 
     in_input_container?: never
     /**
-     * the value displayed in the input when the component loads for the first time,
-     * in form inputs, the form controls the initial value thus this parameter is only
+     * the text displayed in the input when the component loads for the first time,
+     * in form inputs, the form controls the initial text thus this parameter is only
      * available if the input_type is 'generic'
      */
     initial_value?: InitialInput
@@ -60,8 +60,8 @@ export type InputSpecifications<InputType = any, FormObject = any> =
     (FormInputSpecifications<FormObject> | GenericInputSpecifications<InputType>)
     & {
     /**
-     * a function that is called when the input value changes, the new value is passed as an argument
-     * @param value
+     * a function that is called when the input text changes, the new text is passed as an argument
+     * @param text
      */
     onInputChange?: (value: NonArrayObject<InputType, InputType>) => void
     /**

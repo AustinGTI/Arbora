@@ -1,7 +1,7 @@
 import {Text, TextProps} from "@chakra-ui/react";
 
 export type PiTextProps = {
-    value?: string, // either the value is a string or there is no value
+    value?: string, // either the text is a string or there is no text
     placeholder?: string,
 } & TextProps
 

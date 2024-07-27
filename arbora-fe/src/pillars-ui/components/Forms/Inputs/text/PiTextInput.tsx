@@ -16,7 +16,7 @@ export type PiTextInputProps<FormObject> =
     & Omit<InputProps, "isRequired" | "type" | "value" | "onChange">
     & {
     /**
-     * there are instances where the text needs to be modified before being set as the value,
+     * there are instances where the text needs to be modified before being set as the text,
      * say adding a prefix or suffix to the text or a dash after every 4 characters, this is for that
      * ! for safety purposes, only works if the input type is text
      * @param text
@@ -150,12 +150,12 @@ export default function PiTextInput<FormObject extends Object = any>
                             case "password":
                                 return_value = text_value;
                                 break;
-                            // ? number inputs are expected to have number values, if there is no value or the value is NaN then the value should be set to undefined
+                            // ? number inputs are expected to have number values, if there is no text or the text is NaN then the text should be set to undefined
                             case "number":
                                 if (text_value === "" || isNaN(Number(text_value))) {
                                     return_value = ''
                                 } else {
-                                    // if there is a max value, the value should be capped at the max value
+                                    // if there is a max text, the text should be capped at the max text
                                     return_value = Math.min(Number(text_value), max_value ?? Infinity);
                                 }
                                 break;
@@ -173,7 +173,7 @@ export default function PiTextInput<FormObject extends Object = any>
                         setCursorPosition(e.target.selectionStart)
                     }}
                     onBlur={onBlur}
-                    // value={input_type === 'form' ? form_value : curr_value}
+                    // text={input_type === 'form' ? form_value : curr_value}
                     value={input_value}
                     {...variant_styling_props}
                     {...props}/>
