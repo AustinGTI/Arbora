@@ -221,11 +221,15 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
                 bg: 'transparent',
                 placeItems: 'center',
                 _hover: {
-                    color: palette.hover,
+                    color: palette.hover + '!important',
                     borderColor: 'transparent',
                 },
                 _active: {
-                    color: palette.hover,
+                    color: palette.hover + ' !important',
+                    borderColor: 'transparent',
+                },
+                _focus: {
+                    color: palette.primary,
                     borderColor: 'transparent',
                 },
                 color: palette.primary,

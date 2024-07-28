@@ -7,7 +7,7 @@ import {BiExit} from "react-icons/bi";
 import {PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
 import {StandardConsole} from "../../core/helpers/logging.ts";
 import useGlobalAuthState from "../../core/redux/auth/useGlobalAuthState.tsx";
-import {MarkdownEditor} from "../../core/components/MarkdownEditor.tsx";
+import {MarkdownEditor} from "../../core/markdown/MarkdownEditor.tsx";
 
 export default function ArboraHomePage() {
     const auth_data = useGlobalAuthState()
@@ -29,8 +29,10 @@ export default function ArboraHomePage() {
                     </HStack>
                 </HStack>
                 <Box w={'70%'} h={'70%'} marginTop={'5vh'} borderColor={'green.500'} borderWidth={'4px'}
-                     borderRadius={'2rem'}>
-                    <MarkdownEditor/>
+                     borderRadius={'1rem'} overflow={'hidden'}>
+                    <MarkdownEditor initial_content={''} updateContent={async (content) => {
+                        StandardConsole.log('current content in editor is ', content)
+                    }}/>
                 </Box>
             </VStack>
         </Box>

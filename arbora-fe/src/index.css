@@ -54,25 +54,18 @@ button:hover {
     border-color: #646cff;
 }
 
-button:focus,
-button:focus-visible {
-    /*outline: 4px auto -webkit-focus-ring-color;*/
-}
-
 div:focus,
 div:focus-visible {
     /*outline: 4px auto -webkit-focus-ring-color;*/
 }
 
-*:focus {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: initial !important;
+*:focus,
+*:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
 }
 
-*:active {
-    outline: none !important;
-}
 
 
 @media (prefers-color-scheme: light) {

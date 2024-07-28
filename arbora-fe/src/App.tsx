@@ -1,4 +1,5 @@
 import './App.css'
+import './core/markdown/markdown-editor-styling.scss'
 import GlobalProvider from "./core/redux";
 import ArboraWebApp from "./pages";
 import Pillars from "./pillars-ui";
