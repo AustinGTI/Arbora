@@ -97,7 +97,6 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
     }, [active_document, reloadDocuments]);
 
     React.useEffect(() => {
-        StandardConsole.log('countdown timer at ', t_minus_autosave)
         if (t_minus_autosave === 0 && active_document) {
             if (current_editor_content) {
                 updateActiveDocument(current_editor_content).then()

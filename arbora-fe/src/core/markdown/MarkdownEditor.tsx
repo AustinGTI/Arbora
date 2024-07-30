@@ -1,5 +1,12 @@
 import React from 'react';
-import {defaultValueCtx, Editor, EditorStatus, editorViewCtx, editorViewOptionsCtx, rootCtx} from '@milkdown/core';
+import {
+    defaultValueCtx,
+    Editor,
+    EditorStatus,
+    editorViewCtx,
+    editorViewOptionsCtx,
+    rootCtx
+} from '@milkdown/core';
 import {nord} from '@milkdown/theme-nord';
 import {Milkdown, MilkdownProvider, useEditor} from '@milkdown/react';
 import {commonmark} from '@milkdown/preset-commonmark';
@@ -9,6 +16,7 @@ import PiButton from "../../pillars-ui/components/buttons/PiButton.tsx";
 import {PiButtonIcon, PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
 import {StandardConsole} from "../helpers/logging.ts";
 import {Ctx} from "@milkdown/ctx";
+import {replaceAll} from "@milkdown/utils";
 import {JSONRecord} from "@milkdown/transformer";
 
 interface MarkdownEditorProps {
@@ -18,7 +26,7 @@ interface MarkdownEditorProps {
 
 interface MilkdownEditorProps {
     editable: boolean
-    active_content: string
+    initial_content: string
     setActiveContent: (content: string) => void
 }
 
@@ -27,7 +35,7 @@ interface ProseNode extends Object {
 }
 
 
-function MilkdownEditor({editable, setActiveContent}: MilkdownEditorProps) {
+function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownEditorProps) {
     const [doc, setDoc] = React.useState<ProseNode | null>(null)
 
     const {get, loading} = useEditor((root) =>
@@ -96,6 +104,13 @@ function MilkdownEditor({editable, setActiveContent}: MilkdownEditorProps) {
         });
     }, [editor, editable, loading]);
 
+    // when the initial content changes, update the editor content
+    React.useEffect(() => {
+        if (editor) {
+            editor.action(replaceAll(initial_content))
+        }
+    }, [editor, initial_content]);
+
 
     return (
         <Milkdown/>
@@ -135,7 +150,7 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
             <Box position={'relative'} width={'100%'} h={'100%'} bg={'black'} py={'1rem'} px={'0.1rem'}>
                 {control_buttons}
                 <Box id={'milkdown-wrapper'} w={'100%'} h={'100%'} overflowY={'auto'}>
-                    <MilkdownEditor editable={editable} active_content={active_content}
+                    <MilkdownEditor editable={editable} initial_content={initial_content ?? ''}
                                     setActiveContent={setActiveContent}/>
                 </Box>
             </Box>
