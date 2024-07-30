@@ -42,10 +42,11 @@ interface RefreshAccessTokenResponse extends GenericServiceResponseData {
 export async function refreshAccessTokenService(): Promise<GenericServiceResponse<RefreshAccessTokenResponse>> {
     const response = await makeServiceCall<Object, RefreshAccessTokenResponse>
     ({
-        url: `${BACKEND_URL}/refresh_token`,
+        url: `${BACKEND_URL}/refresh-token`,
         method: "GET",
         request: null,
         service_name: "refreshAccessTokenService",
+        with_access_token: false,
         display_error_alert: false
     })
     // set the new access token if the refresh was successful

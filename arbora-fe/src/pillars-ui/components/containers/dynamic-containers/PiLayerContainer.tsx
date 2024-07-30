@@ -14,7 +14,7 @@ type PiLayerContainerProps<ContainerDataContext extends Object> = {
      */
     layers: PiContainerLayer[],
     /**
-     * This is the data context that is exposed to the layers, it can be accessed within any layer inside
+     * This is the single_doc_section context that is exposed to the layers, it can be accessed within any layer inside
      * the data_props.container_data_context prop
      */
     container_data_context: ContainerDataContext,
@@ -53,7 +53,7 @@ export const PiLayerContainerContext = React.createContext<PiLayerContainerConte
 /**
  * A PiLayerContainer allows a user to have multiple views in one container. The views are called layers. Only one layer
  * is visible at a time. The user can switch between layers using the goToLayer function in the PiLayerContainerContext and store the container
- * data context in the container_data_context prop. The container data context can be accessed and modified within any layer under
+ * single_doc_section context in the container_data_context prop. The container single_doc_section context can be accessed and modified within any layer under
  * data_props
  * @constructor
  */

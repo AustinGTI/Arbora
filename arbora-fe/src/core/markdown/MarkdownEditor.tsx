@@ -1,5 +1,5 @@
 import React from 'react';
-import {defaultValueCtx, Editor, EditorStatus, editorViewOptionsCtx, rootCtx} from '@milkdown/core';
+import {defaultValueCtx, Editor, EditorStatus, editorViewCtx, editorViewOptionsCtx, rootCtx} from '@milkdown/core';
 import {nord} from '@milkdown/theme-nord';
 import {Milkdown, MilkdownProvider, useEditor} from '@milkdown/react';
 import {commonmark} from '@milkdown/preset-commonmark';
@@ -12,8 +12,8 @@ import {Ctx} from "@milkdown/ctx";
 import {JSONRecord} from "@milkdown/transformer";
 
 interface MarkdownEditorProps {
-    initial_content: string
-    updateContent: (content: string) => Promise<void>
+    initial_content?: string
+    updateContent: (content: string) => void
 }
 
 interface MilkdownEditorProps {
@@ -85,6 +85,10 @@ function MilkdownEditor({editable, setActiveContent}: MilkdownEditorProps) {
                 },
             ].flat());
             await editor.create();
+            if (editable) {
+                // focus the editor
+                editor.ctx.get(editorViewCtx).focus()
+            }
         }
 
         requestAnimationFrame(() => {
@@ -103,12 +107,8 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
     const [editable, setEditable] = React.useState<boolean>(false)
 
 
-    // update the content every 30 seconds
     React.useEffect(() => {
-        const interval = setInterval(() => {
-            updateContent(active_content).then()
-        }, 30000)
-        return () => clearInterval(interval)
+        updateContent(active_content)
     }, [active_content, updateContent])
 
     const control_buttons = React.useMemo(() => {
@@ -118,16 +118,16 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
                     icon={editable ? PiButtonIcon.VIEW : PiButtonIcon.EDIT}
                     variant={PiButtonVariant.ICON}
                     onClick={() => setEditable(state => !state)}/>
-                <PiButton
-                    icon={PiButtonIcon.SAVE}
-                    variant={PiButtonVariant.ICON}
-                    onClick={() => {
-                        updateContent(active_content).then()
-                    }
-                    }/>
+                {/*<PiButton*/}
+                {/*    icon={PiButtonIcon.SAVE}*/}
+                {/*    variant={PiButtonVariant.ICON}*/}
+                {/*    onClick={() => {*/}
+                {/*        updateContent(active_content).then()*/}
+                {/*    }*/}
+                {/*    }/>*/}
             </HStack>
         )
-    }, [updateContent, active_content, setEditable, editable]);
+    }, [setEditable, editable]);
 
 
     return (

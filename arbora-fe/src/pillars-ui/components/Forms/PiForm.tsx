@@ -46,7 +46,7 @@ export default function PiForm<Data extends FieldValues>
 
     const [form_button_loading, setFormButtonLoading] = React.useState<boolean>(false)
 
-    // if the initial data changes, update the form values
+    // if the initial single_doc_section changes, update the form values
     React.useEffect(() => {
         if (initial_data) {
             methods.reset(initial_data);

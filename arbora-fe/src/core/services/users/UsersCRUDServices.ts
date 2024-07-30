@@ -12,7 +12,7 @@ interface CreateUserServiceRequest extends GenericServiceRequest {
 
 
 /**
- * create a new user in the platform
+ * create a new user on the platform
  * @param request
  */
 export async function createUserService(request: CreateUserServiceRequest): Promise<GenericServiceResponse> {
@@ -30,6 +30,9 @@ interface GetCurrentUserResponse extends GenericServiceResponseData {
     user: User
 }
 
+/**
+ * get the current user based on the saved access token
+ */
 export async function getCurrentUserService(): Promise<GenericServiceResponse<GetCurrentUserResponse>> {
     return makeServiceCall<Object, GetCurrentUserResponse>
     ({

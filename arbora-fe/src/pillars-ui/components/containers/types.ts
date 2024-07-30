@@ -25,11 +25,11 @@ export const LAYOUTS = {
 
 export interface GenericContainerProps {
     /**
-     * whether or not the data passed to the container is loading
+     * whether or not the single_doc_section passed to the container is loading
      */
     data_loading?: boolean;
     /**
-     * whether or not the data passed to the container is not available due to an error
+     * whether or not the single_doc_section passed to the container is not available due to an error
      */
     data_error?: boolean;
 }

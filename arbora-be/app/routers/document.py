@@ -1,3 +1,5 @@
+from typing import Optional
+
 from bson import ObjectId
 from fastapi import APIRouter, Request, Depends
 from pydantic import BaseModel
@@ -16,6 +18,7 @@ class CreateDocumentRequest(BaseModel):
 
 
 class CreateDocumentResponse(BaseModel):
+    document: Optional[Document]
     is_successful: bool
     message: str
 
@@ -30,16 +33,16 @@ async def createDocument(request: Request, document_params: CreateDocumentReques
         return CreateDocumentResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
     document = Document(
         creator_id=user_id,
-        name=document_params.title,
+        title=document_params.title,
         notes={},
         content=document_params.content,
     )
     new_document = await request.app.mongodb["documents"].insert_one(document.dict(by_alias=True, exclude={"id"}))
-    document = await request.app.mongodb["documents"].find_one({"_id": new_document.inserted_id})
-    if document is None:
+    created_document = await request.app.mongodb["documents"].find_one({"_id": new_document.inserted_id})
+    if created_document is None:
         response = CreateDocumentResponse(is_successful=False, message="Failed to create document")
         return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    response = CreateDocumentResponse(is_successful=True, message="Document created successfully")
+    response = CreateDocumentResponse(is_successful=True, message="Document created successfully", document=created_document)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_201_CREATED)
 
 
@@ -69,6 +72,7 @@ class UpdateDocumentRequest(BaseModel):
 
 
 class UpdateDocumentResponse(BaseModel):
+    document: Optional[Document]
     is_successful: bool
     message: str
 
@@ -87,7 +91,7 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
 
     edited_document = Document(**document)
 
-    edited_document.name = document_params.title
+    edited_document.title = document_params.title
     edited_document.content = document_params.content
 
     updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(document_params.id)},
@@ -96,7 +100,7 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
         response = UpdateDocumentResponse(is_successful=False, message="Failed to update document")
         return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    response = UpdateDocumentResponse(is_successful=True, message="Document updated successfully")
+    response = UpdateDocumentResponse(is_successful=True, message="Document updated successfully", document=edited_document)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
 
 

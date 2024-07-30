@@ -26,7 +26,7 @@ type NonArrayObject<T, Fallback> = T extends any[] ? Fallback : T extends object
  */
 type FormInputSpecifications<FormObject> = {
     /**
-     * the type of the input, this is used to determine how the data is returned either through the form or
+     * the type of the input, this is used to determine how the single_doc_section is returned either through the form or
      * directly using onSelectedChoicesChange, this is the default text
      */
     input_type?: 'form'
@@ -42,7 +42,7 @@ type FormInputSpecifications<FormObject> = {
  */
 type GenericInputSpecifications<InitialInput> = {
     /**
-     * the type of the input, this is used to determine how the data is returned either through the form or
+     * the type of the input, this is used to determine how the single_doc_section is returned either through the form or
      * directly using onSelectedChoicesChange
      */
     input_type: 'generic'

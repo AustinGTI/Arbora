@@ -18,4 +18,4 @@ class JWTBearer(HTTPBearer):
             request.state.user_id = token.user_id
             return token
         else:
-            raise HTTPException(status_code=403, detail="Invalid authorization code.")
+            raise HTTPException(status_code=401, detail="Invalid authorization code.")

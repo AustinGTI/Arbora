@@ -9,7 +9,7 @@ import SignUpForm from "../../core/forms/SignUpForm.tsx";
 import PiLayerContainer, {
     PiContainerLayer, PiLayerContainerContext
 } from "../../pillars-ui/components/containers/dynamic-containers/PiLayerContainer.tsx";
-import {createUserService, getCurrentUserService} from "../../core/services/user/UserCRUDServices.ts";
+import {createUserService, getCurrentUserService} from "../../core/services/users/UsersCRUDServices.ts";
 import React from "react";
 import PiButton from "../../pillars-ui/components/buttons/PiButton.tsx";
 import {BiChevronLeft} from "react-icons/bi";

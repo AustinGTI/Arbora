@@ -8,7 +8,7 @@ import PiPasswordInput from "../../pillars-ui/components/forms/inputs/text/PiPas
 import {HStack} from "@chakra-ui/react";
 
 
-// the data type that the form will actually manipulate
+// the single_doc_section type that the form will actually manipulate
 interface SignupFormObject {
     name: string
     email: string

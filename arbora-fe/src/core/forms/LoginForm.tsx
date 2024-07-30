@@ -13,7 +13,7 @@ import {PiLayerContainerContext} from "../../pillars-ui/components/containers/dy
 import {LoginPageLayerKey} from "../../pages/login";
 
 
-// the data type that the form will actually manipulate
+// the single_doc_section type that the form will actually manipulate
 interface LoginFormObject {
     email: string
     password: string

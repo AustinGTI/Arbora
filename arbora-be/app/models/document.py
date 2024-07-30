@@ -11,7 +11,7 @@ class Document(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     folder_id: Optional[str] = None
     creator_id: str
-    name: str
+    title: str
     notes: dict[str, Note]
     content: str
 

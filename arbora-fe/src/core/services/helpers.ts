@@ -2,6 +2,7 @@ import {GenericServiceResponse, GenericServiceResponseData, RequestMethod} from 
 import {StandardConsole} from "../helpers/logging.ts";
 import {getAccessToken} from "../redux/auth/helpers.ts";
 import {refreshAccessTokenService} from "./auth/AuthServices.ts";
+import {showErrorAlert, showSuccessAlert} from "../../pillars-ui/components/alerts/display_functions.tsx";
 
 interface MakeServiceCallParams<Request extends Object> {
     url: string;
@@ -12,6 +13,7 @@ interface MakeServiceCallParams<Request extends Object> {
     log_request?: boolean;
     log_response?: boolean;
     display_success_alert?: boolean;
+    success_message?: string;
     display_error_alert?: boolean;
 }
 
@@ -44,7 +46,7 @@ export async function makeServiceCall<Request extends Object, Response extends G
 ({
      url, method, request, service_name,
      with_access_token = true, log_request = true, log_response = true,
-     // display_error_alert = true, display_success_alert = false
+     display_error_alert = true, display_success_alert = false, success_message
  }: MakeServiceCallParams<Request>): Promise<GenericServiceResponse<Response>> {
     if (log_request) {
         logServiceRequest(service_name, request);
@@ -70,7 +72,7 @@ export async function makeServiceCall<Request extends Object, Response extends G
     }
 
     // if the status code is 401, it likely means the access token has expired, if so, we need to refresh the access token
-    if (response.status === 401 && with_access_token) {
+    if ((response.status === 401 || response.status === 403) && with_access_token) {
         // refresh the access token
         // if the refresh token is also expired, then we need to log the user out
         const refresh_response = await refreshAccessTokenService();
@@ -87,6 +89,7 @@ export async function makeServiceCall<Request extends Object, Response extends G
         } else {
             // refresh token has also expired, log the user out
             StandardConsole.warn('Refresh token has expired, logging out user')
+            window.location.href = '/logout';
         }
     }
 
@@ -96,14 +99,14 @@ export async function makeServiceCall<Request extends Object, Response extends G
         logServiceResponse(service_name, response_json, !response.ok);
     }
 
-    // if ((!response.ok || !response_json.is_successful) && display_error_alert) {
-    //     // todo: make this message customizable
-    //     showErrorAlert(response_json.message ?? 'An error occurred')
-    // }
-    //
-    // if (response.ok && response_json.is_successful && display_success_alert) {
-    //     showSuccessAlert(response_json.message ?? 'Success')
-    // }
+    if ((!response.ok || !response_json.is_successful) && display_error_alert) {
+        // todo: make this message customizable
+        showErrorAlert(response_json.message ?? 'An error occurred')
+    }
+
+    if (response.ok && response_json.is_successful && display_success_alert) {
+        showSuccessAlert(success_message ?? response_json.message ?? 'Success')
+    }
 
 
     return {

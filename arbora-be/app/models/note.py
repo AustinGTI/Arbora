@@ -11,7 +11,7 @@ class ActionType(enum.Enum):
 class Action(BaseModel):
     type: ActionType
     datetime: str
-    data: list
+    single_doc_section: list
 
 
 class Note(BaseModel):
