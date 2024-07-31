@@ -3,17 +3,21 @@ import enum
 from pydantic import BaseModel
 
 
-class ActionType(enum.Enum):
-    EDIT = "edit"
-    REVIEW = "review"
+class NoteEdit(BaseModel):
+    added: int
+    deleted: int
+    timestamp: str
 
 
-class Action(BaseModel):
-    type: ActionType
-    datetime: str
-    single_doc_section: list
+class NoteReview(BaseModel):
+    review_type: str
+    score: float
+    timestamp: str
 
 
 class Note(BaseModel):
     created_at: str
-    actions: list[Action]
+    edits: list[NoteEdit]
+    reviews: list[NoteReview]
+    content: str
+    children: list[str]

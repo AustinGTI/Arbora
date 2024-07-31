@@ -23,7 +23,6 @@ export async function listDocumentsService(): Promise<GenericServiceResponse<Lis
 
 
 interface CreateDocumentServiceRequest extends GenericServiceRequest {
-    title: string
     content: string
 }
 
@@ -48,7 +47,6 @@ export async function createDocumentService(request: CreateDocumentServiceReques
 
 interface UpdateDocumentServiceRequest extends GenericServiceRequest {
     id: string
-    title: string
     content: string
 }
 

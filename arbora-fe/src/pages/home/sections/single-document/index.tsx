@@ -46,7 +46,6 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
         }
         updateDocumentService({
             id: active_document.id,
-            title: active_document.title,
             content: new_content
         }).then((response) => {
             if (response.is_successful) {
@@ -64,7 +63,6 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
         setButtonLoadingState(true)
         await createDocumentService({
             // todo: extract the title from the content
-            title: `New Document # ${Math.floor(Math.random() * 1000)}`,
             content: current_editor_content
         }).then((response) => {
             if (response.is_successful) {

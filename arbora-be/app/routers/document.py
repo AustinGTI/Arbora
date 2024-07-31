@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from bson import ObjectId
@@ -7,13 +8,15 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from auth_bearer import JWTBearer
+from document_utils import calculateContentEdit, extractDocumentTitle
+from markdown_utils import generateNewDocumentNotes, generateUpdatedDocumentNotes
 from models.document import Document
+from note import NoteReview
 
 document_router = APIRouter(dependencies=[Depends(JWTBearer())])
 
 
 class CreateDocumentRequest(BaseModel):
-    title: str
     content: str
 
 
@@ -33,8 +36,8 @@ async def createDocument(request: Request, document_params: CreateDocumentReques
         return CreateDocumentResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
     document = Document(
         creator_id=user_id,
-        title=document_params.title,
-        notes={},
+        title=extractDocumentTitle(document_params.content),
+        notes=generateNewDocumentNotes(document_params.content),
         content=document_params.content,
     )
     new_document = await request.app.mongodb["documents"].insert_one(document.dict(by_alias=True, exclude={"id"}))
@@ -67,7 +70,6 @@ async def listDocuments(request: Request):
 
 class UpdateDocumentRequest(BaseModel):
     id: str
-    title: str
     content: str
 
 
@@ -89,10 +91,18 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
         response = UpdateDocumentResponse(message="Unauthorized", is_successful=False)
         return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
 
+    # check if there is a difference in content, if not, no need to update
+    added, deleted = calculateContentEdit(document.content, document_params.content)
+
+    if added + deleted == 0:
+        response = UpdateDocumentResponse(is_successful=True, message="No changes made to document", document=document)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
+
     edited_document = Document(**document)
 
-    edited_document.title = document_params.title
+    edited_document.title = extractDocumentTitle(document_params.content),
     edited_document.content = document_params.content
+    edited_document.notes = generateUpdatedDocumentNotes(document.notes, document_params.content)
 
     updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(document_params.id)},
                                                                          {"$set": edited_document.dict(by_alias=True, exclude={"id"})})
@@ -131,4 +141,55 @@ async def deleteDocument(request: Request, document_params: DeleteDocumentReques
         return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = DeleteDocumentResponse(is_successful=True, message="Document deleted successfully")
+    return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
+
+
+class RecordNoteReviewRequest(BaseModel):
+    document_id: str
+    note_id: str
+    review_type: str
+    score: float
+
+
+class RecordNoteReviewResponse(BaseModel):
+    is_successful: bool
+    message: str
+
+
+@document_router.post("/record-note-review", description="Record the reviewing of a note", response_model=RecordNoteReviewResponse)
+async def recordNoteReview(request: Request, review_params: RecordNoteReviewRequest):
+    user_id = request.state.user_id
+    document = await request.app.mongodb["documents"].find_one({"_id": ObjectId(review_params.document_id)})
+    if not document:
+        response = RecordNoteReviewResponse(message="Document not found", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
+    # make sure that the user is the creator of the document
+    if document["creator_id"] != user_id:
+        response = RecordNoteReviewResponse(message="Unauthorized", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
+
+    note = document["notes"].get(review_params.note_id)
+    if not note:
+        response = RecordNoteReviewResponse(message="Note not found", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
+
+    if review_params.review_type not in ["flash-card", "question-answer", "explain-to-arby"]:
+        response = RecordNoteReviewResponse(message="Invalid review type", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    if review_params.score < 0 or review_params.score > 1:
+        response = RecordNoteReviewResponse(message="Invalid score", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    note["reviews"].append(
+        NoteReview(review_type=review_params.review_type, score=review_params.score, timestamp=datetime.now().isoformat())
+    )
+
+    updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(review_params.document_id)},
+                                                                         {"$set": {"notes": document["notes"]}})
+    if updated_document is None:
+        response = RecordNoteReviewResponse(is_successful=False, message="Failed to record note review")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    response = RecordNoteReviewResponse(is_successful=True, message="Note review recorded successfully")
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
