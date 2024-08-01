@@ -5,19 +5,19 @@ import {
     EditorStatus,
     editorViewCtx,
     editorViewOptionsCtx,
-    rootCtx
+    rootCtx,
 } from '@milkdown/core';
 import {nord} from '@milkdown/theme-nord';
 import {Milkdown, MilkdownProvider, useEditor} from '@milkdown/react';
-import {commonmark} from '@milkdown/preset-commonmark';
+import {commonmark, headingAttr} from '@milkdown/preset-commonmark';
 import {listener, listenerCtx} from "@milkdown/plugin-listener";
 import {Box, HStack} from "@chakra-ui/react";
 import PiButton from "../../pillars-ui/components/buttons/PiButton.tsx";
 import {PiButtonIcon, PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
-import {StandardConsole} from "../helpers/logging.ts";
 import {Ctx} from "@milkdown/ctx";
 import {replaceAll} from "@milkdown/utils";
 import {JSONRecord} from "@milkdown/transformer";
+import {addAIButtonToHeaders} from "./dom.ts";
 
 interface MarkdownEditorProps {
     initial_content?: string
@@ -52,6 +52,13 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
                     },
                     editable: () => editable,
                 }))
+
+                ctx.set(headingAttr.key, (node) => {
+                    const level = node.attrs.level
+                    return {
+                        class: `md-header md-header-${level}`
+                    }
+                })
             })
             .config((ctx) => {
                 ctx.get(listenerCtx).markdownUpdated((_ctx, markdown) => {
@@ -67,11 +74,6 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
     const editor = React.useMemo(() => {
         return get()
     }, [get]);
-
-    editor?.onStatusChange((status) => {
-        StandardConsole.log('editor status changed', status)
-    })
-
     React.useEffect(() => {
         const effect = async () => {
             if (loading || !editor || editor.status !== EditorStatus.Created) {
@@ -96,6 +98,8 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
             if (editable) {
                 // focus the editor
                 editor.ctx.get(editorViewCtx).focus()
+            } else {
+                addAIButtonToHeaders()
             }
         }
 
@@ -149,7 +153,8 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
         <MilkdownProvider>
             <Box position={'relative'} width={'100%'} h={'100%'} bg={'black'} py={'1rem'} px={'0.1rem'}>
                 {control_buttons}
-                <Box id={'milkdown-wrapper'} w={'100%'} h={'100%'} overflowY={'auto'}>
+                <Box className={`milkdown-wrapper ${editable ? 'edit-mode' : 'review-mode'}`} w={'100%'} h={'100%'}
+                     overflowY={'auto'}>
                     <MilkdownEditor editable={editable} initial_content={initial_content ?? ''}
                                     setActiveContent={setActiveContent}/>
                 </Box>

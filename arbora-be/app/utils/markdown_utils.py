@@ -20,7 +20,6 @@ def parseMarkdownHeadings(markdown: str) -> dict[str, HeadingNode]:
     heading_structure = {}
     node_stack = []
     current_content = []
-    headings = set()
 
     for line in lines:
         line = line.strip()
@@ -44,16 +43,13 @@ def parseMarkdownHeadings(markdown: str) -> dict[str, HeadingNode]:
                 node_stack.pop()
 
             # calculate the note's coords
-            if coords == '':
-                if len(node_stack) == 0:
-                    coords = '1'
+            if len(node_stack) == 0:
+                coords = '1'
+            else:
+                if node_stack[-1][0] >= level:
+                    coords = str(int(node_stack[-1][1]) + 1)
                 else:
-                    if node_stack[-1][0] >= level:
-                        coords = str(int(node_stack[-1][1]) + 1)
-                    else:
-                        coords = node_stack[-1][1] + '.' + str(len(heading_structure[node_stack[-1][1]].children) + 1)
-
-            headings.add(coords)
+                    coords = node_stack[-1][1] + '.' + str(len(heading_structure[node_stack[-1][1]].children) + 1)
 
             # Add current section to its parent's children
             if node_stack and coords.count('.') > 0:
@@ -128,7 +124,7 @@ def generateUpdatedDocumentNotes(current_notes: dict[str, Note], new_markdown_co
     # add the remaining potentially new notes
     for new_coords in list(new_notes_coords):
         node = new_heading_structure[new_coords]
-        note = Note(created_at=datetime.now().isoformat(), actions=[], content=node.content,
+        note = Note(created_at=datetime.now().isoformat(), edits=[], reviews=[], content=node.content,
                     title=node.title, level=node.level, children=node.children)
         updated_document_notes[new_coords] = note
 

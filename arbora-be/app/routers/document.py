@@ -92,7 +92,7 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
         return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
 
     # check if there is a difference in content, if not, no need to update
-    added, deleted = calculateContentEdit(document.content, document_params.content)
+    added, deleted = calculateContentEdit(document['content'], document_params.content)
 
     if added + deleted == 0:
         response = UpdateDocumentResponse(is_successful=True, message="No changes made to document", document=document)
@@ -102,7 +102,7 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
 
     edited_document.title = extractDocumentTitle(document_params.content),
     edited_document.content = document_params.content
-    edited_document.notes = generateUpdatedDocumentNotes(document.notes, document_params.content)
+    edited_document.notes = generateUpdatedDocumentNotes(document['notes'], document_params.content)
 
     updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(document_params.id)},
                                                                          {"$set": edited_document.dict(by_alias=True, exclude={"id"})})

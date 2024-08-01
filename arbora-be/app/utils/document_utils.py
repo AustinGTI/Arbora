@@ -1,4 +1,5 @@
 import difflib
+import secrets
 
 
 def calculateContentEdit(before: str, after: str) -> tuple[int, int]:
@@ -32,4 +33,5 @@ def extractDocumentTitle(markdown_content: str) -> str:
     for line in lines:
         if line.startswith("# "):
             return line[2:]
-    return ""
+    # else generate a random 5char alpha numeric string
+    return f"Document #{secrets.token_urlsafe(5).lower()}"
