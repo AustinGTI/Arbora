@@ -20,4 +20,6 @@ class Note(BaseModel):
     edits: list[NoteEdit]
     reviews: list[NoteReview]
     content: str
+    title: str
+    level: int
     children: list[str]
