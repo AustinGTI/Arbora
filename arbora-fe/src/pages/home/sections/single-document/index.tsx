@@ -36,7 +36,7 @@ const DOCUMENT_VIEW_TABS: DocumentViewTab[] = [
     {key: DocumentViewTabKey.EXPLAIN, title: 'Explain', content: <DocumentViewExplainTab/>},
 ]
 
-export default function SingleDocumentSection({w, width, ...box_props}: SingleDocumentSectionProps) {
+export default function DocumentViewSection({w, width, ...box_props}: SingleDocumentSectionProps) {
     const {
         document_view: {collapsed, active_tab},
     } = useGlobalHomeState()
@@ -77,7 +77,7 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
                     {
                         DOCUMENT_VIEW_TABS.map(tab => {
                             return (
-                                <Center py={'1rem'} px={'2rem'} cursor={'pointer'}
+                                <Center key={tab.key} py={'1rem'} px={'2rem'} cursor={'pointer'}
                                         onClick={() => {
                                             dispatch(setActiveTab(tab.key))
                                         }}>
@@ -90,6 +90,7 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
                         })
                     }
                 </HStack>
+
                 <Box w={'100%'} h={'calc(100% - 2rem)'} overflow={'auto'}>
                     {DOCUMENT_VIEW_TABS.find(tab => tab.key === active_tab)?.content}
                 </Box>

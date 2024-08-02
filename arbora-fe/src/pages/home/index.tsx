@@ -4,7 +4,7 @@ import ArboraBanner from "../../core/graphics/ArboraBanner.tsx";
 import {BiExit} from "react-icons/bi";
 import {PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
 import AllDocumentsSection from "./sections/documents";
-import SingleDocumentSection from "./sections/single-document";
+import DocumentViewSection from "./sections/single-document";
 import PiLinkButton from "../../pillars-ui/components/buttons/PiLinkButton.tsx";
 import useDocuments from "../../core/services/documents/hooks/useDocuments.tsx";
 
@@ -31,7 +31,7 @@ export default function ArboraHomePage() {
                 {!documents_loading ? (
                     <HStack w={'100%'} h={'calc(100% - 100px)'}>
                         <AllDocumentsSection flex={1} h={'100%'}/>
-                        <SingleDocumentSection h={'100%'}/>
+                        <DocumentViewSection h={'100%'}/>
                     </HStack>
                 ) : (
                     <p>loading documents...</p>

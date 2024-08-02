@@ -26,7 +26,7 @@
     "@milkdown/transformer": "^7.4.0",
     "@reduxjs/toolkit": "^2.2.6",
     "chroma-js": "^2.4.2",
-    "framer-motion": "^11.3.16",
+    "framer-motion": "^11.3.21",
     "rangy": "^1.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -1,18 +1,46 @@
 import {VStack} from "@chakra-ui/react";
-import useGlobalHomeState from "../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
-import PiPlainText from "../../../../../../pillars-ui/components/text/PiPlainText.tsx";
+import FlashCardsReviewLayer from "./review";
+import React from "react";
+import FlashCardsSetupLayer from "./setup";
+import {FlashCard} from "./types.ts";
+import {StandardConsole} from "../../../../../../core/helpers/logging.ts";
+
+enum FlashCardsTabLayerKey {
+    REVIEW = 'review',
+    SETUP = 'setup'
+}
 
 export default function DocumentViewFlashCardsTab() {
-    const {
-        documents: {active_document, active_note},
-        document_view: {
-            tab_data: {editor_data: {content}}
-        }
-    } = useGlobalHomeState()
+    // const {
+    //     documents: {active_document, active_note},
+    //     document_view: {
+    //         tab_data: {editor_data: {content}}
+    //     }
+    // } = useGlobalHomeState()
+
+    const [active_layer, setActiveLayer] = React.useState<FlashCardsTabLayerKey>(FlashCardsTabLayerKey.SETUP)
+    const [flash_cards, setFlashCards] = React.useState<FlashCard[]>([])
 
     return (
-        <VStack w={'100%'} h={'100%'} px={'1rem'}>
-            <PiPlainText value={`welcome to flashcards, active note is ${active_note}`}/>
+        <VStack bg={'white'} w={'100%'} h={'100%'} px={'1rem'}>
+            {active_layer === FlashCardsTabLayerKey.SETUP && (
+                <FlashCardsSetupLayer
+                    w={'100%'} h={'100%'}
+                    reviewFlashCards={(cards) => {
+                        setFlashCards(cards)
+                        setActiveLayer(FlashCardsTabLayerKey.REVIEW);
+                    }}/>
+            )}
+            {active_layer === FlashCardsTabLayerKey.REVIEW && (
+                <FlashCardsReviewLayer
+                    w={'100%'} h={'100%'}
+                    flash_cards={flash_cards}
+                    completeReview={(review_records) => {
+                        setActiveLayer(FlashCardsTabLayerKey.SETUP);
+                        StandardConsole.log('Review Complete', review_records)
+                    }}
+                />
+            )}
         </VStack>
     )
 }
