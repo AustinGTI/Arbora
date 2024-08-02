@@ -2,6 +2,7 @@
 // every header
 
 import {StandardConsole} from "../helpers/logging.ts";
+import {createAIMainButton, HeadingTag} from "./buttons.ts";
 
 //todo: make this customizable to a specific dom element and its children
 
@@ -70,14 +71,7 @@ export function addAIButtonToHeaders() {
         }
         const header_key = coords
 
-        const aiButton = document.createElement('button')
-        aiButton.className = 'header-ai-btn'
-        aiButton.innerHTML = 'AI'
-        aiButton.style.marginLeft = '1rem'
-        aiButton.onclick = () => {
-            StandardConsole.log('AI Button Clicked: ' + header_key)
-        }
-        header.appendChild(aiButton)
+        header.appendChild(createAIMainButton(header_key, `h${level}` as HeadingTag))
         StandardConsole.log('child appended')
     })
 }

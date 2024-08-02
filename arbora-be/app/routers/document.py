@@ -100,7 +100,8 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
 
     edited_document = Document(**document)
 
-    edited_document.title = extractDocumentTitle(document_params.content),
+    edited_document.title = extractDocumentTitle(document_params.content)
+    print('title is ', edited_document.title)
     edited_document.content = document_params.content
     edited_document.notes = generateUpdatedDocumentNotes(document['notes'], document_params.content)
 

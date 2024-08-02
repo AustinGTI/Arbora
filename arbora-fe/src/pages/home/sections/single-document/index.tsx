@@ -1,109 +1,49 @@
 import React from 'react';
-import {Box, BoxProps, HStack, VStack} from "@chakra-ui/react";
-import {ArboraHomePageContext} from "../../index.tsx";
-import {ButtonOnClickFunction, PiButtonIcon, PiButtonVariant} from "../../../../pillars-ui/components/buttons/types.ts";
+import {Box, BoxProps, Center, HStack, VStack} from "@chakra-ui/react";
+import {PiButtonIcon, PiButtonVariant} from "../../../../pillars-ui/components/buttons/types.ts";
 import PiButton from "../../../../pillars-ui/components/buttons/PiButton.tsx";
 import {BsBodyText} from "react-icons/bs";
 import useCollapse, {CollapseTimer} from "../../../../core/helpers/hooks/useCollapse.tsx";
-import {MarkdownEditor} from "../../../../core/markdown/MarkdownEditor.tsx";
-import {
-    createDocumentService,
-    deleteDocumentService,
-    updateDocumentService
-} from "../../../../core/services/documents/DocumentsCRUDServices.ts";
-import {StandardConsole} from "../../../../core/helpers/logging.ts";
+import useGlobalHomeState from "../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
+import {useDispatch} from "react-redux";
+import {collapseDocumentView, DocumentViewTabKey, setActiveTab,} from "../../../../core/redux/home/home_slice.ts";
+import DocumentViewEditorTab from "./tabs/editor";
 import PiPlainText from "../../../../pillars-ui/components/text/PiPlainText.tsx";
-import useCountdownTimer from "../../../../core/helpers/hooks/useCountdownTimer.tsx";
+import DocumentViewFlashCardsTab from "./tabs/flash-cards";
+import DocumentViewQATab from "./tabs/qa";
+import DocumentViewExplainTab from "./tabs/explain";
 
 interface SingleDocumentSectionProps extends BoxProps {
 }
 
-const SINGLE_DOCUMENT_COLLAPSE_TIMERS: CollapseTimer[] = [
+const DOCUMENT_VIEW_COLLAPSE_TIMERS: CollapseTimer[] = [
     {key: 'button', collapse_delay: 1000, expand_delay: 0},
     {key: 'width', expand_delay: 0, collapse_delay: 500},
     {key: 'content-opacity', expand_delay: 500, collapse_delay: 0},
     {key: 'content-display', expand_delay: 400, collapse_delay: 100},
 ]
 
-const AUTOSAVE_INTERVAL_IN_S = 30
+interface DocumentViewTab {
+    key: DocumentViewTabKey,
+    title: string,
+    content: React.ReactElement
+}
+
+const DOCUMENT_VIEW_TABS: DocumentViewTab[] = [
+    {key: DocumentViewTabKey.EDITOR, title: 'Editor', content: <DocumentViewEditorTab/>},
+    {key: DocumentViewTabKey.FLASH_CARDS, title: 'Flash Cards', content: <DocumentViewFlashCardsTab/>},
+    {key: DocumentViewTabKey.QA, title: 'Q&A', content: <DocumentViewQATab/>},
+    {key: DocumentViewTabKey.EXPLAIN, title: 'Explain', content: <DocumentViewExplainTab/>},
+]
 
 export default function SingleDocumentSection({w, width, ...box_props}: SingleDocumentSectionProps) {
-    const [current_editor_content, setCurrentEditorContent] = React.useState<string>('')
-
-    const {t: t_minus_autosave, setTimer} = useCountdownTimer()
-
     const {
-        single_doc_section: {active_document, setActiveDocument},
-        all_documents_section: {reloadDocuments},
-        control: {single_doc_section_collapsed, setSingleDocSectionCollapsed}
-    } = React.useContext(ArboraHomePageContext)
+        document_view: {collapsed, active_tab},
+    } = useGlobalHomeState()
+    const dispatch = useDispatch()
 
-    const updateActiveDocument = React.useCallback(async (new_content: string) => {
-        // check if there is an active document
-        if (!active_document) {
-            StandardConsole.warn('No active document to update')
-            return
-        }
-        updateDocumentService({
-            id: active_document.id,
-            content: new_content
-        }).then((response) => {
-            if (response.is_successful) {
-                reloadDocuments()
-            }
-        })
-    }, [active_document, reloadDocuments]);
 
-    const createNewDocument: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
-        // check if there is an active document
-        if (active_document) {
-            StandardConsole.warn('There is an active document, cannot create a new document')
-            return
-        }
-        setButtonLoadingState(true)
-        await createDocumentService({
-            // todo: extract the title from the content
-            content: current_editor_content
-        }).then((response) => {
-            if (response.is_successful) {
-                reloadDocuments()
-                if (response.data?.document) {
-                    setActiveDocument(response.data.document)
-                } else {
-                    StandardConsole.error('Successfully created document but could not set active document')
-                }
-            }
-        })
-        setButtonLoadingState(false)
-    }, [active_document, reloadDocuments, setActiveDocument, current_editor_content]);
-
-    const deleteActiveDocument: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
-        // check if there is an active document
-        if (!active_document) {
-            StandardConsole.warn('No active document to delete')
-            return
-        }
-        setButtonLoadingState(true)
-        await deleteDocumentService({
-            id: active_document.id
-        }).then((response) => {
-            if (response.is_successful) {
-                reloadDocuments()
-            }
-        })
-        setButtonLoadingState(false)
-    }, [active_document, reloadDocuments]);
-
-    React.useEffect(() => {
-        if (t_minus_autosave === 0 && active_document) {
-            if (current_editor_content) {
-                updateActiveDocument(current_editor_content).then()
-            }
-            setTimer(AUTOSAVE_INTERVAL_IN_S)
-        }
-    }, [t_minus_autosave, active_document]);
-
-    const collapse_state = useCollapse(single_doc_section_collapsed, SINGLE_DOCUMENT_COLLAPSE_TIMERS)
+    const collapse_state = useCollapse(collapsed, DOCUMENT_VIEW_COLLAPSE_TIMERS)
     const collapse_button = React.useMemo(() => {
         return (
             <Box zIndex={200} p={'1rem'} position={'absolute'}
@@ -113,12 +53,12 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
                     icon={!collapse_state.get('button') ? PiButtonIcon.CLOSE : BsBodyText}
                     icon_props={{fontSize: '30px'}}
                     onClick={() => {
-                        setSingleDocSectionCollapsed(!single_doc_section_collapsed)
+                        dispatch(collapseDocumentView(!collapsed))
                     }}
                 />
             </Box>
         )
-    }, [single_doc_section_collapsed, setSingleDocSectionCollapsed, collapse_state]);
+    }, [collapse_state, dispatch, collapsed]);
 
     return (
         <Box
@@ -132,46 +72,27 @@ export default function SingleDocumentSection({w, width, ...box_props}: SingleDo
                 opacity={collapse_state.get('content-opacity') ? 0 : 1}
                 display={collapse_state.get('content-display') ? 'none' : 'flex'}
                 transition={'opacity 0.2s'}
-                w={'100%'} h={'100%'} overflow={'hidden'} pt={'3rem'} px={'1rem'}>
-                {active_document ? (
-                    <HStack w={'100%'} justify={'space-between'}>
-                        <HStack>
-                            <PiButton
-                                icon={PiButtonIcon.DELETE}
-                                icon_props={{fontSize: '25px'}}
-                                px={'.7rem'}
-                                onClick={deleteActiveDocument}/>
-                            <Box px={'.5rem'}>
-                                <PiPlainText value={`Last auto-saved ${AUTOSAVE_INTERVAL_IN_S - t_minus_autosave}s ago`}
-                                             fontSize={'13px'}/>
-                            </Box>
-                        </HStack>
-                        <HStack>
-                            <PiButton
-                                label={'New Doc'}
-                                icon={PiButtonIcon.ADD}
-                                onClick={() => {
-                                    setActiveDocument(null)
-                                }}
-                            />
-                        </HStack>
-                    </HStack>
-                ) : (
-                    <HStack w={'100%'} justify={'flex-end'}>
-                        <PiButton
-                            label={'Create Doc'}
-                            icon={PiButtonIcon.SAVE}
-                            onClick={createNewDocument}
-                        />
-                    </HStack>
-                )}
-
-                <Box w={'100%'} h={'85%'} mt={'.5rem'} borderRadius={'10px'} overflow={'hidden'}>
-                    <MarkdownEditor
-                        initial_content={active_document?.content}
-                        updateContent={setCurrentEditorContent}/>
+                w={'100%'} h={'100%'} overflow={'hidden'}>
+                <HStack w={'100%'}>
+                    {
+                        DOCUMENT_VIEW_TABS.map(tab => {
+                            return (
+                                <Center py={'1rem'} px={'2rem'} cursor={'pointer'}
+                                        onClick={() => {
+                                            dispatch(setActiveTab(tab.key))
+                                        }}>
+                                    <PiPlainText
+                                        value={tab.title}
+                                        fontSize={active_tab === tab.key ? '20px' : '16px'}
+                                        color={active_tab === tab.key ? 'black' : 'gray'}/>
+                                </Center>
+                            )
+                        })
+                    }
+                </HStack>
+                <Box w={'100%'} h={'calc(100% - 2rem)'} overflow={'auto'}>
+                    {DOCUMENT_VIEW_TABS.find(tab => tab.key === active_tab)?.content}
                 </Box>
-
             </VStack>
         </Box>
     )

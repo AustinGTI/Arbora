@@ -33,5 +33,12 @@ def extractDocumentTitle(markdown_content: str) -> str:
     for line in lines:
         if line.startswith("# "):
             return line[2:]
-    # else generate a random 5char alpha numeric string
-    return f"Document #{secrets.token_urlsafe(5).lower()}"
+    # else just take the first few words of the first line,
+    # title should be less than 20 chars
+    title = ''
+    for word in lines[0].split():
+        title += word + ' '
+        if len(title) > 20:
+            title += '...'
+            break
+    return title

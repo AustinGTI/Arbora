@@ -7,18 +7,23 @@ import {PersistGate} from "redux-persist/integration/react";
 import React from "react";
 import {PersistConfig} from "redux-persist/es/types";
 import {BrowserRouter} from "react-router-dom";
+import {GlobalHomeState, HomeSlice} from "./home/home_slice.ts";
 
 export interface GlobalStoreState {
     auth: GlobalAuthState
+    home: GlobalHomeState
 }
 
 const reducers: { [key in keyof GlobalStoreState]: Reducer<GlobalStoreState[key]> } = {
-    auth: AuthSlice.reducer
+    auth: AuthSlice.reducer,
+    home: HomeSlice.reducer
 }
 
 const persist_config: PersistConfig<GlobalStoreState> = {
     key: 'root',
-    storage
+    storage,
+    // do not persist home state
+    blacklist: ['home']
 }
 
 

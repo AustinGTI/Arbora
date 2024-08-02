@@ -14,15 +14,13 @@ import {listener, listenerCtx} from "@milkdown/plugin-listener";
 import {Box, HStack} from "@chakra-ui/react";
 import PiButton from "../../pillars-ui/components/buttons/PiButton.tsx";
 import {PiButtonIcon, PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
-import {Ctx} from "@milkdown/ctx";
-import {replaceAll} from "@milkdown/utils";
-import {JSONRecord} from "@milkdown/transformer";
+import {Ctx, MilkdownPlugin} from "@milkdown/ctx";
 import {addAIButtonToHeaders} from "./dom.ts";
-
-interface MarkdownEditorProps {
-    initial_content?: string
-    updateContent: (content: string) => void
-}
+import useGlobalHomeState from "../redux/home/hooks/useGlobalHomeState.tsx";
+import {useDispatch} from "react-redux";
+import {setEditorContent, setEditorEditable} from "../redux/home/home_slice.ts";
+import {StandardConsole} from "../helpers/logging.ts";
+import {replaceAll} from "@milkdown/utils"
 
 interface MilkdownEditorProps {
     editable: boolean
@@ -30,18 +28,23 @@ interface MilkdownEditorProps {
     setActiveContent: (content: string) => void
 }
 
-interface ProseNode extends Object {
-    toJSON: () => JSONRecord
-}
-
-
 function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownEditorProps) {
-    const [doc, setDoc] = React.useState<ProseNode | null>(null)
+    const [current_content, setCurrentContent] = React.useState<string>(initial_content)
+    const initial_content_ref = React.useRef<string>(initial_content);
+    const plugin_ref = React.useRef<MilkdownPlugin | null>(null);
+
+    React.useEffect(() => {
+        setActiveContent(current_content)
+    }, [current_content]);
+
+    React.useEffect(() => {
+        setCurrentContent(initial_content)
+    }, [initial_content]);
 
     const {get, loading} = useEditor((root) =>
         Editor.make()
             .config(nord)
-            .config((ctx) => {
+            .config((ctx: Ctx) => {
                 ctx.set(rootCtx, root);
 
                 ctx.update(editorViewOptionsCtx, (prev) => ({
@@ -53,18 +56,17 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
                     editable: () => editable,
                 }))
 
+            })
+            .config((ctx: Ctx) => {
                 ctx.set(headingAttr.key, (node) => {
                     const level = node.attrs.level
                     return {
                         class: `md-header md-header-${level}`
                     }
                 })
-            })
-            .config((ctx) => {
+
                 ctx.get(listenerCtx).markdownUpdated((_ctx, markdown) => {
-                    setActiveContent(markdown)
-                }).updated((_ctx, doc) => {
-                    setDoc(doc)
+                    setCurrentContent(markdown)
                 })
             })
             .use(commonmark)
@@ -74,33 +76,43 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
     const editor = React.useMemo(() => {
         return get()
     }, [get]);
+
     React.useEffect(() => {
         const effect = async () => {
             if (loading || !editor || editor.status !== EditorStatus.Created) {
                 return
             }
 
-            editor.use([
-                (ctx: Ctx) => () => {
-                    ctx.update(editorViewOptionsCtx, (prev) => ({
-                        ...prev,
-                        editable: () => editable,
-                    }))
-                    if (doc) {
-                        ctx.set(defaultValueCtx, {
-                            type: 'json',
-                            value: doc.toJSON()
-                        })
-                    }
-                },
-            ].flat());
+            if (plugin_ref.current) {
+                await editor.remove(plugin_ref.current)
+            }
+            const initPlugin = (ctx: Ctx) => () => {
+                ctx.update(editorViewOptionsCtx, (prev) => ({
+                    ...prev,
+                    editable: () => editable,
+                }))
+                if (initial_content_ref.current !== initial_content) {
+                    StandardConsole.log('setting to initial content', initial_content)
+                    ctx.set(defaultValueCtx, initial_content)
+                    initial_content_ref.current = initial_content
+                } else {
+                    StandardConsole.log('setting to current content', current_content)
+                    ctx.set(defaultValueCtx, current_content)
+                }
+            }
+
+            editor.use(initPlugin);
+
             await editor.create();
+
             if (editable) {
                 // focus the editor
                 editor.ctx.get(editorViewCtx).focus()
             } else {
                 addAIButtonToHeaders()
             }
+
+            plugin_ref.current = initPlugin
         }
 
         requestAnimationFrame(() => {
@@ -108,10 +120,14 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
         });
     }, [editor, editable, loading]);
 
+
     // when the initial content changes, update the editor content
     React.useEffect(() => {
         if (editor) {
             editor.action(replaceAll(initial_content))
+            if (!editable) {
+                addAIButtonToHeaders()
+            }
         }
     }, [editor, initial_content]);
 
@@ -121,14 +137,24 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
     )
 };
 
-export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorProps) {
-    const [active_content, setActiveContent] = React.useState<string>(initial_content ?? '')
-    const [editable, setEditable] = React.useState<boolean>(false)
+export function MarkdownEditor() {
+    const {
+        documents: {active_document},
+        document_view: {tab_data: {editor_data: {editable}}}
+    } = useGlobalHomeState()
+    const dispatch = useDispatch()
 
 
+    // when the active document id changes, set the editable back to view mode and update the content
     React.useEffect(() => {
-        updateContent(active_content)
-    }, [active_content, updateContent])
+        if (active_document) {
+            dispatch(setEditorContent(active_document.content))
+            dispatch(setEditorEditable(false))
+        } else {
+            dispatch(setEditorContent(''))
+            dispatch(setEditorEditable(true))
+        }
+    }, [active_document?.id]);
 
     const control_buttons = React.useMemo(() => {
         return (
@@ -136,7 +162,9 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
                 <PiButton
                     icon={editable ? PiButtonIcon.VIEW : PiButtonIcon.EDIT}
                     variant={PiButtonVariant.ICON}
-                    onClick={() => setEditable(state => !state)}/>
+                    onClick={() => {
+                        dispatch(setEditorEditable(!editable))
+                    }}/>
                 {/*<PiButton*/}
                 {/*    icon={PiButtonIcon.SAVE}*/}
                 {/*    variant={PiButtonVariant.ICON}*/}
@@ -146,7 +174,7 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
                 {/*    }/>*/}
             </HStack>
         )
-    }, [setEditable, editable]);
+    }, [editable, dispatch]);
 
 
     return (
@@ -155,8 +183,10 @@ export function MarkdownEditor({initial_content, updateContent}: MarkdownEditorP
                 {control_buttons}
                 <Box className={`milkdown-wrapper ${editable ? 'edit-mode' : 'review-mode'}`} w={'100%'} h={'100%'}
                      overflowY={'auto'}>
-                    <MilkdownEditor editable={editable} initial_content={initial_content ?? ''}
-                                    setActiveContent={setActiveContent}/>
+                    <MilkdownEditor editable={editable} initial_content={active_document?.content ?? ''}
+                                    setActiveContent={(content) => {
+                                        dispatch(setEditorContent(content))
+                                    }}/>
                 </Box>
             </Box>
         </MilkdownProvider>
