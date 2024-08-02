@@ -10,7 +10,7 @@ import {collapseDocumentView, DocumentViewTabKey, setActiveTab,} from "../../../
 import DocumentViewEditorTab from "./tabs/editor";
 import PiPlainText from "../../../../pillars-ui/components/text/PiPlainText.tsx";
 import DocumentViewFlashCardsTab from "./tabs/flash-cards";
-import DocumentViewQATab from "./tabs/qa";
+import DocumentViewQuizTab from "./tabs/quiz";
 import DocumentViewExplainTab from "./tabs/explain";
 
 interface SingleDocumentSectionProps extends BoxProps {
@@ -32,7 +32,7 @@ interface DocumentViewTab {
 const DOCUMENT_VIEW_TABS: DocumentViewTab[] = [
     {key: DocumentViewTabKey.EDITOR, title: 'Editor', content: <DocumentViewEditorTab/>},
     {key: DocumentViewTabKey.FLASH_CARDS, title: 'Flash Cards', content: <DocumentViewFlashCardsTab/>},
-    {key: DocumentViewTabKey.QA, title: 'Q&A', content: <DocumentViewQATab/>},
+    {key: DocumentViewTabKey.QA, title: 'Quiz', content: <DocumentViewQuizTab/>},
     {key: DocumentViewTabKey.EXPLAIN, title: 'Explain', content: <DocumentViewExplainTab/>},
 ]
 

@@ -1,7 +1,7 @@
 import {BoxProps, HStack} from "@chakra-ui/react";
 import {FlashCard} from "../types.ts";
 import React from "react";
-import ProgressSection from "./ProgressSection.tsx";
+import CardReviewProgressSection from "./CardReviewProgressSection.tsx";
 import FlashCardSection from "./FlashCardSection.tsx";
 import CardReviewCompleteOverlay from "./ReviewCompleteOverlay.tsx";
 
@@ -92,7 +92,7 @@ export default function FlashCardsReviewLayer({flash_cards, completeReview, ...b
                     restartReview={restartReview}
                     w={'100%'} h={'100%'}/>
             )}
-            <ProgressSection
+            <CardReviewProgressSection
                 w={'35%'} h={'100%'}
                 flash_cards={flash_cards}
                 card_reviews={card_reviews}

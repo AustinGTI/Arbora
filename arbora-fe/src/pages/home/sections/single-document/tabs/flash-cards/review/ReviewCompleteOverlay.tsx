@@ -48,8 +48,7 @@ export default function CardReviewCompleteOverlay({
             {...box_props}>
             <VStack w={'50%'} spacing={'1rem'}>
                 <VStack w={'100%'} py={'1rem'} justify={'center'}>
-                    <PiPlainText value={'Congratulations!'} fontSize={'42px'} fontWeight={700}/>
-                    <PiPlainText value={'Review Complete'} fontSize={'22px'} fontWeight={500}/>
+                    <PiPlainText value={'Review Complete'} fontSize={'42px'} fontWeight={700}/>
                     <HStack w={'100%'} justify={'space-around'} py={'1rem'}>
                         <PiPlainText value={`Easy: ${easys}`}/>
                         <PiPlainText value={`Medium: ${mediums}`}/>
