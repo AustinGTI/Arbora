@@ -3,6 +3,7 @@ import {Box, BoxProps, VStack} from "@chakra-ui/react";
 import {ChatMessage, ChatSource} from "../types.ts";
 import ChatMessageDisplay from "./ChatMessageDisplay.tsx";
 import ChatMessageInput from "./ChatMessageInput.tsx";
+import ActiveDocumentNoteSelector from "../../../../../../../core/components/document-note-selector";
 
 interface ExplainTabChatSectionProps extends BoxProps {
 
@@ -86,6 +87,7 @@ export default function ExplainTabChatSection({...box_props}: ExplainTabChatSect
     return (
         <Box w={'100%'} h={'100%'} {...box_props}>
             <VStack h={'95%'} w={'100%'}>
+                <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}/>
                 <Box flex={1}/>
                 <VStack ref={chat_box_ref} w={'100%'} maxH={'85%'} h={'fit-content'} spacing={'1rem'} p={'1rem'}
                         overflowY={'auto'}>

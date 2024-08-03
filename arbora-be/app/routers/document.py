@@ -11,7 +11,7 @@ from auth_bearer import JWTBearer
 from document_utils import calculateContentEdit, extractDocumentTitle
 from markdown_utils import generateNewDocumentNotes, generateUpdatedDocumentNotes
 from models.document import Document
-from note import NoteReview
+from note import NoteReview, Note
 
 document_router = APIRouter(dependencies=[Depends(JWTBearer())])
 
@@ -103,7 +103,7 @@ async def updateDocument(request: Request, document_params: UpdateDocumentReques
     edited_document.title = extractDocumentTitle(document_params.content)
     print('title is ', edited_document.title)
     edited_document.content = document_params.content
-    edited_document.notes = generateUpdatedDocumentNotes(document['notes'], document_params.content)
+    edited_document.notes = generateUpdatedDocumentNotes({key: Note(**note) for key, note in document['notes'].items()}, document_params.content)
 
     updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(document_params.id)},
                                                                          {"$set": edited_document.dict(by_alias=True, exclude={"id"})})

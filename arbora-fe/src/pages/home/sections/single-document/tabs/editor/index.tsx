@@ -7,19 +7,19 @@ import {
     createDocumentService, deleteDocumentService,
     updateDocumentService
 } from "../../../../../../core/services/documents/DocumentsCRUDServices.ts";
-import {reloadHomeData, setActiveDocument} from "../../../../../../core/redux/home/home_slice.ts";
+import {reloadHomeData, setActiveDocument, setEditorEditable} from "../../../../../../core/redux/home/home_slice.ts";
 import {ButtonOnClickFunction, PiButtonIcon} from "../../../../../../pillars-ui/components/buttons/types.ts";
 import {Box, HStack, VStack} from "@chakra-ui/react";
 import PiButton from "../../../../../../pillars-ui/components/buttons/PiButton.tsx";
-import PiPlainText from "../../../../../../pillars-ui/components/text/PiPlainText.tsx";
 import {MarkdownEditor} from "../../../../../../core/markdown/MarkdownEditor.tsx";
+import ActiveDocumentNoteSelector from "../../../../../../core/components/document-note-selector";
 
 const AUTOSAVE_INTERVAL_IN_S = 10
 export default function DocumentViewEditorTab() {
     const {
-        documents: {active_document},
+        documents: {active_document, active_note},
         document_view: {
-            tab_data: {editor_data: {content}}
+            tab_data: {editor_data: {editable, content}}
         }
     } = useGlobalHomeState()
     const dispatch = useDispatch()
@@ -27,7 +27,7 @@ export default function DocumentViewEditorTab() {
     // region CRUD FUNCTIONS
     // ? ........................
 
-    const updateActiveDocument = React.useCallback(async (new_content: string) => {
+    const updateActiveDocument = React.useCallback(async () => {
         // check if there is an active document
         if (!active_document) {
             StandardConsole.warn('No active document to update')
@@ -35,13 +35,14 @@ export default function DocumentViewEditorTab() {
         }
         updateDocumentService({
             id: active_document.id,
-            content: new_content
+            content
         }).then((response) => {
             if (response.is_successful) {
                 dispatch(reloadHomeData({with_note_reset: true}))
+                dispatch(setEditorEditable(false))
             }
         })
-    }, [active_document, dispatch]);
+    }, [active_document, dispatch, content]);
 
     const createNewDocument: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
         // check if there is an active document
@@ -100,7 +101,7 @@ export default function DocumentViewEditorTab() {
     React.useEffect(() => {
         if (t_minus_autosave === 1000 && active_document) {
             if (content) {
-                updateActiveDocument(content).then()
+                updateActiveDocument().then()
             }
             setTimer(AUTOSAVE_INTERVAL_IN_S)
         }
@@ -109,45 +110,91 @@ export default function DocumentViewEditorTab() {
     // ? ........................
     // endregion ........................
 
+    React.useEffect(() => {
+        // when the active note changes and the editor is in edit mode, scroll the
+        // editor to the note
+        StandardConsole.log('attempting to scroll')
+        if (active_note && !editable) {
+            const editor_elem = document.getElementsByClassName('milkdown-wrapper')[0]
+            if (!editor_elem) {
+                StandardConsole.warn('Could not find editor element')
+                return
+            }
+            const header_elem_class_name = `header-key-${active_note.replace(/\./g, '-')}`
+            const header_elem = document.getElementsByClassName(header_elem_class_name)[0]
+
+            if (!header_elem) {
+                StandardConsole.warn('Could not find header element')
+                return
+            }
+
+            // remove active header from any existing header
+            Array.from(document.getElementsByClassName('active-header')).forEach((elem) => {
+                elem.classList.remove('active-header')
+            })
+
+            // add an active header class to the header element
+            header_elem.classList.add('active-header')
+
+
+            editor_elem.scrollTo({
+                top: header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top,
+                behavior: 'smooth'
+            })
+
+            StandardConsole.log('scrolled ', header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top)
+        }
+    }, [active_note]);
+
     return (
-    <VStack w={'100%'} h={'100%'} px={'1rem'}>
-        {active_document ? (
-            <HStack w={'100%'} justify={'space-between'}>
-                <HStack>
-                    <PiButton
-                        icon={PiButtonIcon.DELETE}
-                        icon_props={{fontSize: '25px'}}
-                        px={'.7rem'}
-                        onClick={deleteActiveDocument}/>
-                    <Box px={'.5rem'}>
-                        <PiPlainText value={`Last auto-saved ${AUTOSAVE_INTERVAL_IN_S - t_minus_autosave}s ago`}
-                                     fontSize={'13px'}/>
-                    </Box>
+        <VStack w={'100%'} h={'100%'} px={'1rem'}>
+            {active_document ? (
+                <HStack w={'100%'} justify={'space-between'}>
+                    <HStack>
+                        <PiButton
+                            icon={PiButtonIcon.DELETE}
+                            icon_props={{fontSize: '25px'}}
+                            px={'.7rem'}
+                            onClick={deleteActiveDocument}/>
+                        <PiButton
+                            icon={PiButtonIcon.SAVE}
+                            icon_props={{fontSize: '25px'}}
+                            px={'.7rem'}
+                            onClick={async (setButtonLoadingState) => {
+                                setButtonLoadingState(true)
+                                await updateActiveDocument()
+                                setButtonLoadingState(false)
+                            }}/>
+                        {/*<Box px={'.5rem'}>*/}
+                        {/*    <PiPlainText value={`Last auto-saved ${AUTOSAVE_INTERVAL_IN_S - t_minus_autosave}s ago`}*/}
+                        {/*                 fontSize={'13px'}/>*/}
+                        {/*</Box>*/}
+                    </HStack>
+                    <ActiveDocumentNoteSelector is_disabled={editable}/>
+                    <HStack>
+                        <PiButton
+                            label={'New Doc'}
+                            icon={PiButtonIcon.ADD}
+                            onClick={() => {
+                                dispatch(setActiveDocument(null))
+                            }}
+                        />
+                    </HStack>
                 </HStack>
-                <HStack>
+            ) : (
+                <HStack w={'100%'} justify={'flex-end'}>
                     <PiButton
-                        label={'New Doc'}
-                        icon={PiButtonIcon.ADD}
-                        onClick={() => {
-                            dispatch(setActiveDocument(null))
-                        }}
+                        label={'Create Doc'}
+                        icon={PiButtonIcon.SAVE}
+                        onClick={createNewDocument}
                     />
                 </HStack>
-            </HStack>
-        ) : (
-            <HStack w={'100%'} justify={'flex-end'}>
-                <PiButton
-                    label={'Create Doc'}
-                    icon={PiButtonIcon.SAVE}
-                    onClick={createNewDocument}
-                />
-            </HStack>
-        )}
+            )}
 
-        <Box w={'100%'} h={'85%'} mt={'.5rem'} borderRadius={'10px'} overflow={'hidden'}>
-            <MarkdownEditor/>
-        </Box>
+            <Box w={'100%'} h={'85%'} mt={'.5rem'} borderRadius={'10px'} overflow={'hidden'}>
+                <MarkdownEditor/>
+            </Box>
 
-    </VStack>
+        </VStack>
     )
 }

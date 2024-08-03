@@ -4,6 +4,7 @@ import React from "react";
 import FlashCardsSetupLayer from "./setup";
 import {FlashCard} from "./types.ts";
 import {StandardConsole} from "../../../../../../core/helpers/logging.ts";
+import ActiveDocumentNoteSelector from "../../../../../../core/components/document-note-selector";
 
 enum FlashCardsTabLayerKey {
     REVIEW = 'review',
@@ -23,6 +24,8 @@ export default function DocumentViewFlashCardsTab() {
 
     return (
         <VStack bg={'white'} w={'100%'} h={'100%'} px={'1rem'}>
+            <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}
+                                        is_disabled={active_layer === FlashCardsTabLayerKey.REVIEW}/>
             {active_layer === FlashCardsTabLayerKey.SETUP && (
                 <FlashCardsSetupLayer
                     w={'100%'} h={'100%'}

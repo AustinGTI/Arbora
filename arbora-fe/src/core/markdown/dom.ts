@@ -6,8 +6,8 @@ import {createAIMainButton, HeadingTag} from "./buttons.ts";
 
 //todo: make this customizable to a specific dom element and its children
 
-function editorInEditMode() {
-    return document.querySelector('.milkdown-wrapper.edit-mode') !== null
+function editorInEditMode(elem: Element | Document) {
+    return elem.querySelector('.milkdown-wrapper.edit-mode') !== null
 }
 
 interface HeaderTreeNode {
@@ -16,10 +16,17 @@ interface HeaderTreeNode {
     children: string[]
 }
 
-export function addAIButtonToHeaders() {
-    const headers = document.querySelectorAll('.md-header')
 
-    if (editorInEditMode()) {
+function iterateThroughHeaders(action: (header_key: string, header: Element, level: number) => void, editor_id?: string) {
+    if (editor_id && !document.querySelector('#' + editor_id)) {
+        StandardConsole.warn(`editor id ${editor_id} not found`)
+        return
+    }
+    const elem = (editor_id ? document.querySelector('#' + editor_id)! : document)
+
+    const headers = elem.querySelectorAll('.md-header')
+
+    if (editorInEditMode(elem)) {
         return
     }
 
@@ -30,7 +37,7 @@ export function addAIButtonToHeaders() {
     // use tree to determine header ids
     headers.forEach((header) => {
         const level = parseInt(header.className.split('md-header-')[1])
-        let coords = ''
+        let coords: string
 
         while (node_stack.length && node_stack.slice(-1)[0].level >= level) {
             if (!node_stack.slice(-1)[0].coords.includes('.')) {
@@ -63,15 +70,23 @@ export function addAIButtonToHeaders() {
         node_stack.push(new_node)
         header_tree.set(coords, new_node)
 
+        action(coords, header, level)
+    })
+}
+
+export function addAIButtonToHeaders(editor_id?: string) {
+    iterateThroughHeaders((header_key, header, level) => {
+        // add a class to the header based on its key, first remove any pre-existing header-key class
+        header.className = header.className.replace(/header-key-\d+/g, '')
+        header.className += ` header-key-${header_key.replace(/\./g, '-')}`
 
         // if there is no AI button, add one
         if (header.querySelector('.header-ai-btn')) {
             StandardConsole.log('i see one')
             return
         }
-        const header_key = coords
 
         header.appendChild(createAIMainButton(header_key, `h${level}` as HeadingTag))
         StandardConsole.log('child appended')
-    })
+    }, editor_id)
 }

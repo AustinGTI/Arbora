@@ -4,6 +4,8 @@ import {MultipleChoiceQuestion, OpenEndedQuestion, QuizType} from "../types.ts";
 import PiTextInput from "../../../../../../../pillars-ui/components/forms/inputs/text/PiTextInput.tsx";
 import PiInputLabel from "../../../../../../../pillars-ui/components/forms/inputs/helper-components/PiInputLabel.tsx";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import PiMultiButton from "../../../../../../../pillars-ui/components/buttons/modal-buttons/PiMultiButton.tsx";
+import {PiButtonVariant} from "../../../../../../../pillars-ui/components/buttons/types.ts";
 
 interface QuizSetupLayerProps extends BoxProps {
     takeQuiz: (cards: MultipleChoiceQuestion[] | OpenEndedQuestion[]) => void
@@ -54,6 +56,26 @@ export default function QuizSetupLayer({takeQuiz, ...box_props}: QuizSetupLayerP
     return (
         <Center w={'100%'} h={'100%'} {...box_props}>
             <VStack w={'50%'} h={'75%'} justify={'space-around'}>
+                <VStack w={'100%'}>
+                    <PiInputLabel m={0} name={'quiz_type'} label={'Quiz Type'}/>
+                    <PiMultiButton
+                        label={quiz_type === QuizType.MULTIPLE_CHOICE ? 'Multiple Choice' : 'Open Ended'}
+                        w={'100%'}
+                        variant={PiButtonVariant.GHOST}
+                        dropdown_container_props={{
+                            w: "match-button"
+                        }}
+                        nested_buttons_props={[
+                        {
+                            label: 'Multiple Choice',
+                            onClick: () => setQuizType(QuizType.MULTIPLE_CHOICE),
+                        },
+                        {
+                            label: 'Open Ended',
+                            onClick: () => setQuizType(QuizType.OPEN_ENDED),
+                        }
+                    ]}/>
+                </VStack>
                 <VStack w={'100%'}>
                     <PiInputLabel m={0} name={'no_of_cards'} label={'Number of Questions'}/>
                     <PiTextInput

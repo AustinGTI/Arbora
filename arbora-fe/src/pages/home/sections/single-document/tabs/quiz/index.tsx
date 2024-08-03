@@ -4,6 +4,7 @@ import {isMultipleChoiceQuestion, MultipleChoiceQuestion, OpenEndedQuestion} fro
 import QuizSetupLayer from "./setup";
 import {MultipleChoiceQuizSessionLayer, OpenEndedQuizSessionLayer} from "./session";
 import {StandardConsole} from "../../../../../../core/helpers/logging.ts";
+import ActiveDocumentNoteSelector from "../../../../../../core/components/document-note-selector";
 
 enum QuizTabLayerKey {
     SESSION = 'session',
@@ -23,6 +24,7 @@ export default function DocumentViewQuizTab() {
 
     return (
         <VStack bg={'lavender'} w={'100%'} h={'100%'} px={'1rem'}>
+            <ActiveDocumentNoteSelector w={'100%'} py={'1rem'} is_disabled={active_layer === QuizTabLayerKey.SESSION}/>
             {active_layer === QuizTabLayerKey.SETUP && (
                 <QuizSetupLayer
                     w={'100%'} h={'100%'}
