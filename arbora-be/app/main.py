@@ -33,5 +33,5 @@ app.include_router(document_router)
 
 if __name__ == '__main__':
     uvicorn.run(
-        "main:app"
+        "__init__:app"
     )
