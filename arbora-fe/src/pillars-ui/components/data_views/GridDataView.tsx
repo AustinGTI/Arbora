@@ -1,8 +1,10 @@
 import {Box, BoxProps, HStack} from "@chakra-ui/react";
+import React from "react";
 
 export interface GridCellData {
     key: string
     color: string
+    content?: React.ReactNode
     onClick: () => void
 }
 
@@ -29,13 +31,15 @@ export default function GridDataView
     return (
         <Box {...box_props}>
             <HStack w={'100%'} h={'100%'} flexWrap={'wrap'}>
-                {grid_data.map(({key, color, onClick}) => {
+                {grid_data.map(({key, color, content, onClick}) => {
                     return (
                         <Box
                             key={key}
                             onClick={onClick}
                             w={`${cell_size}px`} h={`${cell_size}px`}
-                            rounded={cell_border_radius} bg={color}/>
+                            rounded={cell_border_radius} bg={color}>
+                            {content}
+                        </Box>
                     )
                 })}
             </HStack>

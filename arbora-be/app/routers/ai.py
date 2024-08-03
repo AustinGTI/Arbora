@@ -32,8 +32,8 @@ async def get_flash_cards(request: Request, params: GetFlashCardsRequest):
     try:
         flash_cards = generateFlashCards(params.no_of_flash_cards, params.content)
     except Exception as e:
-        response = GetFlashCardsRequestResponse(is_successful=False, message=str(e), flash_cards=[])
-        return JSONResponse(content=response.dict(), message="Internal error when generating flash_cards", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response = GetFlashCardsRequestResponse(is_successful=False, message="Internal error getting flash cards " + str(e), flash_cards=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = GetFlashCardsRequestResponse(is_successful=True, message="Flash cards generated successfully", flash_cards=flash_cards)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
@@ -54,9 +54,9 @@ async def get_multiple_choice_questions(request: Request, params: GetMultipleCho
     try:
         mc_questions = generateMultipleChoiceQuestions(params.no_of_questions, params.content)
     except Exception as e:
-        response = GetMultipleChoiceQuestionsResponse(is_successful=False, message=str(e), questions=[])
-        return JSONResponse(content=response.dict(), message="Internal error when generating multiple choice questions",
-                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response = GetMultipleChoiceQuestionsResponse(is_successful=False, message="Internal server error generating multiple choice questions," + str(e),
+                                                      questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = GetMultipleChoiceQuestionsResponse(is_successful=True, message="Multiple choice questions generated successfully", questions=mc_questions)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
@@ -77,9 +77,8 @@ async def get_open_ended_questions(request: Request, params: GetOpenEndedQuestio
     try:
         oe_questions = generateOpenEndedQuestions(params.no_of_questions, params.content)
     except Exception as e:
-        response = GetOpenEndedQuestionsResponse(is_successful=False, message=str(e), questions=[])
-        return JSONResponse(content=response.dict(), message="Internal error when generating open ended questions",
-                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response = GetOpenEndedQuestionsResponse(is_successful=False, message='Internal server error ' + str(e), questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = GetOpenEndedQuestionsResponse(is_successful=True, message="Open ended questions generated successfully", questions=oe_questions)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
@@ -105,12 +104,11 @@ async def grade_open_ended_questions(request: Request, params: GradeOpenEndedQue
 
     try:
         grading = gradeOpenEndedQuestions(params.content,
-                                          [OpenEndedQuestionAnswer(id=q['id'], question=q['question'], answer=a) for q, a in zip(params.questions,
-                                                                                                                                 params.answers)])
+                                          [OpenEndedQuestionAnswer(id=q.id, question=q.question, answer=a) for q, a in zip(params.questions,
+                                                                                                                           params.answers)])
     except Exception as e:
         response = GradeOpenEndedQuestionsResponse(is_successful=False, message=str(e), grading=[])
-        return JSONResponse(content=response.dict(), message="Internal error when grading open ended questions",
-                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = GradeOpenEndedQuestionsResponse(is_successful=True, message="Open ended questions graded successfully", grading=grading)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
@@ -125,7 +123,7 @@ class ChatWithArbyRequest(BaseModel):
     curiosity: int
 
 
-class ChatWithArbyResponse(BaseModel):
+class ChatWithArbyResponse(GenericResponse):
     response: ChatResponse
 
 
@@ -134,9 +132,8 @@ async def chat_with_arby(request: Request, params: ChatWithArbyRequest):
     try:
         response = explainContentToAI(params.content, params.conversation, params.limit, params.curiosity)
     except Exception as e:
-        response = ChatWithArbyResponse(is_successful=False, message=str(e), response=ChatResponse())
-        return JSONResponse(content=response.dict(), message="Internal error when chatting with Arby",
-                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response = ChatWithArbyResponse(is_successful=False, message="Internal error in Chat with Arby : " + str(e), response=ChatResponse())
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = ChatWithArbyResponse(is_successful=True, message="Chat with Arby successful", response=response)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)

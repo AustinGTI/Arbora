@@ -12,13 +12,6 @@ enum FlashCardsTabLayerKey {
 }
 
 export default function DocumentViewFlashCardsTab() {
-    // const {
-    //     documents: {active_document, active_note},
-    //     document_view: {
-    //         tab_data: {editor_data: {content}}
-    //     }
-    // } = useGlobalHomeState()
-
     const [active_layer, setActiveLayer] = React.useState<FlashCardsTabLayerKey>(FlashCardsTabLayerKey.SETUP)
     const [flash_cards, setFlashCards] = React.useState<FlashCard[]>([])
 

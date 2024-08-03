@@ -1,13 +1,13 @@
 import React from "react";
 import {BoxProps, Center, HStack, VStack} from "@chakra-ui/react";
-import GridDataView, {GridCellData} from "../../../../../../../pillars-ui/components/data_views/GridDataView.tsx";
+import GridDataView, {GridCellData} from "../../../../../../../../pillars-ui/components/data_views/GridDataView.tsx";
 import CircularProgressIndicator
-    from "../../../../../../../pillars-ui/components/data_views/CircularProgressIndicator.tsx";
-import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
-import {MultipleChoiceQuestion, OpenEndedQuestion} from "../../../../../../../core/services/ai/types.ts";
+    from "../../../../../../../../pillars-ui/components/data_views/CircularProgressIndicator.tsx";
+import PiButton from "../../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import {MultipleChoiceQuestion, OpenEndedQuestion} from "../../../../../../../../core/services/ai/types.ts";
 
 
-interface ProgressSectionProps extends BoxProps {
+interface MultipleChoiceProgressSectionProps extends BoxProps {
     active_question_idx: number
     questions: OpenEndedQuestion[] | MultipleChoiceQuestion[]
     answers: Map<string, string | number>
@@ -16,12 +16,12 @@ interface ProgressSectionProps extends BoxProps {
     endSession: () => void
 }
 
-export default function QuizProgressSection
+export default function MultipleChoiceProgressSection
 ({
      questions, answers, performance, setActiveQuestionIdx,
      active_question_idx, endSession,
      ...box_props
- }: ProgressSectionProps) {
+ }: MultipleChoiceProgressSectionProps) {
 
     const questions_done: number = React.useMemo(() => {
         return Array.from(answers.values()).filter(answer => {

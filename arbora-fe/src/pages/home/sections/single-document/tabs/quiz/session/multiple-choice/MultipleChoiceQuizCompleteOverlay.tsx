@@ -1,9 +1,9 @@
 import React from 'react';
 import {BoxProps, Center, HStack, VStack} from "@chakra-ui/react";
-import PiPlainText from "../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
-import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import PiPlainText from "../../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
+import PiButton from "../../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
 
-interface QuizSessionCompleteOverlayProps extends BoxProps {
+interface MultipleChoiceQuizCompleteOverlayProps extends BoxProps {
     is_loading: boolean
     quiz_performance: Map<string, boolean> | null
     completeSession: (quiz_session_records: Map<string, boolean>) => void
@@ -11,11 +11,11 @@ interface QuizSessionCompleteOverlayProps extends BoxProps {
     reviewSession: () => void
 }
 
-export default function QuizSessionCompleteOverlay
+export default function MultipleChoiceQuizCompleteOverlay
 ({
      is_loading, quiz_performance, completeSession, restartSession,
      reviewSession, ...box_props
- }: QuizSessionCompleteOverlayProps) {
+ }: MultipleChoiceQuizCompleteOverlayProps) {
     const correct_answers: number = React.useMemo(() => {
         if (!quiz_performance) return 0
         return Array.from(quiz_performance.values()).filter(performance => {

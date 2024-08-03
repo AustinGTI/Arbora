@@ -1,10 +1,10 @@
 import React from 'react';
 import {BoxProps, Center, HStack, SimpleGrid, VStack} from "@chakra-ui/react";
 import {motion, AnimatePresence} from "framer-motion";
-import PiPlainText from "../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
-import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
-import {PiButtonVariant} from "../../../../../../../pillars-ui/components/buttons/types.ts";
-import {MultipleChoiceQuestion} from "../../../../../../../core/services/ai/types.ts";
+import PiPlainText from "../../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
+import PiButton from "../../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import {PiButtonVariant} from "../../../../../../../../pillars-ui/components/buttons/types.ts";
+import {MultipleChoiceQuestion} from "../../../../../../../../core/services/ai/types.ts";
 
 interface MultipleChoiceQuestionSectionProps extends BoxProps {
     review_mode: boolean

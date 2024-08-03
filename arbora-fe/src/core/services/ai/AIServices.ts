@@ -113,7 +113,7 @@ interface ChatWithArbyServiceRequest extends GenericServiceRequest {
 }
 
 interface ChatWithArbyServiceResponse extends GenericServiceResponseData {
-    conversation: ChatResponse[]
+    response: ChatResponse
 }
 
 /**
