@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse
 from auth_bearer import JWTBearer
 from document_utils import calculateContentEdit, extractDocumentTitle
 from markdown_utils import generateNewDocumentNotes, generateUpdatedDocumentNotes
-from models.document import Document
+from models.document import Document, ReviewType
 from note import NoteReview, Note
 from routers import GenericResponse
 
@@ -167,16 +167,19 @@ async def record_note_review(request: Request, review_params: RecordNoteReviewRe
         response = RecordNoteReviewResponse(message="Note not found", is_successful=False)
         return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
 
-    if review_params.review_type not in ["flash-card", "question-answer", "explain-to-arby"]:
-        response = RecordNoteReviewResponse(message="Invalid review type", is_successful=False)
-        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
-
     if review_params.score < 0 or review_params.score > 1:
         response = RecordNoteReviewResponse(message="Invalid score", is_successful=False)
         return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
 
+    # check that the review type is one of the valid review types
+    valid_review_types = [ReviewType.FLASH_CARDS.value, ReviewType.MULTIPLE_CHOICE_QUESTION.value, ReviewType.OPEN_ENDED_QUESTION.value, ReviewType.CHAT.value]
+    print('valid review types are', valid_review_types)
+    if review_params.review_type not in valid_review_types:
+        response = RecordNoteReviewResponse(is_successful=False, message="Invalid review type")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
     note["reviews"].append(
-        NoteReview(review_type=review_params.review_type, score=review_params.score, timestamp=datetime.now().isoformat())
+        NoteReview(review_type=review_params.review_type, score=review_params.score, timestamp=datetime.now().isoformat()).dict()
     )
 
     updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(review_params.document_id)},

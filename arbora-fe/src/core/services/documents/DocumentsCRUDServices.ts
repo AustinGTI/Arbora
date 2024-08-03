@@ -1,6 +1,6 @@
 import {GenericServiceRequest, GenericServiceResponse, GenericServiceResponseData} from "../types.ts";
 import {BACKEND_URL} from "../../constants/env.ts";
-import {Document} from "./types.ts";
+import {Document, NoteReviewType} from "./types.ts";
 import {makeServiceCall} from "../helpers.ts";
 
 interface ListDocumentsServiceResponse extends GenericServiceResponseData {
@@ -82,6 +82,27 @@ export async function deleteDocumentService(request: DeleteDocumentServiceReques
         method: "DELETE",
         request: request,
         service_name: "deleteDocumentService",
+        with_access_token: true
+    })
+}
+
+interface RecordNoteReviewServiceRequest extends GenericServiceRequest {
+    document_id: string
+    note_id: string
+    review_type: NoteReviewType
+    score: number
+}
+
+/**
+ * record a review for a note
+ */
+export async function recordNoteReviewService(request: RecordNoteReviewServiceRequest): Promise<GenericServiceResponse> {
+    return makeServiceCall<RecordNoteReviewServiceRequest>
+    ({
+        url: `${BACKEND_URL}/record-note-review`,
+        method: "POST",
+        request: request,
+        service_name: "recordNoteReviewService",
         with_access_token: true
     })
 }

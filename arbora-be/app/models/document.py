@@ -1,3 +1,4 @@
+import enum
 from typing import Optional
 
 from model_utils import PyObjectId
@@ -18,3 +19,10 @@ class Document(BaseModel):
     model_config = {
         "populate_by_field_name": True,
     }
+
+
+class ReviewType(enum.Enum):
+    FLASH_CARDS = "flash_cards"
+    MULTIPLE_CHOICE_QUESTION = "multiple_choice_questions"
+    OPEN_ENDED_QUESTION = "open_ended_questions"
+    CHAT = "chat"

@@ -9,6 +9,8 @@ import useActiveContent from "../../../../../../../core/redux/home/hooks/useActi
 import {StandardConsole} from "../../../../../../../core/helpers/logging.ts";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
 import useGlobalHomeState from "../../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
+import {recordNoteReviewService} from "../../../../../../../core/services/documents/DocumentsCRUDServices.ts";
+import {NoteReviewType} from "../../../../../../../core/services/documents/types.ts";
 
 interface ExplainTabChatSectionProps extends BoxProps {
 
@@ -80,10 +82,16 @@ export default function ExplainTabChatSection({...box_props}: ExplainTabChatSect
             })
             if (response.data!.response.is_last) {
                 setChatComplete(true)
+                recordNoteReviewService({
+                    document_id: active_document!.id,
+                    note_id: active_note ?? '1',
+                    review_type: NoteReviewType.CHAT,
+                    score: 1
+                }).then()
             }
         }
 
-    }, [setChatMessages, cancel_response_flag.current, active_content, chat_messages, setChatComplete]);
+    }, [setChatMessages, cancel_response_flag.current, active_content, chat_messages, setChatComplete, active_document, active_note]);
 
     React.useEffect(() => {
         // chat message box should scroll to the bottom when new messages are added

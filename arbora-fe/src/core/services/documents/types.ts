@@ -13,3 +13,10 @@ export interface Note {
     content: string
     level: number
 }
+
+export enum NoteReviewType {
+    FLASH_CARDS = "flash_cards",
+    MULTIPLE_CHOICE_QUESTIONS = "multiple_choice_questions",
+    OPEN_ENDED_QUESTIONS = "open_ended_questions",
+    CHAT = "chat"
+}
