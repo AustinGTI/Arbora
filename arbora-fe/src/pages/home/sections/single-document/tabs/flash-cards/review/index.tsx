@@ -1,9 +1,9 @@
 import {BoxProps, HStack} from "@chakra-ui/react";
-import {FlashCard} from "../types.ts";
 import React from "react";
 import CardReviewProgressSection from "./CardReviewProgressSection.tsx";
 import FlashCardSection from "./FlashCardSection.tsx";
 import CardReviewCompleteOverlay from "./ReviewCompleteOverlay.tsx";
+import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
 
 
 interface FlashCardReviewProps extends BoxProps {

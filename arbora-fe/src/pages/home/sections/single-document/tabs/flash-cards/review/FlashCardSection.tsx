@@ -1,9 +1,9 @@
 import {BoxProps, Center, Divider, HStack, VStack} from "@chakra-ui/react";
-import {FlashCard} from "../types.ts";
 import {motion, AnimatePresence} from "framer-motion";
 import PiPlainText from "../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
 import React from "react";
+import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
 
 interface ReviewSectionProps extends BoxProps {
     active_card: FlashCard | null

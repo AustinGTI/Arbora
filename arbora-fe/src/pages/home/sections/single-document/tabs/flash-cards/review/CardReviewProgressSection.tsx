@@ -1,10 +1,10 @@
-import {FlashCard} from "../types.ts";
 import {BoxProps, HStack, VStack} from "@chakra-ui/react";
 import {FLASH_CARD_REPEAT_THRESHOLD_DIFFICULTY} from "./index.tsx";
 import React from "react";
 import CircularProgressIndicator
     from "../../../../../../../pillars-ui/components/data_views/CircularProgressIndicator.tsx";
 import GridDataView, {GridCellData} from "../../../../../../../pillars-ui/components/data_views/GridDataView.tsx";
+import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
 
 interface ProgressSectionProps extends BoxProps {
     flash_cards: FlashCard[]

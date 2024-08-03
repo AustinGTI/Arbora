@@ -1,7 +1,7 @@
 from gemini import getModel, OutputType
 import json
 
-from question import OpenEndedQuestionGrading, OpenEndedQuestionAnswer
+from question import OpenEndedQuestionAssessment, OpenEndedQuestionAnswer
 
 INPUT_OUTPUT_EXAMPLES = [
     {
@@ -54,7 +54,7 @@ grading_model = getModel(
 )
 
 
-def gradeOpenEndedQuestions(content: str, answers: list[OpenEndedQuestionAnswer]) -> list[OpenEndedQuestionGrading]:
+def gradeOpenEndedQuestions(content: str, answers: list[OpenEndedQuestionAnswer]) -> list[OpenEndedQuestionAssessment]:
     graded_answers = []
     model_input = {
         "content": content,
@@ -64,7 +64,7 @@ def gradeOpenEndedQuestions(content: str, answers: list[OpenEndedQuestionAnswer]
     grades_json = json.loads(model_output.text)
 
     for grade_json in grades_json:
-        graded_answer = OpenEndedQuestionGrading(
+        graded_answer = OpenEndedQuestionAssessment(
             id=grade_json["id"],
             grade=grade_json["grade"],
             comment=grade_json["comment"]

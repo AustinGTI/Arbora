@@ -2,9 +2,9 @@ import {VStack} from "@chakra-ui/react";
 import FlashCardsReviewLayer from "./review";
 import React from "react";
 import FlashCardsSetupLayer from "./setup";
-import {FlashCard} from "./types.ts";
 import {StandardConsole} from "../../../../../../core/helpers/logging.ts";
 import ActiveDocumentNoteSelector from "../../../../../../core/components/document-note-selector";
+import {FlashCard} from "../../../../../../core/services/ai/types.ts";
 
 enum FlashCardsTabLayerKey {
     REVIEW = 'review',

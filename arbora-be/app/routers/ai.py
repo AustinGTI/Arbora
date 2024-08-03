@@ -12,7 +12,7 @@ from gemini.services.open_ended_questions import generateOpenEndedQuestions
 from gemini.services.chat import explainContentToAI
 from gemini.services.grade_open_ended_questions import gradeOpenEndedQuestions
 
-from question import MultipleChoiceQuestion, OpenEndedQuestion, OpenEndedQuestionGrading, OpenEndedQuestionAnswer
+from question import MultipleChoiceQuestion, OpenEndedQuestion, OpenEndedQuestionAssessment, OpenEndedQuestionAnswer
 from routers import GenericResponse
 
 ai_router = APIRouter(prefix='/ai', dependencies=[Depends(JWTBearer())])
@@ -27,7 +27,7 @@ class GetFlashCardsRequestResponse(GenericResponse):
     flash_cards: list[FlashCard]
 
 
-@ai_router.get("/flash-cards", description="generate flash cards given the number and content", response_model=GetFlashCardsRequestResponse)
+@ai_router.post("/get-flash-cards", description="generate flash cards given the number and content", response_model=GetFlashCardsRequestResponse)
 async def get_flash_cards(request: Request, params: GetFlashCardsRequest):
     try:
         flash_cards = generateFlashCards(params.no_of_flash_cards, params.content)
@@ -48,8 +48,8 @@ class GetMultipleChoiceQuestionsResponse(GenericResponse):
     questions: list[MultipleChoiceQuestion]
 
 
-@ai_router.get("/multiple-choice-questions", description="generate multiple choice questions given the number and content",
-               response_model=GetMultipleChoiceQuestionsResponse)
+@ai_router.post("/get-multiple-choice-questions", description="generate multiple choice questions given the number and content",
+                response_model=GetMultipleChoiceQuestionsResponse)
 async def get_multiple_choice_questions(request: Request, params: GetMultipleChoiceQuestionsRequest):
     try:
         mc_questions = generateMultipleChoiceQuestions(params.no_of_questions, params.content)
@@ -71,8 +71,8 @@ class GetOpenEndedQuestionsResponse(GenericResponse):
     questions: list[OpenEndedQuestion]
 
 
-@ai_router.get("/open-ended-questions", description="generate open ended questions given the number and content",
-               response_model=GetOpenEndedQuestionsResponse)
+@ai_router.post("/get-open-ended-questions", description="generate open ended questions given the number and content",
+                response_model=GetOpenEndedQuestionsResponse)
 async def get_open_ended_questions(request: Request, params: GetOpenEndedQuestionsRequest):
     try:
         oe_questions = generateOpenEndedQuestions(params.no_of_questions, params.content)
@@ -92,7 +92,7 @@ class GradeOpenEndedQuestionsRequest(BaseModel):
 
 
 class GradeOpenEndedQuestionsResponse(GenericResponse):
-    grading: list[OpenEndedQuestionGrading]
+    grading: list[OpenEndedQuestionAssessment]
 
 
 @ai_router.post("/grade-open-ended-questions", description="grade open ended questions given the content, questions and answers",
@@ -105,7 +105,8 @@ async def grade_open_ended_questions(request: Request, params: GradeOpenEndedQue
 
     try:
         grading = gradeOpenEndedQuestions(params.content,
-                                          [OpenEndedQuestionAnswer(id=q.id, question=q.question, answer=a) for q, a in zip(params.questions, params.answers)])
+                                          [OpenEndedQuestionAnswer(id=q['id'], question=q['question'], answer=a) for q, a in zip(params.questions,
+                                                                                                                                 params.answers)])
     except Exception as e:
         response = GradeOpenEndedQuestionsResponse(is_successful=False, message=str(e), grading=[])
         return JSONResponse(content=response.dict(), message="Internal error when grading open ended questions",

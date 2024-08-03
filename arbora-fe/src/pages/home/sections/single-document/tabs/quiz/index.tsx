@@ -1,10 +1,14 @@
 import {VStack} from "@chakra-ui/react";
 import React from "react";
-import {isMultipleChoiceQuestion, MultipleChoiceQuestion, OpenEndedQuestion} from "./types.ts";
 import QuizSetupLayer from "./setup";
 import {MultipleChoiceQuizSessionLayer, OpenEndedQuizSessionLayer} from "./session";
 import {StandardConsole} from "../../../../../../core/helpers/logging.ts";
 import ActiveDocumentNoteSelector from "../../../../../../core/components/document-note-selector";
+import {
+    isMultipleChoiceQuestion,
+    MultipleChoiceQuestion,
+    OpenEndedQuestion
+} from "../../../../../../core/services/ai/types.ts";
 
 enum QuizTabLayerKey {
     SESSION = 'session',

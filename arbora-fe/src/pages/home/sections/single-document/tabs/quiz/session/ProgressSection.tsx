@@ -1,10 +1,10 @@
 import React from "react";
 import {BoxProps, Center, HStack, VStack} from "@chakra-ui/react";
-import {MultipleChoiceQuestion, OpenEndedQuestion} from "../types.ts";
 import GridDataView, {GridCellData} from "../../../../../../../pillars-ui/components/data_views/GridDataView.tsx";
 import CircularProgressIndicator
     from "../../../../../../../pillars-ui/components/data_views/CircularProgressIndicator.tsx";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import {MultipleChoiceQuestion, OpenEndedQuestion} from "../../../../../../../core/services/ai/types.ts";
 
 
 interface ProgressSectionProps extends BoxProps {

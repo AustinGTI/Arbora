@@ -1,34 +1,40 @@
 import React from 'react';
 import {BoxProps, Center, VStack} from "@chakra-ui/react";
-import {FlashCard} from "../types.ts";
 import PiTextInput from "../../../../../../../pillars-ui/components/forms/inputs/text/PiTextInput.tsx";
 import PiInputLabel from "../../../../../../../pillars-ui/components/forms/inputs/helper-components/PiInputLabel.tsx";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
+import {ButtonOnClickFunction} from "../../../../../../../pillars-ui/components/buttons/types.ts";
+import {getFlashCardsService} from "../../../../../../../core/services/ai/AIServices.ts";
+import useGlobalHomeState from "../../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
+import {StandardConsole} from "../../../../../../../core/helpers/logging.ts";
 
 interface FlashCardsSetupLayerProps extends BoxProps {
     reviewFlashCards: (cards: FlashCard[]) => void
 
 }
 
-function generateRandomFlashCards(no_of_cards: number): FlashCard[] {
-    const flash_cards: FlashCard[] = []
-    for (let i = 0; i < no_of_cards; i++) {
-        flash_cards.push({
-            id: i.toString(),
-            prompt: `Prompt ${i}`,
-            answer: `Answer ${i}`
-        })
-    }
-    return flash_cards
-}
-
 export default function FlashCardsSetupLayer({reviewFlashCards, ...box_props}: FlashCardsSetupLayerProps) {
     const [no_of_cards, setNoOfCards] = React.useState<number>(25)
 
-    const handleOnClickReviewFlashCards = React.useCallback(() => {
-        // todo: some async call to fetch flash cards
-        reviewFlashCards(generateRandomFlashCards(no_of_cards))
-    }, [reviewFlashCards, no_of_cards]);
+    const {documents: {active_document, active_note}} = useGlobalHomeState()
+
+    const handleOnClickReviewFlashCards: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
+        // if there is no active document, return
+        if (!active_document) {
+            StandardConsole.warn('No active document to review')
+            return
+        }
+        setButtonLoadingState(true)
+        const response = await getFlashCardsService({
+            no_of_flash_cards: no_of_cards,
+            content: active_note ? active_document?.notes[active_note].content : active_document?.content
+        })
+        if (response.is_successful) {
+            reviewFlashCards(response.data!.flash_cards)
+        }
+        setButtonLoadingState(false)
+    }, [reviewFlashCards, no_of_cards, active_document, active_note]);
 
     return (
         <Center w={'100%'} h={'100%'} {...box_props}>

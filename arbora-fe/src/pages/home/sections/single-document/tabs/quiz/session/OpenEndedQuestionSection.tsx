@@ -1,10 +1,10 @@
 import {BoxProps, Center, HStack, VStack} from "@chakra-ui/react";
-import {OpenEndedQuestion} from "../types.ts";
 import {motion, AnimatePresence} from "framer-motion";
 import PiPlainText from "../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
 import PiTextAreaInput from "../../../../../../../pillars-ui/components/forms/inputs/text/PiTextAreaInput.tsx";
 import React from "react";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
+import {OpenEndedQuestion} from "../../../../../../../core/services/ai/types.ts";
 
 interface OpenEndedQuestionSectionProps extends BoxProps {
     review_mode: boolean

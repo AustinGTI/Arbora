@@ -1,11 +1,12 @@
 import React from 'react';
 import {BoxProps, Center, VStack} from "@chakra-ui/react";
-import {MultipleChoiceQuestion, OpenEndedQuestion, QuizType} from "../types.ts";
+import {QuizType} from "../types.ts";
 import PiTextInput from "../../../../../../../pillars-ui/components/forms/inputs/text/PiTextInput.tsx";
 import PiInputLabel from "../../../../../../../pillars-ui/components/forms/inputs/helper-components/PiInputLabel.tsx";
 import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
 import PiMultiButton from "../../../../../../../pillars-ui/components/buttons/modal-buttons/PiMultiButton.tsx";
 import {PiButtonVariant} from "../../../../../../../pillars-ui/components/buttons/types.ts";
+import {MultipleChoiceQuestion, OpenEndedQuestion} from "../../../../../../../core/services/ai/types.ts";
 
 interface QuizSetupLayerProps extends BoxProps {
     takeQuiz: (cards: MultipleChoiceQuestion[] | OpenEndedQuestion[]) => void

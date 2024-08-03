@@ -19,7 +19,7 @@ class OpenEndedQuestionAnswer(BaseModel):
     answer: str
 
 
-class OpenEndedQuestionGrading(BaseModel):
+class OpenEndedQuestionAssessment(BaseModel):
     id: str
     grade: int
     comment: str

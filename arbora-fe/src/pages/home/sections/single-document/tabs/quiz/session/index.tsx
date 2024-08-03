@@ -1,10 +1,10 @@
 import React from 'react';
 import {BoxProps, HStack} from "@chakra-ui/react";
-import {MultipleChoiceQuestion, OpenEndedQuestion} from "../types.ts";
 import QuizProgressSection from "./ProgressSection.tsx";
 import OpenEndedQuestionSection from "./OpenEndedQuestionSection.tsx";
 import MultipleChoiceQuestionSection from "./MultipleChoiceQuestionSection.tsx";
 import QuizSessionCompleteOverlay from "./QuizSessionCompleteOverlay.tsx";
+import {MultipleChoiceQuestion, OpenEndedQuestion} from "../../../../../../../core/services/ai/types.ts";
 
 interface OpenQuizSessionLayerProps extends BoxProps {
     questions: OpenEndedQuestion[]
