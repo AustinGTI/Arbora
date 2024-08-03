@@ -12,6 +12,7 @@ from document_utils import calculateContentEdit, extractDocumentTitle
 from markdown_utils import generateNewDocumentNotes, generateUpdatedDocumentNotes
 from models.document import Document
 from note import NoteReview, Note
+from routers import GenericResponse
 
 document_router = APIRouter(dependencies=[Depends(JWTBearer())])
 
@@ -20,14 +21,12 @@ class CreateDocumentRequest(BaseModel):
     content: str
 
 
-class CreateDocumentResponse(BaseModel):
+class CreateDocumentResponse(GenericResponse):
     document: Optional[Document]
-    is_successful: bool
-    message: str
 
 
 @document_router.post("/create-document", description="create a document", response_model=CreateDocumentResponse)
-async def createDocument(request: Request, document_params: CreateDocumentRequest):
+async def create_document(request: Request, document_params: CreateDocumentRequest):
     # first we need to get the access token to get the user id
     user_id = request.state.user_id
     user = await request.app.mongodb["users"].find_one({"_id": ObjectId(user_id)})
@@ -49,15 +48,13 @@ async def createDocument(request: Request, document_params: CreateDocumentReques
     return JSONResponse(content=response.dict(), status_code=status.HTTP_201_CREATED)
 
 
-class ListDocumentsResponse(BaseModel):
+class ListDocumentsResponse(GenericResponse):
     documents: list[Document]
-    is_successful: bool
-    message: str
 
 
 @document_router.get("/list-documents", description="Get and return a list of all the documents created by the current user",
                      response_model=ListDocumentsResponse)
-async def listDocuments(request: Request):
+async def list_documents(request: Request):
     user_id = request.state.user_id
     documents = await request.app.mongodb["documents"].find({"creator_id": user_id}).to_list(length=100)
     response = ListDocumentsResponse(
@@ -73,14 +70,12 @@ class UpdateDocumentRequest(BaseModel):
     content: str
 
 
-class UpdateDocumentResponse(BaseModel):
+class UpdateDocumentResponse(GenericResponse):
     document: Optional[Document]
-    is_successful: bool
-    message: str
 
 
 @document_router.put("/update-document", description="Update a document", response_model=CreateDocumentResponse)
-async def updateDocument(request: Request, document_params: UpdateDocumentRequest):
+async def update_document(request: Request, document_params: UpdateDocumentRequest):
     user_id = request.state.user_id
     document = await request.app.mongodb["documents"].find_one({"_id": ObjectId(document_params.id)})
     if not document:
@@ -119,13 +114,12 @@ class DeleteDocumentRequest(BaseModel):
     id: str
 
 
-class DeleteDocumentResponse(BaseModel):
-    is_successful: bool
-    message: str
+class DeleteDocumentResponse(GenericResponse):
+    pass
 
 
 @document_router.delete("/delete-document", description="Delete a document", response_model=CreateDocumentResponse)
-async def deleteDocument(request: Request, document_params: DeleteDocumentRequest):
+async def delete_document(request: Request, document_params: DeleteDocumentRequest):
     user_id = request.state.user_id
     document = await request.app.mongodb["documents"].find_one({"_id": ObjectId(document_params.id)})
     if not document:
@@ -152,13 +146,12 @@ class RecordNoteReviewRequest(BaseModel):
     score: float
 
 
-class RecordNoteReviewResponse(BaseModel):
-    is_successful: bool
-    message: str
+class RecordNoteReviewResponse(GenericResponse):
+    pass
 
 
 @document_router.post("/record-note-review", description="Record the reviewing of a note", response_model=RecordNoteReviewResponse)
-async def recordNoteReview(request: Request, review_params: RecordNoteReviewRequest):
+async def record_note_review(request: Request, review_params: RecordNoteReviewRequest):
     user_id = request.state.user_id
     document = await request.app.mongodb["documents"].find_one({"_id": ObjectId(review_params.document_id)})
     if not document:

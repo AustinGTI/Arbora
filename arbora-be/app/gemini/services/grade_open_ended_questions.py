@@ -1,7 +1,7 @@
-from ai import getModel, OutputType
+from gemini import getModel, OutputType
 import json
 
-from question import OpenEndedQuestionAnswer
+from question import OpenEndedQuestionGrading, OpenEndedQuestionAnswer
 
 INPUT_OUTPUT_EXAMPLES = [
     {
@@ -54,7 +54,7 @@ grading_model = getModel(
 )
 
 
-def gradeOpenEndedQuestions(content: str, answers: list[dict]) -> list[OpenEndedQuestionAnswer]:
+def gradeOpenEndedQuestions(content: str, answers: list[OpenEndedQuestionAnswer]) -> list[OpenEndedQuestionGrading]:
     graded_answers = []
     model_input = {
         "content": content,
@@ -64,7 +64,7 @@ def gradeOpenEndedQuestions(content: str, answers: list[dict]) -> list[OpenEnded
     grades_json = json.loads(model_output.text)
 
     for grade_json in grades_json:
-        graded_answer = OpenEndedQuestionAnswer(
+        graded_answer = OpenEndedQuestionGrading(
             id=grade_json["id"],
             grade=grade_json["grade"],
             comment=grade_json["comment"]
@@ -90,6 +90,8 @@ if __name__ == '__main__':
             # does not call me out for referring to Fischer's "longevity" though he only played 1 World Championship match... needs better prompting.
         }
     ]
+
+    answers = [OpenEndedQuestionAnswer(**answer) for answer in answers]
 
     graded_answers = gradeOpenEndedQuestions(content, answers)
     for answer in graded_answers:

@@ -15,5 +15,11 @@ class OpenEndedQuestion(BaseModel):
 
 class OpenEndedQuestionAnswer(BaseModel):
     id: str
+    question: str
+    answer: str
+
+
+class OpenEndedQuestionGrading(BaseModel):
+    id: str
     grade: int
     comment: str

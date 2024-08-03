@@ -1,6 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
+
+from ai import ai_router
 from config import settings
 from routers.document import document_router
 from routers.auth import auth_router
@@ -30,8 +32,9 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(document_router)
+app.include_router(ai_router)
 
 if __name__ == '__main__':
     uvicorn.run(
-        "__init__:app"
+        "main:app"
     )

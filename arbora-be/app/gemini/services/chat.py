@@ -1,4 +1,4 @@
-from ai import getModel, OutputType
+from gemini import getModel, OutputType
 from chat import ChatResponse
 import json
 

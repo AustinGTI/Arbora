@@ -1,4 +1,4 @@
-from ai import getModel, OutputType
+from gemini import getModel, OutputType
 from question import MultipleChoiceQuestion
 from string_utils import generateRandomId
 import json

@@ -1,4 +1,4 @@
-from ai import getModel, OutputType
+from gemini import getModel, OutputType
 from flash_card import FlashCard
 from string_utils import generateRandomId
 import json
@@ -6,8 +6,8 @@ import json
 INPUT_OUTPUT_EXAMPLES = [
     {
         "input": {
-            "no_of_flashcards": 3,
-            "flashcard_content": " The Colony of Kenya and the Protectorate of Kenya each came to an end on 12 December 1963, with independence conferred on all of Kenya. The U.K. ceded sovereignty over the Colony of Kenya. The Sultan of Zanzibar agreed that simultaneous with independence for the colony, he would cease to have sovereignty over the Protectorate of Kenya so that all of Kenya would become one sovereign state. In this way, Kenya became an independent country under the Kenya Independence Act 1963 of the United Kingdom. On 12 December 1964, Kenya became a republic under the name 'Republic of Kenya'"
+            "no_of_flash_cards": 3,
+            "content": " The Colony of Kenya and the Protectorate of Kenya each came to an end on 12 December 1963, with independence conferred on all of Kenya. The U.K. ceded sovereignty over the Colony of Kenya. The Sultan of Zanzibar agreed that simultaneous with independence for the colony, he would cease to have sovereignty over the Protectorate of Kenya so that all of Kenya would become one sovereign state. In this way, Kenya became an independent country under the Kenya Independence Act 1963 of the United Kingdom. On 12 December 1964, Kenya became a republic under the name 'Republic of Kenya'"
         },
         "output": [
             {
@@ -26,8 +26,8 @@ INPUT_OUTPUT_EXAMPLES = [
     },
     {
         "input": {
-            "no_of_flashcards": 3,
-            "flashcard_content": '''
+            "no_of_flash_cards": 3,
+            "content": '''
                 The conjugation of the word 'to be' in French is:
                     - Je suis (I am)
                     - Tu es (You are)
@@ -54,8 +54,8 @@ INPUT_OUTPUT_EXAMPLES = [
     },
     {
         "input": {
-            "no_of_flashcards": 2,
-            "flashcard_content": '''
+            "no_of_flash_cards": 2,
+            "content": '''
        Decorators are a very powerful and useful tool in Python since it allows programmers to modify the behaviour of a function or class. Decorators allow us to wrap another function in order to extend the behaviour of the wrapped function, without permanently modifying it. But before diving deep into decorators let us understand some concepts that will come in handy in learning the decorators.
 
         First Class Objects
@@ -84,7 +84,7 @@ INPUT_OUTPUT_EXAMPLES = [
 SYSTEM_INSTRUCTION: str = '''
     A flashcard is an object consisting of a prompt string and an answer string. They are used to help memorize information by practicing
      associating the prompt with the answer.
-     Your purpose is to generate flashcards based on the given content and number of flashcards, the flashcards should cover important information in the 
+     Your purpose is to generate flash_cards based on the given content and number of flash_cards, the flash_cards should cover important information in the 
      content that would be complex enough to require memorization. You may use your own knowledge of said content to generate the cards but the first cards 
      should prioritize the content and cards with additional information should not stray too far from the content. The answer should be concise and to the point.
      
@@ -97,11 +97,11 @@ flash_cards_model = getModel(
 )
 
 
-def generateFlashCards(no_of_flashcards: int, flashcard_content: str) -> list[FlashCard]:
+def generateFlashCards(no_of_flash_cards: int, content: str) -> list[FlashCard]:
     flash_cards = []
     model_input = {
-        "no_of_flashcards": no_of_flashcards,
-        "flashcard_content": flashcard_content
+        "no_of_flash_cards": no_of_flash_cards,
+        "content": content
     }
     model_output = flash_cards_model.generate_content(str(model_input))
     flash_cards_json = json.loads(model_output.text)
@@ -119,5 +119,6 @@ def generateFlashCards(no_of_flashcards: int, flashcard_content: str) -> list[Fl
 if __name__ == '__main__':
     cards = generateFlashCards(
         5,
-        'In 27 BC, Octavian became princeps civitatis and took the title of Augustus, founding the principate, a diarchy between the princeps and the senate. During the reign of Nero, two thirds of the city was ruined after the Great Fire of Rome, and the persecution of Christians commenced. Rome was established as a de facto empire, which reached its greatest expansion in the second century under the Emperor Trajan. Rome was confirmed as caput Mundi, i.e. the capital of the known world, an expression which had already been used in the Republican period. During its first two centuries, the empire was ruled by emperors of the Julio-Claudian, Flavian (who also built an eponymous amphitheatre, known as the Colosseum), and Antonine dynasties. This time was also characterised by the spread of the Christian religion, preached by Jesus Christ in Judea in the first half of the first century (under Tiberius) and popularised by his apostles through the empire and beyond. The Antonine age is considered the zenith of the Empire, whose territory ranged from the Atlantic Ocean to the Euphrates and from Britain to Egypt.'
+        '''Superman was born on the fictional planet Krypton with the birth name of Kal-El. As a baby, his parents sent him to Earth in a small spaceship 
+        shortly before Krypton was destroyed in a natural cataclysm. His ship landed in the American countryside near the fictional town of Smallville, Kansas. He was found and adopted by farmers Jonathan and Martha Kent, who named him Clark Kent. Clark began developing superhuman abilities, such as incredible strength and impervious skin. His adoptive parents advised him to use his powers to benefit of humanity, and he decided to fight crime as a vigilante. To protect his personal life, he changes into a colorful costume and uses the alias "Superman" when fighting crime. Clark resides in the fictional American city of Metropolis, where he works as a journalist for the Daily Planet. Superman's supporting characters include his love interest and fellow journalist Lois Lane, Daily Planet photographer Jimmy Olsen, and editor-in-chief Perry White, and his enemies include Brainiac, General Zod, and archenemy Lex Luthor.'''
     )
