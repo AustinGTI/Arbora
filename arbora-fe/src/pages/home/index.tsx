@@ -3,10 +3,10 @@ import ArboraLogo from "../../core/graphics/ArboraLogo.tsx";
 import ArboraBanner from "../../core/graphics/ArboraBanner.tsx";
 import {BiExit} from "react-icons/bi";
 import {PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
-import AllDocumentsSection from "./sections/documents";
 import DocumentViewSection from "./sections/single-document";
 import PiLinkButton from "../../pillars-ui/components/buttons/PiLinkButton.tsx";
 import useDocuments from "../../core/services/documents/hooks/useDocuments.tsx";
+import AllDocumentsSection from "./sections/all-documents";
 
 export default function ArboraHomePage() {
     const {documents_loading} = useDocuments()

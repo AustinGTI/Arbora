@@ -8,6 +8,7 @@ import React from "react";
 import {setActiveNote} from "../../redux/home/home_slice.ts";
 import {PiButtonVariant} from "../../../pillars-ui/components/buttons/types.ts";
 
+
 interface ActiveDocumentNoteSelectorProps extends CenterProps {
     is_disabled?: boolean
 }
@@ -35,8 +36,9 @@ export default function ActiveDocumentNoteSelector
                             selected_note={active_note}
                             notes={active_document.notes} setSelectedNote={setSelectedNote}/>
                     }>
-                    <PiPlainText value={active_note ? active_document.notes[active_note].title : 'Select a note...'}
-                                 fontSize={'20px'}/>
+                    <PiPlainText
+                        value={active_note && active_document.notes[active_note].title ? active_document.notes[active_note].title : 'Select a note...'}
+                        fontSize={'20px'}/>
                 </PiDropdownButton>
             ) : (
                 <PiPlainText value={'No document selected'} fontSize={'24px'}/>

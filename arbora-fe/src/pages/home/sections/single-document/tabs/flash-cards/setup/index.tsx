@@ -6,8 +6,8 @@ import PiButton from "../../../../../../../pillars-ui/components/buttons/PiButto
 import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
 import {ButtonOnClickFunction} from "../../../../../../../pillars-ui/components/buttons/types.ts";
 import {getFlashCardsService} from "../../../../../../../core/services/ai/AIServices.ts";
-import useGlobalHomeState from "../../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
 import {StandardConsole} from "../../../../../../../core/helpers/logging.ts";
+import useActiveContent from "../../../../../../../core/redux/home/hooks/useActiveContent.tsx";
 
 interface FlashCardsSetupLayerProps extends BoxProps {
     reviewFlashCards: (cards: FlashCard[]) => void
@@ -17,24 +17,23 @@ interface FlashCardsSetupLayerProps extends BoxProps {
 export default function FlashCardsSetupLayer({reviewFlashCards, ...box_props}: FlashCardsSetupLayerProps) {
     const [no_of_cards, setNoOfCards] = React.useState<number>(25)
 
-    const {documents: {active_document, active_note}} = useGlobalHomeState()
-
+    const active_content = useActiveContent()
     const handleOnClickReviewFlashCards: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
         // if there is no active document, return
-        if (!active_document) {
-            StandardConsole.warn('No active document to review')
+        if (!active_content) {
+            StandardConsole.warn('Could not locate active content')
             return
         }
         setButtonLoadingState(true)
         const response = await getFlashCardsService({
             no_of_flash_cards: no_of_cards,
-            content: active_note ? active_document?.notes[active_note].content : active_document?.content
+            content: active_content
         })
         if (response.is_successful) {
             reviewFlashCards(response.data!.flash_cards)
         }
         setButtonLoadingState(false)
-    }, [reviewFlashCards, no_of_cards, active_document, active_note]);
+    }, [reviewFlashCards, no_of_cards, active_content]);
 
     return (
         <Center w={'100%'} h={'100%'} {...box_props}>

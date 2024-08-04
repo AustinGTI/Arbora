@@ -114,35 +114,38 @@ export default function DocumentViewEditorTab() {
         // when the active note changes and the editor is in edit mode, scroll the
         // editor to the note
         StandardConsole.log('attempting to scroll')
+        // wait a few ms for the content to load
         if (active_note && !editable) {
-            const editor_elem = document.getElementsByClassName('milkdown-wrapper')[0]
-            if (!editor_elem) {
-                StandardConsole.warn('Could not find editor element')
-                return
-            }
-            const header_elem_class_name = `header-key-${active_note.replace(/\./g, '-')}`
-            const header_elem = document.getElementsByClassName(header_elem_class_name)[0]
+            setTimeout(() => {
+                const editor_elem = document.getElementsByClassName('milkdown-wrapper')[0]
+                if (!editor_elem) {
+                    StandardConsole.warn('Could not find editor element')
+                    return
+                }
+                const header_elem_class_name = `header-key-${active_note.replace(/\./g, '-')}`
+                const header_elem = document.getElementsByClassName(header_elem_class_name)[0]
 
-            if (!header_elem) {
-                StandardConsole.warn('Could not find header element')
-                return
-            }
+                if (!header_elem) {
+                    StandardConsole.warn('Could not find header element')
+                    return
+                }
 
-            // remove active header from any existing header
-            Array.from(document.getElementsByClassName('active-header')).forEach((elem) => {
-                elem.classList.remove('active-header')
-            })
+                // remove active header from any existing header
+                Array.from(document.getElementsByClassName('active-header')).forEach((elem) => {
+                    elem.classList.remove('active-header')
+                })
 
-            // add an active header class to the header element
-            header_elem.classList.add('active-header')
+                // add an active header class to the header element
+                header_elem.classList.add('active-header')
 
 
-            editor_elem.scrollTo({
-                top: header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top,
-                behavior: 'smooth'
-            })
+                editor_elem.scrollTo({
+                    top: header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top,
+                    behavior: 'smooth'
+                })
 
-            StandardConsole.log('scrolled ', header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top)
+                StandardConsole.log('scrolled ', header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top)
+            }, 200)
         }
     }, [active_note]);
 
