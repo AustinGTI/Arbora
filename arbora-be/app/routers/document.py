@@ -215,7 +215,7 @@ async def list_folders(request: Request):
 
 
 class CreateFolderRequest(BaseModel):
-    folder_name: str
+    name: str
 
 
 class CreateFolderResponse(GenericResponse):
@@ -291,6 +291,69 @@ async def add_document_to_folder(request: Request, folder_params: AddDocumentToF
         return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = AddDocumentToFolderResponse(is_successful=True, message="Document added to folder successfully")
+    return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
+
+
+class UpdateFolderRequest(BaseModel):
+    id: str
+    name: str
+
+
+class UpdateFolderResponse(GenericResponse):
+    pass
+
+
+@document_router.put("/update-folder", description="Update a folder name", response_model=UpdateFolderResponse)
+async def update_folder(request: Request, folder_params: UpdateFolderRequest):
+    user_id = request.state.user_id
+
+    folder = await request.app.mongodb["folders"].find_one({"_id": ObjectId(folder_params.folder_id)})
+    if not folder:
+        response = AddDocumentToFolderResponse(message="Folder not found", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
+    # make sure that the user is the creator of the folder
+    if folder["creator_id"] != user_id:
+        response = AddDocumentToFolderResponse(message="Unauthorized", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
+
+    updated_folder = await request.app.mongodb["folders"].update_one({"_id": ObjectId(folder_params.folder_id)},
+                                                                     {"$set": {"name": folder_params.name}})
+
+    if updated_folder is None:
+        response = UpdateFolderResponse(is_successful=False, message="Failed to update folder")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    response = UpdateFolderResponse(is_successful=True, message="Folder updated successfully")
+
+
+class DeleteFolderRequest(BaseModel):
+    id: str
+
+
+class DeleteFolderResponse(GenericResponse):
+    pass
+
+
+@document_router.delete("/delete-folder", description="Delete a folder", response_model=DeleteFolderResponse)
+async def delete_folder(request: Request, folder_params: DeleteFolderRequest):
+    user_id = request.state.user_id
+    folder = await request.app.mongodb["folders"].find_one({"_id": ObjectId(folder_params.id)})
+    if not folder:
+        response = DeleteFolderResponse(message="Folder not found", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
+
+    # make sure that the user is the creator of the document
+    if folder["creator_id"] != user_id:
+        response = DeleteFolderResponse(message="Unauthorized", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
+
+    deleted_folder = await request.app.mongodb["folders"].delete_one({"_id": ObjectId(folder_params.id)})
+
+    if deleted_folder is None:
+        response = DeleteFolderResponse(is_successful=False, message="Failed to delete folder")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    response = DeleteFolderResponse(is_successful=True, message="Folder deleted successfully")
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
 
 # endregion

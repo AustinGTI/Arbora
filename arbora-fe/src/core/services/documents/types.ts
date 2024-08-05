@@ -1,10 +1,16 @@
+export interface Folder {
+    id: string
+    name: string
+    created_at: string
+}
+
 export interface Document {
     id: string
     folder_id?: string
     creator_id: string
     title: string
     content: string
-    notes: {[key: string]: Note}
+    notes: { [key: string]: Note }
 }
 
 export interface Note {
