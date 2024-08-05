@@ -26,3 +26,14 @@ class ReviewType(enum.Enum):
     MULTIPLE_CHOICE_QUESTION = "multiple_choice_questions"
     OPEN_ENDED_QUESTION = "open_ended_questions"
     CHAT = "chat"
+
+
+class Folder(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    creator_id: str
+    name: str
+    created_at: str
+
+    model_config = {
+        "populate_by_field_name": True,
+    }

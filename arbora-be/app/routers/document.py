@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse
 from auth_bearer import JWTBearer
 from document_utils import calculateContentEdit, extractDocumentTitle
 from markdown_utils import generateNewDocumentNotes, generateUpdatedDocumentNotes
-from models.document import Document, ReviewType
+from models.document import Document, ReviewType, Folder
 from note import NoteReview, Note
 from routers import GenericResponse
 
@@ -190,3 +190,107 @@ async def record_note_review(request: Request, review_params: RecordNoteReviewRe
 
     response = RecordNoteReviewResponse(is_successful=True, message="Note review recorded successfully")
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
+
+
+# region FOLDERS
+
+class ListFoldersRequest(BaseModel):
+    pass
+
+
+class ListFoldersResponse(GenericResponse):
+    folders: list[Folder]
+
+
+@document_router.get("/list-folders", description="Get and return a list of all the folders created by the current user", response_model=ListFoldersResponse)
+async def list_folders(request: Request):
+    user_id = request.state.user_id
+    folders = await request.app.mongodb["folders"].find({"creator_id": user_id}).to_list(length=100)
+    response = ListFoldersResponse(
+        folders=folders,
+        is_successful=True,
+        message="Folders retrieved successfully"
+    )
+    return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
+
+
+class CreateFolderRequest(BaseModel):
+    folder_name: str
+
+
+class CreateFolderResponse(GenericResponse):
+    pass
+
+
+@document_router.post("/create-folder", description="Create a folder", response_model=CreateFolderResponse)
+async def create_folder(request: Request, folder_params: CreateFolderRequest):
+    user_id = request.state.user_id
+    folder = Folder(
+        creator_id=user_id,
+        name=folder_params.folder_name,
+        created_at=datetime.now().isoformat()
+    )
+    # first check if the folder name is already in use
+    folder_exists = await request.app.mongodb["folders"].find_one({"creator_id": user_id, "name": folder_params.folder_name})
+    if folder_exists:
+        response = CreateFolderResponse(is_successful=False, message="Folder name already in use")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    new_folder = await request.app.mongodb["folders"].insert_one(folder.dict(by_alias=True, exclude={"id"}))
+
+    if new_folder is None:
+        response = CreateFolderResponse(is_successful=False, message="Failed to create folder")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    response = CreateFolderResponse(is_successful=True, message="Folder created successfully")
+    return JSONResponse(content=response.dict(), status_code=status.HTTP_201_CREATED)
+
+
+# add a document to a folder
+class AddDocumentToFolderRequest(BaseModel):
+    folder_id: str
+    document_id: str
+
+
+class AddDocumentToFolderResponse(GenericResponse):
+    pass
+
+
+@document_router.post("/add-document-to-folder", description="Add a document to a folder", response_model=AddDocumentToFolderResponse)
+async def add_document_to_folder(request: Request, folder_params: AddDocumentToFolderRequest):
+    user_id = request.state.user_id
+    folder = await request.app.mongodb["folders"].find_one({"_id": ObjectId(folder_params.folder_id)})
+    if not folder:
+        response = AddDocumentToFolderResponse(message="Folder not found", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
+    # make sure that the user is the creator of the folder
+    if folder["creator_id"] != user_id:
+        response = AddDocumentToFolderResponse(message="Unauthorized", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
+
+    document = await request.app.mongodb["documents"].find_one({"_id": ObjectId(folder_params.document_id)})
+    if not document:
+        response = AddDocumentToFolderResponse(message="Document not found", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
+
+    # check that the user is the creator of the document
+    if document["creator_id"] != user_id:
+        response = AddDocumentToFolderResponse(message="Unauthorized", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
+
+    # check if the document is already in the folder
+    if folder_params.document_id in folder["documents"]:
+        response = AddDocumentToFolderResponse(message="Document already in folder", is_successful=False)
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    updated_document = await request.app.mongodb["documents"].update_one({"_id": ObjectId(folder_params.document_id)},
+                                                                         {"$set": {"folder_id": folder_params.folder_id}})
+
+    if updated_document is None:
+        response = AddDocumentToFolderResponse(is_successful=False, message="Failed to add document to folder")
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    response = AddDocumentToFolderResponse(is_successful=True, message="Document added to folder successfully")
+    return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
+
+# endregion
