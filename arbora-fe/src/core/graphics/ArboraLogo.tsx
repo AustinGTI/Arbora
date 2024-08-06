@@ -1,5 +1,5 @@
-import {Box, Image} from "@chakra-ui/react";
-import ArboraLogoImage from '../../assets/ArboraLogoV1.png'
+import {FaTree} from "react-icons/fa";
+import {ARBORA_GREEN} from "../constants/styling.ts";
 
 interface ArboraLogoProps {
     size: string
@@ -7,6 +7,7 @@ interface ArboraLogoProps {
 
 export default function ArboraLogo({size}: ArboraLogoProps) {
     return (
-        <Image src={ArboraLogoImage} alt={'Arbora logo'} w={size} h={size}/>
+        // <Image src={ArboraLogoImage} alt={'Arbora logo'} w={size} h={size}/>
+        <FaTree color={ARBORA_GREEN.hard} fontSize={size}/>
     )
 }

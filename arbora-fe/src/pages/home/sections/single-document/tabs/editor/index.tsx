@@ -189,6 +189,7 @@ export default function DocumentViewEditorTab() {
                     <PiButton
                         label={'Create Doc'}
                         icon={PiButtonIcon.SAVE}
+                        isDisabled={!content}
                         onClick={createNewDocument}
                     />
                 </HStack>

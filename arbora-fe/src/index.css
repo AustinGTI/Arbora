@@ -66,6 +66,10 @@ div:focus-visible {
     border-color: transparent;
 }
 
+.hidden-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
 
 
 @media (prefers-color-scheme: light) {

@@ -7,6 +7,7 @@ import {useDispatch} from "react-redux";
 import React from "react";
 import {setActiveNote} from "../../redux/home/home_slice.ts";
 import {PiButtonVariant} from "../../../pillars-ui/components/buttons/types.ts";
+import './document-note-selector-styling.scss'
 
 
 interface ActiveDocumentNoteSelectorProps extends CenterProps {
@@ -22,6 +23,16 @@ export default function ActiveDocumentNoteSelector
         dispatch(setActiveNote(note_id))
     }, [dispatch]);
 
+    const button_label: string = React.useMemo(() => {
+        if (!active_document) {
+            return 'No document selected'
+        }
+        if (active_note) {
+            return active_document.notes[active_note].title
+        }
+        return active_document.title
+    }, [active_document, active_note]);
+
     return (
         <Center {...center_props}>
             {active_document ? (
@@ -29,15 +40,16 @@ export default function ActiveDocumentNoteSelector
                     width={'300px'} isDisabled={is_disabled}
                     variant={PiButtonVariant.GHOST}
                     dropdown_container_props={{
-                        w: 'match-button'
+                        w: 'match-button',
+                        pr: '4px',
                     }}
                     dropdown_content={
                         <NoteSelectionDropdown
                             selected_note={active_note}
-                            notes={active_document.notes} setSelectedNote={setSelectedNote}/>
+                            document={active_document} setSelectedNote={setSelectedNote}/>
                     }>
                     <PiPlainText
-                        value={active_note && active_document.notes[active_note].title ? active_document.notes[active_note].title : 'Select a note...'}
+                        value={button_label}
                         fontSize={'20px'}/>
                 </PiDropdownButton>
             ) : (

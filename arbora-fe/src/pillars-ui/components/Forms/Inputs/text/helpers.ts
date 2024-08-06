@@ -1,5 +1,6 @@
 import {InputVariant} from "../types";
 import {InputProps} from "@chakra-ui/react";
+import {ARBORA_GREEN} from "../../../../../core/constants/styling.ts";
 
 export function inputVariantToTextInputStyling(variant: InputVariant): InputProps {
     switch (variant) {
@@ -11,7 +12,7 @@ export function inputVariantToTextInputStyling(variant: InputVariant): InputProp
             return {
                 borderRadius: '10px',
                 borderWidth: '2px',
-                borderColor: 'green.500',
+                borderColor: ARBORA_GREEN.hard,
                 fontSize: '13px'
             }
         default:

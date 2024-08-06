@@ -1,7 +1,7 @@
 import {IconType} from "react-icons";
 import {TbEdit} from "react-icons/tb";
-import {MdAdd, MdOutlineDelete, MdSave, MdSettings} from "react-icons/md";
-import {FaEye} from "react-icons/fa";
+import {MdOutlineDelete, MdSave, MdSettings} from "react-icons/md";
+import {FaEye, FaPlus} from "react-icons/fa";
 import {FiX} from "react-icons/fi";
 import {BsThreeDots} from "react-icons/bs";
 import {ButtonPalette, PiButtonIcon, PiButtonPalette, PiButtonVariant} from "./types";
@@ -10,11 +10,16 @@ import chroma from "chroma-js";
 import {HiArrowLongLeft, HiArrowLongRight} from "react-icons/hi2";
 import {RiDownload2Line, RiUpload2Line} from "react-icons/ri";
 import {HiOutlineSwitchHorizontal} from "react-icons/hi";
+import {ARBORA_GREEN} from "../../../core/constants/styling.ts";
+import {FaMinus} from "react-icons/fa6";
+import {BiChevronDown, BiChevronUp} from "react-icons/bi";
 
 export function convertIconStringToIconComponent(icon: PiButtonIcon): IconType {
     switch (icon) {
         case PiButtonIcon.ADD:
-            return MdAdd
+            return FaPlus
+        case PiButtonIcon.SUBTRACT:
+            return FaMinus
         case PiButtonIcon.EDIT:
             return TbEdit
         case PiButtonIcon.DELETE:
@@ -39,6 +44,10 @@ export function convertIconStringToIconComponent(icon: PiButtonIcon): IconType {
             return RiUpload2Line
         case PiButtonIcon.SWAP:
             return HiOutlineSwitchHorizontal
+        case PiButtonIcon.DOWN:
+            return BiChevronDown
+        case PiButtonIcon.UP:
+            return BiChevronUp
 
         default:
             throw new Error(`Invalid common icon string: ${icon}`)
@@ -85,9 +94,10 @@ export function convertPaletteStringToPalette(palette: PiButtonPalette): ButtonP
             }
         case PiButtonPalette.PURE_GREEN:
             return {
-                primary: "green.500",
-                secondary: "green.100",
-                hover: "green.300"
+                primary: ARBORA_GREEN.hard,
+                secondary: ARBORA_GREEN.soft,
+                hover: chroma(ARBORA_GREEN.hard).brighten(0.5).hex(),
+                active: chroma(ARBORA_GREEN.hard).brighten(-0.25).hex(),
             }
         default:
             throw new Error(`Invalid palette string: ${palette}`)
@@ -100,17 +110,6 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
 } {
     const palette = convertPaletteStringToPalette(palette_string);
     switch (variant) {
-        // case PiButtonVariant.SOLID:
-        //     return {
-        //         bg: palette.primary,
-        //         color: palette.secondary,
-        //         _hover: {
-        //             backgroundColor: palette.hover,
-        //         },
-        //         _active: {
-        //             backgroundColor: palette.hover,
-        //         }
-        //     }
         case PiButtonVariant.SOLID:
             return {
                 bg: palette.primary,
@@ -129,18 +128,6 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
                 py: '20px',
                 px: '20px'
             }
-        // case PiButtonVariant.OUTLINE:
-        //     return {
-        //         bg: "transparent",
-        //         color: palette.primary,
-        //         border: `2px solid ${palette.primary}`,
-        //         _hover: {
-        //             color: palette.hover,
-        //         },
-        //         _active: {
-        //             color: palette.hover,
-        //         }
-        //     }
         case PiButtonVariant.OUTLINE:
             return {
                 bg: "transparent",
@@ -149,11 +136,11 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
                 borderColor: palette.primary,
                 _hover: {
                     color: palette.hover,
-                    borderColor: palette.primary,
+                    borderColor: palette.hover,
                 },
                 _active: {
                     color: palette.hover,
-                    borderColor: palette.primary,
+                    borderColor: palette.hover,
                 },
                 borderRadius: '10px',
                 fontSize: '14px',
@@ -167,9 +154,11 @@ export function variantAndPaletteToStylingProps(variant: PiButtonVariant, palett
                 color: palette.primary,
                 _hover: {
                     color: palette.hover,
+                    borderColor: 'transparent',
                 },
                 _active: {
                     color: palette.hover,
+                    borderColor: 'transparent',
                 }
             }
         case PiButtonVariant.LINK:

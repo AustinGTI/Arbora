@@ -3,6 +3,7 @@ import {Box, HStack} from "@chakra-ui/react";
 import {ChatMessage, ChatSource} from "../types.ts";
 import PiPlainText from "../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
 import EllipsesLoader from "../../../../../../../pillars-ui/components/graphics/loaders/EllipsesLoader.tsx";
+import {ARBORA_GREEN} from "../../../../../../../core/constants/styling.ts";
 
 interface ChatMessageDisplayProps {
     chat_message: ChatMessage
@@ -31,7 +32,7 @@ export default function ChatMessageDisplay({chat_message}: ChatMessageDisplayPro
             case ChatSource.USER:
                 return 'gray.100'
             case ChatSource.ARBY:
-                return 'green.100'
+                return ARBORA_GREEN.soft
             default:
                 throw new Error('Invalid chat message source')
         }

@@ -17,7 +17,7 @@ export default function useActiveContent(): string | undefined {
     }
 
     // recursively iterate through the children of the active document to get the content of the active note
-    const note_graph = generateNotesGraph(active_document)
+    const note_graph = generateNotesGraph(Object.keys(active_document.notes))
 
     function getNoteContent(note_id: string): string {
         let content = active_document!.notes[note_id].content

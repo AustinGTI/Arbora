@@ -21,7 +21,7 @@ class JWTPayload(BaseModel):
     expires: int
 
 
-def generateJWTToken(user_id: str, seconds_to_expiry: int = 600) -> str:
+def generateJWTToken(user_id: str, seconds_to_expiry: int = 60 * 60) -> str:
     payload = JWTPayload(user_id=user_id, expires=int(time.time()) + seconds_to_expiry)
 
     token = jwt.encode(payload.dict(), settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)

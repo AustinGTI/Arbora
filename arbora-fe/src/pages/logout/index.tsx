@@ -4,8 +4,10 @@ import React from "react";
 import {useDispatch} from "react-redux";
 import {clearAuth} from "../../core/redux/auth/auth_slice.ts";
 import {useNavigate} from "react-router-dom";
+import {ARBORA_GREEN} from "../../core/constants/styling.ts";
+import TreeAnimationLoader from "../../pillars-ui/components/graphics/loaders/TreeAnimationLoader.tsx";
 
-const LOGOUT_DELAY = 2000
+const LOGOUT_DELAY = 3000
 
 export default function ArboraLogoutPage() {
     const dispatch = useDispatch()
@@ -20,10 +22,10 @@ export default function ArboraLogoutPage() {
     }, []);
 
     return (
-        <Center position={'absolute'} top={0} left={0} bg={'green.300'} w={'100vw'} h={'100vh'} p={0} m={0}>
+        <Center position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.bg} w={'100vw'} h={'100vh'} p={0} m={0}>
             <VStack>
-                <PiPlainText value={'Logging out...'} fontSize={'40px'}/>
-                <PiPlainText value={'Come back soon :)'}/>
+                <TreeAnimationLoader tree_size={50} text={'Logging out'}/>
+                <PiPlainText value={'Come back soon :)'} fontWeight={600}/>
             </VStack>
         </Center>
     )

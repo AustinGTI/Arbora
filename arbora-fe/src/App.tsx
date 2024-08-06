@@ -5,6 +5,8 @@ import ArboraWebApp from "./pages";
 import Pillars from "./pillars-ui";
 import {ChakraProvider, extendTheme} from "@chakra-ui/react";
 
+/// <reference types="vite-plugin-svgr/client" />
+
 const APP_THEME = extendTheme({
     fonts: {
         body: 'Quicksand',

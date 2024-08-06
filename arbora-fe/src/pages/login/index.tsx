@@ -17,13 +17,14 @@ import {PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
 import {store} from "../../core/redux";
 import {setUser} from "../../core/redux/auth/auth_slice.ts";
 import {StandardConsole} from "../../core/helpers/logging.ts";
+import {ARBORA_GREEN} from "../../core/constants/styling.ts";
 
 function LoginFormLayer() {
     const navigate = useNavigate()
 
     return (
         <VStack>
-            <Text lineHeight={1} textDecoration={'underline'} fontSize={'30px'} color={'green.500'}
+            <Text lineHeight={1} textDecoration={'underline'} fontSize={'30px'} color={ARBORA_GREEN.hard}
                   fontWeight={800}>LOGIN</Text>
             <LoginForm submitFunction={
                 async (login_form_obj, setError) => {
@@ -61,7 +62,7 @@ function SignUpFormLayer() {
                     position={'absolute'} left={0}
                     onClick={() => goToLayer(LoginPageLayerKey.LOGIN_FORM)}
                 />
-                <Text lineHeight={1} textDecoration={'underline'} fontSize={'30px'} color={'green.500'}
+                <Text lineHeight={1} textDecoration={'underline'} fontSize={'30px'} color={ARBORA_GREEN.hard}
                       fontWeight={800}>
                     SIGN UP
                 </Text>
@@ -94,13 +95,13 @@ const LOGIN_PAGE_LAYERS: PiContainerLayer[] = [
 export default function ArboraLoginPage() {
 
     return (
-        <Center position={'absolute'} top={0} left={0} bg={'green.300'} w={'100vw'} h={'100vh'} p={0} m={0}>
+        <Center position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.soft} w={'100vw'} h={'100vh'} p={0} m={0}>
             <VStack>
                 <VStack pb={'0.5rem'}>
                     <ArboraLogo size={'70px'}/>
                     <ArboraBanner size={'63px'}/>
                 </VStack>
-                <PiCard bg={'green.100'} w={'25rem'} py={'1.5rem'}>
+                <PiCard bg={ARBORA_GREEN.fg} w={'25rem'} py={'1.5rem'}>
                     <PiLayerContainer layers={LOGIN_PAGE_LAYERS} container_data_context={{}}/>
                 </PiCard>
             </VStack>

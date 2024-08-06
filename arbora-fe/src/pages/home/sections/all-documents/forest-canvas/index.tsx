@@ -74,6 +74,7 @@ export default function ForestCanvas() {
 
     return (
         <Box
+            className={'hidden-scrollbar'}
             position={'absolute'}
             top={0} left={0}
             ref={wrapper_box_ref} w={'100%'} h={'100%'} overflowX={'scroll'} overflowY={'hidden'}>

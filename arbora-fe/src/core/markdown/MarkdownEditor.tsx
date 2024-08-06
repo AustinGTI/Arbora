@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-    defaultValueCtx,
-    Editor,
-    EditorStatus,
-    editorViewCtx,
-    editorViewOptionsCtx,
-    rootCtx,
-} from '@milkdown/core';
+import {defaultValueCtx, Editor, EditorStatus, editorViewCtx, editorViewOptionsCtx, rootCtx,} from '@milkdown/core';
 import {nord} from '@milkdown/theme-nord';
 import {Milkdown, MilkdownProvider, useEditor} from '@milkdown/react';
 import {commonmark, headingAttr} from '@milkdown/preset-commonmark';
@@ -21,6 +14,8 @@ import {useDispatch} from "react-redux";
 import {setEditorContent, setEditorEditable} from "../redux/home/home_slice.ts";
 import {StandardConsole} from "../helpers/logging.ts";
 import {replaceAll} from "@milkdown/utils"
+import {ARBORA_GREEN} from "../constants/styling.ts";
+import PiPlainText from "../../pillars-ui/components/text/PiPlainText.tsx";
 
 interface MilkdownEditorProps {
     editable: boolean
@@ -158,28 +153,52 @@ export function MarkdownEditor() {
 
     const control_buttons = React.useMemo(() => {
         return (
-            <HStack zIndex={200} position={'absolute'} top={0} right={0} p={'0.5rem'}>
-                <PiButton
-                    icon={editable ? PiButtonIcon.VIEW : PiButtonIcon.EDIT}
-                    variant={PiButtonVariant.ICON}
-                    onClick={() => {
-                        dispatch(setEditorEditable(!editable))
-                    }}/>
-                {/*<PiButton*/}
-                {/*    icon={PiButtonIcon.SAVE}*/}
-                {/*    variant={PiButtonVariant.ICON}*/}
-                {/*    onClick={() => {*/}
-                {/*        updateContent(active_content).then()*/}
-                {/*    }*/}
-                {/*    }/>*/}
-            </HStack>
+            <React.Fragment>
+                <HStack zIndex={200} position={'absolute'} top={0} right={0} p={'0.5rem'}>
+                    <PiButton
+                        icon={editable ? PiButtonIcon.VIEW : PiButtonIcon.EDIT}
+                        variant={PiButtonVariant.ICON}
+                        fontWeight={700}
+                        fontSize={'16px'}
+                        with_tooltip
+                        tooltip_label={`Toggle document to ${editable ? 'view' : 'edit'} mode`}
+                        tooltip_placement={'left'}
+                        py={'3px'} px={'10px'} rounded={'6px'}
+                        onClick={() => {
+                            dispatch(setEditorEditable(!editable))
+                        }}/>
+                    {/*<PiButton*/}
+                    {/*    icon={PiButtonIcon.SAVE}*/}
+                    {/*    variant={PiButtonVariant.ICON}*/}
+                    {/*    onClick={() => {*/}
+                    {/*        updateContent(active_content).then()*/}
+                    {/*    }*/}
+                    {/*    }/>*/}
+                </HStack>
+                <HStack zIndex={200} position={'absolute'} bottom={0} right={0} p={'0.5rem'}>
+                    <PiPlainText
+                        value={editable ? 'EDIT MODE' : 'VIEW MODE'}
+                        fontWeight={700}
+                        fontSize={'14px'}
+                        color={editable ? ARBORA_GREEN.fg : ARBORA_GREEN.hard}
+                        bg={editable ? ARBORA_GREEN.hard : ARBORA_GREEN.fg}
+                        py={'3px'} px={'7px'} rounded={'6px'}/>
+                    {/*<PiButton*/}
+                    {/*    icon={PiButtonIcon.SAVE}*/}
+                    {/*    variant={PiButtonVariant.ICON}*/}
+                    {/*    onClick={() => {*/}
+                    {/*        updateContent(active_content).then()*/}
+                    {/*    }*/}
+                    {/*    }/>*/}
+                </HStack>
+            </React.Fragment>
         )
     }, [editable, dispatch]);
 
 
     return (
         <MilkdownProvider>
-            <Box position={'relative'} width={'100%'} h={'100%'} bg={'black'} py={'1rem'} px={'0.1rem'}>
+            <Box position={'relative'} width={'100%'} h={'100%'} bg={ARBORA_GREEN.bg} py={'1rem'} px={'0.1rem'}>
                 {control_buttons}
                 <Box className={`milkdown-wrapper ${editable ? 'edit-mode' : 'review-mode'}`} w={'100%'} h={'100%'}
                      overflowY={'auto'}>

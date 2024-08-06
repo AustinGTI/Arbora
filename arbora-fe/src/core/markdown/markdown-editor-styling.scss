@@ -1,43 +1,22 @@
-[data-milkdown-root = "true"] {
-  width: 100%;
-  min-height: 100%;
-  background-color: black;
-  border-radius: 10px;
-}
+// variable for arbora green colors
+$arbora-green-hard: #5E8248;
+$arbora-green-soft: #F0FFF0;
+$arbora-green-mid: #A8E4A0;
+$arbora-green-fg: #BFE3BF;
+$arbora-green-bg: #F0FFF0;
+$arbora-green-loud: #8EE53F;
 
-.milkdown-editor h1 {
-  font-size: 2em;
-  font-weight: 700;
-  margin: 0.67em 0;
-}
-
-.milkdown-editor h2 {
-  font-size: 1.5em;
-  font-weight: 700;
-  margin: 0.43em 0;
-}
 
 .milkdown-editor {
   width: 100%;
   height: 100%;
   text-align: left;
-  background-color: black;
-  color: white;
+  background-color: $arbora-green-soft;
+  color: $arbora-green-hard;
   padding: 1rem;
 
-  li {
-    position: relative;
-    margin-left: 2em;
-  }
+  overflow: hidden;
 
-  em {
-    font-style: italic;
-    color: #777777;
-  }
-}
-
-// headers
-.milkdown-editor {
   $heading-levels: 6;
 
   @function repeat($str, $n) {
@@ -50,50 +29,151 @@
 
   @for $i from 1 through $heading-levels {
     h#{$i} {
+      margin-left: $i * 10px;
+
       position: relative;
-      padding-left: 1em;
+
+      //$padding: 0.1em + $i * 0.75em; // Increase padding based on heading level
+      padding-left: 2em;
+
+      font-weight: 1000 - $i * 75; // Increase font weight based on heading level
+      font-size: 2em - ($i - 1) * 0.2em; // Decrease font size based on heading level
+
+      margin-bottom: 4 + (6 - $i) * 2px; // Increase margin based on heading level
+      margin-top: 4 + (6 - $i) * 2px; // Increase margin based on heading level
+
+      // Apply margin to paragraphs after this heading
+      + p,
+      ~ p {
+        margin-left: $i * 10px;
+      }
+
+      // Reset margin for paragraphs after a new heading
+      @for $j from 1 through $heading-levels {
+        + h#{$j} ~ p {
+          margin-left: $j * 10px;
+        }
+      }
 
       &::before {
-        content: '#{repeat("#", $i)}';
+        //content: '#{repeat("#", $i)}';
+        content: 'H#{$i} |';
         color: #aaa;
-        margin-left: -1em;
-        margin-right: 0.5em;
         position: absolute;
+        left: 0;
+        top: 0;
+        //width: $padding; // Adjust width to match padding minus some space
+        width: 2em;
+        text-align: left; // Align the "#" to the right within its space
       }
 
       &:hover::before {
         color: #777;
       }
+
+      .ai-button-container {
+        opacity: 0;
+        transition: opacity 0.3s;
+
+        .header-ai-btn {
+          path, line, circle {
+            fill: $arbora-green-hard;
+          }
+
+          &:hover {
+            path, line, circle {
+              fill: $arbora-green-loud;
+            }
+          }
+        }
+
+        .ai-action-button-icon {
+          path {
+            fill: $arbora-green-loud;
+          }
+        }
+      }
+
+      &:hover .ai-button-container {
+        opacity: 1;
+      }
+    }
+
+    h1 {
+      margin-top: 0;
     }
   }
+
   .active-header {
     text-decoration: underline;
     text-decoration-color: darkseagreen;
   }
 
+  li {
+    position: relative;
+    margin-left: 2em;
+  }
+
+  em {
+    font-style: italic;
+    color: #777777;
+  }
+
 }
 
-// Style for the scrollbar track
-::-webkit-scrollbar {
-  width: 10px; // Set the width of the scrollbar
-  background-color: black; // Set the background color of the scrollbar track
+[data-milkdown-root = "true"] {
+  width: 100%;
+  min-height: 100%;
+  background-color: $arbora-green-soft;
+  border-radius: 10px;
 }
 
+.milkdown-wrapper {
+  // Style for the scrollbar track
+  &::-webkit-scrollbar {
+    width: 10px; // Set the width of the scrollbar
+    background-color: transparent; // Set the background color of the scrollbar track
+  }
 
-// Style for the scrollbar thumb (the part that you drag)
-::-webkit-scrollbar-thumb {
-  background-color: gray; // Set the color of the scrollbar thumb
-  border-radius: 3px;
-  box-shadow: inset 0 0 0 3px black; // Adjust the color and size as needed
+
+  // Style for the scrollbar thumb (the part that you drag)
+  &::-webkit-scrollbar-thumb {
+    background-color: $arbora-green-hard; // Set the color of the scrollbar thumb
+    //border-radius: 0px;
+    box-shadow: inset 0 0 0 3px $arbora-green-soft; // Adjust the color and size as needed
 
 
-  &:hover {
-    background-color: darken(lightgray, 10%); // Slightly darken the thumb on hover for better UI interaction
+    &:hover {
+      background-color: darken(lightgray, 10%); // Slightly darken the thumb on hover for better UI interaction
+    }
+  }
+
+  // Removing scrollbar buttons (arrows)
+  &::-webkit-scrollbar-button {
+    display: none; // This will remove the arrows from the scrollbar
   }
 }
 
-// Removing scrollbar buttons (arrows)
-::-webkit-scrollbar-button {
-  display: none; // This will remove the arrows from the scrollbar
+// region ANIMATIONS
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+// endregion

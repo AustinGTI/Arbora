@@ -77,7 +77,7 @@ export default function PiPasswordInput<FormObject extends Object = any>
                         setPasswordShown(!password_shown)
                     }}>
                     <Icon
-                        color="gray.700"
+                        color={variant_styling_props?.borderColor ?? "gray.700"}
                         boxSize={6}
                         as={password_shown ? IoIosEye : IoIosEyeOff}
                     />

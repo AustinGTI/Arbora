@@ -7,35 +7,46 @@ import DocumentViewSection from "./sections/single-document";
 import PiLinkButton from "../../pillars-ui/components/buttons/PiLinkButton.tsx";
 import useDocuments from "../../core/services/documents/hooks/useDocuments.tsx";
 import AllDocumentsSection from "./sections/all-documents";
+import {ARBORA_GREEN} from "../../core/constants/styling.ts";
+import TreeAnimationLoader from "../../pillars-ui/components/graphics/loaders/TreeAnimationLoader.tsx";
+
+
+function ArboraHomePageHeader() {
+    return (
+        <HStack w={'100%'} h={'100px'} align={'center'} justify={'space-between'} px={'1rem'}>
+            <Box w={'100px'}>
+                <ArboraLogo size={'50px'}/>
+            </Box>
+            <HStack pt={'1rem'}>
+                <ArboraBanner size={'70px'}/>
+            </HStack>
+            <HStack w={'100px'} justify={'flex-end'}>
+                <PiLinkButton
+                    to={'/login'}
+                    variant={PiButtonVariant.ICON}
+                    icon={BiExit} icon_props={{fontSize: '40px'}}/>
+            </HStack>
+        </HStack>
+    )
+}
 
 export default function ArboraHomePage() {
     const {documents_loading} = useDocuments()
 
     return (
-        <Box position={'absolute'} top={0} left={0} bg={'green.300'} w={'100vw'} h={'100vh'} p={0} m={0}>
+        <Box position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.soft} w={'100vw'} h={'100vh'} p={0} m={0}>
             <VStack w={'100%'} h={'100%'}>
-                <HStack w={'100%'} h={'100px'} align={'center'} justify={'space-between'} px={'1rem'}>
-                    <Box w={'100px'}>
-                        <ArboraLogo size={'50px'}/>
-                    </Box>
-                    <HStack pt={'1rem'}>
-                        <ArboraBanner size={'70px'}/>
-                    </HStack>
-                    <HStack w={'100px'} justify={'flex-end'}>
-                        <PiLinkButton
-                            to={'/login'}
-                            variant={PiButtonVariant.ICON}
-                            icon={BiExit} icon_props={{fontSize: '40px'}}/>
-                    </HStack>
-                </HStack>
-                {!documents_loading ? (
-                    <HStack w={'100%'} h={'calc(100% - 100px)'}>
-                        <AllDocumentsSection flex={1} h={'100%'}/>
-                        <DocumentViewSection h={'100%'}/>
-                    </HStack>
-                ) : (
-                    <p>loading documents...</p>
-                )}
+                <ArboraHomePageHeader/>
+                <Box position={'relative'} w={'100%'} h={'calc(100% - 100px)'}>
+                    {!documents_loading ? (
+                        <HStack w={'100%'} h={'100%'}>
+                            <AllDocumentsSection w={'100%'} h={'100%'}/>
+                            <DocumentViewSection h={'97%'}/>
+                        </HStack>
+                    ) : (
+                        <TreeAnimationLoader w={'100%'} h={'100%'} text={'Documents Loading'}/>
+                    )}
+                </Box>
             </VStack>
         </Box>
     )

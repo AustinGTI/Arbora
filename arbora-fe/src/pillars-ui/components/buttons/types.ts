@@ -7,10 +7,12 @@ export type ButtonPalette = {
     primary: string
     secondary: string
     hover: string
+    active?: string
 }
 
 export enum PiButtonIcon {
     ADD = 'add',
+    SUBTRACT = 'subtract',
     EDIT = 'edit',
     DELETE = 'delete',
     VIEW = 'view',
@@ -23,6 +25,9 @@ export enum PiButtonIcon {
     LONG_RIGHT_ARROW = 'long-right-arrow',
     LONG_LEFT_ARROW = 'long-left-arrow',
     SWAP = 'swap',
+
+    UP = 'up',
+    DOWN= 'down'
 }
 
 export enum PiButtonVariant {
