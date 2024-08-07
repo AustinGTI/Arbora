@@ -5,13 +5,14 @@ import PiInputError from "./PiInputError.tsx";
 import {InputType} from "../types";
 import PiInputDescription from "./PiInputDescription.tsx";
 
-interface PiInputContainerProps extends FormControlProps {
+export interface PiInputContainerProps extends FormControlProps {
     name: string;
     description?: string;
     label?: string;
     info?: string
     error?: string;
     label_position?: "top" | "left" | "right" | "bottom";
+    label_alignment?: "left" | "right" | 'center';
     children: React.ReactNode;
 }
 
@@ -21,13 +22,14 @@ interface ConditionalInputContainerProps extends Partial<PiInputContainerProps> 
 }
 
 export default function PiInputContainer({
-                                           name,
-                                           description, info, label,
-                                           error,
-                                           label_position = "top",
-                                           children,
-                                           ...form_control_props
-                                       }: PiInputContainerProps) {
+                                             name,
+                                             description, info, label,
+                                             error,
+                                             label_position = "top",
+                                             label_alignment = "left",
+                                             children,
+                                             ...form_control_props
+                                         }: PiInputContainerProps) {
     return (
         <FormControl {...form_control_props}>
             <VStack
@@ -39,6 +41,9 @@ export default function PiInputContainer({
                       alignItems={"center"}>
                     {(label && (label_position === "top" || label_position === "left")) && (
                         <PiInputLabel name={name} label={label} info={info}
+                                      container_props={{
+                                          justify: label_alignment === "center" ? "center" : label_alignment === 'left' ? "flex-start" : "flex-end",
+                                      }}
                                       {...(label_position === "top" ? {mb: "0.5rem"} : {m: 0})}
                         />
                     )}
@@ -48,6 +53,9 @@ export default function PiInputContainer({
                     {children}
                     {(label && (label_position === "bottom" || label_position === "right")) && (
                         <PiInputLabel name={name} label={label} info={info}
+                                      container_props={{
+                                          justify: label_alignment === "center" ? "center" : label_alignment === 'left' ? "flex-start" : "flex-end",
+                                      }}
                                       {...(label_position === "bottom" ? {mb: "0.5rem"} : {m: 0})}
                         />
                     )}

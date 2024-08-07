@@ -34,7 +34,7 @@ export default function ActiveDocumentNoteSelector
     }, [active_document, active_note]);
 
     return (
-        <Center {...center_props}>
+        <Center w={'100%'} h={'40px'} {...center_props}>
             {active_document ? (
                 <PiDropdownButton
                     width={'300px'} isDisabled={is_disabled}

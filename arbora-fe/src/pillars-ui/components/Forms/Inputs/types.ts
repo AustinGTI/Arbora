@@ -1,3 +1,5 @@
+import {PiInputContainerProps} from "./helper-components/PiInputContainer.tsx";
+
 export interface InputDimensionSpecifications {
     width?: string,
     w?: string,
@@ -69,4 +71,5 @@ export type InputSpecifications<InputType = any, FormObject = any> =
      * variants are batches of styles that are used to style the input
      */
     input_variant?: InputVariant
+    input_container_props?: Partial<PiInputContainerProps>
 }

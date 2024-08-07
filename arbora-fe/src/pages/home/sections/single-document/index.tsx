@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {MemoExoticComponent} from 'react';
 import {Box, BoxProps, Center, HStack, VStack} from "@chakra-ui/react";
 import {PiButtonIcon, PiButtonVariant} from "../../../../pillars-ui/components/buttons/types.ts";
 import PiButton from "../../../../pillars-ui/components/buttons/PiButton.tsx";
@@ -18,7 +18,7 @@ import ChatIcon from "../../../../assets/ai/AIChatAction.svg?react"
 // @ts-ignore
 import QuizIcon from "../../../../assets/ai/AIQuizAction.svg?react"
 // @ts-ignore
-import FlashCardsIcon from "../../../../assets/ai/AIFlashCardsAction.svg?react"
+import FlashCardsIcon from "../../../../assets/ai/AIFlashCardsActionV2.svg?react"
 // @ts-ignore
 import DocumentIcon from "../../../../assets/ai/Document.svg?react"
 
@@ -36,20 +36,38 @@ const DOCUMENT_VIEW_COLLAPSE_TIMERS: CollapseTimer[] = [
 interface DocumentViewTab {
     key: DocumentViewTabKey,
     title: string,
-    content: React.ReactElement
+    content: MemoExoticComponent<() => React.ReactElement>
     icon: any
 }
 
 const DOCUMENT_VIEW_TABS: DocumentViewTab[] = [
-    {key: DocumentViewTabKey.EDITOR, title: 'Document', content: <DocumentViewEditorTab/>, icon: DocumentIcon},
+    {
+        key: DocumentViewTabKey.EDITOR,
+        title: 'Document',
+        // content: <DocumentViewEditorTab/>,
+        content: React.memo(DocumentViewEditorTab),
+        icon: DocumentIcon
+    },
     {
         key: DocumentViewTabKey.FLASH_CARDS,
         title: 'Flash Cards',
-        content: <DocumentViewFlashCardsTab/>,
+        content: React.memo(DocumentViewFlashCardsTab),
         icon: FlashCardsIcon
     },
-    {key: DocumentViewTabKey.QA, title: 'Quiz', content: <DocumentViewQuizTab/>, icon: QuizIcon},
-    {key: DocumentViewTabKey.EXPLAIN, title: 'Explain', content: <DocumentViewExplainTab/>, icon: ChatIcon},
+    {
+        key: DocumentViewTabKey.QA,
+        title: 'Quiz',
+        // content: <DocumentViewQuizTab/>,
+        content: React.memo(DocumentViewQuizTab),
+        icon: QuizIcon
+    },
+    {
+        key: DocumentViewTabKey.EXPLAIN,
+        title: 'Explain',
+        // content: <DocumentViewExplainTab/>,
+        content: React.memo(DocumentViewExplainTab),
+        icon: ChatIcon
+    },
 ]
 
 export default function DocumentViewSection({w, width, ...box_props}: SingleDocumentSectionProps) {
@@ -91,7 +109,7 @@ export default function DocumentViewSection({w, width, ...box_props}: SingleDocu
             <VStack
                 opacity={collapse_state.get('content-opacity') ? 0 : 1}
                 display={collapse_state.get('content-display') ? 'none' : 'flex'}
-                transition={'opacity 0.2s'}
+                transition={'opacity 0.2s ease-in-out'}
                 w={'100%'} h={'100%'} overflow={'hidden'}>
                 <HStack w={'100%'} px={'1rem'} h={'70px'}>
                     {
@@ -126,7 +144,14 @@ export default function DocumentViewSection({w, width, ...box_props}: SingleDocu
                 </HStack>
 
                 <Box w={'100%'} h={'calc(100% - 70px)'} overflow={'auto'}>
-                    {DOCUMENT_VIEW_TABS.find(tab => tab.key === active_tab)?.content}
+                    {/*{DOCUMENT_VIEW_TABS.find(tab => tab.key === active_tab)?.content}*/}
+                    {DOCUMENT_VIEW_TABS.map(({key, content: TabContent}) => (
+                        <Box
+                            h={'100%'} w={'100%'}
+                            key={key} display={key === active_tab ? 'block' : 'none'}>
+                            <TabContent/>
+                        </Box>
+                    ))}
                 </Box>
             </VStack>
         </Box>

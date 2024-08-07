@@ -72,7 +72,7 @@ function OptionsDropdownList({options, setInputValue}: OptionsDropdownListProps)
 export default function PiTextInput<FormObject extends Object = any>
 ({
      input_type = 'form', type = 'text',
-     name, label, is_required, onInputChange,
+     name, label, is_required, onInputChange, input_container_props,
      in_input_container, input_variant = InputVariant.ROUNDED, initial_value,
      textModifier, options, to_uppercase = false, max_value, ...props
  }: PiTextInputProps<FormObject>) {
@@ -126,7 +126,7 @@ export default function PiTextInput<FormObject extends Object = any>
     return (
         <ConditionalInputContainer in_input_container={in_input_container} input_type={input_type} name={name}
                                    isRequired={is_required} label={label}
-                                   error={error?.message}>
+                                   error={error?.message} {...input_container_props}>
             <InputGroup>
                 <Input
                     ref={mergeRefs([ref, local_ref])}

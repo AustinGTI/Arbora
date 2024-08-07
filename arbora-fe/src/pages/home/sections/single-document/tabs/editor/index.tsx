@@ -152,7 +152,7 @@ export default function DocumentViewEditorTab() {
     return (
         <VStack w={'100%'} h={'100%'} px={'1rem'}>
             {active_document ? (
-                <HStack w={'100%'} justify={'space-between'}>
+                <HStack w={'100%'} justify={'space-between'} h={'40px'}>
                     <HStack>
                         <PiButton
                             icon={PiButtonIcon.DELETE}
@@ -185,7 +185,7 @@ export default function DocumentViewEditorTab() {
                     </HStack>
                 </HStack>
             ) : (
-                <HStack w={'100%'} justify={'flex-end'}>
+                <HStack w={'100%'} justify={'flex-end'} h={'40px'}>
                     <PiButton
                         label={'Create Doc'}
                         icon={PiButtonIcon.SAVE}
@@ -195,7 +195,7 @@ export default function DocumentViewEditorTab() {
                 </HStack>
             )}
 
-            <Box w={'100%'} h={'85%'} mt={'.5rem'} borderRadius={'10px'} overflow={'hidden'}>
+            <Box w={'100%'} h={'calc(100% - 40px)'} mb={'1rem'} mt={'0.5rem'} borderRadius={'10px'} overflow={'hidden'}>
                 <MarkdownEditor/>
             </Box>
 

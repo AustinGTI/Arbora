@@ -74,18 +74,16 @@ export default function DocumentViewQuizTab() {
     }, [active_document, setActiveLayer, active_note]);
 
     return (
-        <VStack bg={'lavender'} w={'100%'} h={'100%'} px={'1rem'}>
+        <VStack w={'100%'} h={'100%'}>
             {active_document ? (
                 <React.Fragment>
-                    <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}
-                                                is_disabled={active_layer === QuizTabLayerKey.SESSION}/>
+                    <ActiveDocumentNoteSelector is_disabled={active_layer === QuizTabLayerKey.SESSION}/>
                     {active_layer === QuizTabLayerKey.SETUP && (
                         <QuizSetupLayer
-                            w={'100%'} h={'100%'}
-                            takeQuiz={(questions) => {
-                                setQuestions(questions)
-                                setActiveLayer(QuizTabLayerKey.SESSION);
-                            }}/>
+                            w={'100%'} takeQuiz={(questions) => {
+                            setQuestions(questions)
+                            setActiveLayer(QuizTabLayerKey.SESSION);
+                        }}/>
                     )}
                     {active_layer === QuizTabLayerKey.SESSION && (
                         isMultipleChoiceQuestion(questions[0]) ? (

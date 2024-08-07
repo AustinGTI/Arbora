@@ -6,44 +6,47 @@ import PiForm from "../../../../../../../pillars-ui/components/forms/PiForm.tsx"
 import {HStack, VStack} from "@chakra-ui/react";
 import PiFormSubmitButton
     from "../../../../../../../pillars-ui/components/forms/helper_components/PiFormSubmitButton.tsx";
+import {QuizType} from "../types.ts";
 
-export interface CardGenFormObject {
-    no_of_cards: number
+export interface QuizGenFormObject {
+    no_of_questions: number
+    quiz_type: QuizType
 }
 
 
-const form_schema: yup.ObjectSchema<CardGenFormObject> = yup.object()
+const form_schema: yup.ObjectSchema<QuizGenFormObject> = yup.object()
     .shape({
-        no_of_cards: yup.number().required('Kindly enter the number of cards to generate')
+        no_of_questions: yup.number().required('Kindly enter the number of questions to generate'),
+        quiz_type: yup.string().oneOf(Object.values(QuizType)).required('Kindly select a quiz type')
     })
 
-interface CardGenFormProps extends SimpleFormProps<CardGenFormObject> {
+interface QuizGenFormProps extends SimpleFormProps<QuizGenFormObject> {
 }
 
-function CardGenFormFields() {
+function QuizGenFormFields() {
     return (
         <PiFormFields flex={undefined} h={'fit-content'} py={0} my={0}>
-            <PiTextInput<CardGenFormObject>
-                name={'no_of_cards'} type={'number'} label={'No. of Cards'} placeholder={'Number of Flash Cards'}
+            <PiTextInput<QuizGenFormObject>
+                name={'no_of_questions'} type={'number'} label={'No. of Questions'} placeholder={'Number of Flash Cards'}
                 is_required input_container_props={{label_alignment: 'center'}}/>
         </PiFormFields>
     )
 }
 
 
-export default function CardGenerationForm
+export default function QuizGenerationForm
 ({
      initial_values,
      submitFunction
- }: CardGenFormProps) {
+ }: QuizGenFormProps) {
     return (
-        <PiForm<CardGenFormObject>
+        <PiForm<QuizGenFormObject>
             initial_data={initial_values}
             submitFunction={submitFunction} yup_schema={form_schema}>
             <VStack justify={'center'} w={'100%'} flex={1}>
-                <CardGenFormFields/>
+                <QuizGenFormFields/>
                 <HStack w={'100%'} justify={'center'} mt={'1rem'}>
-                    <PiFormSubmitButton label={'Generate Flash Cards'}/>
+                    <PiFormSubmitButton label={'Generate Quiz'}/>
                 </HStack>
             </VStack>
         </PiForm>

@@ -41,14 +41,13 @@ export default function DocumentViewFlashCardsTab() {
     }, [active_document, setActiveLayer, active_note]);
 
     return (
-        <VStack bg={'white'} w={'100%'} h={'100%'} px={'1rem'}>
+        <VStack w={'100%'} h={'100%'}>
             {active_document ? (
                 <React.Fragment>
-                    <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}
-                                                is_disabled={active_layer === FlashCardsTabLayerKey.REVIEW}/>
+                    <ActiveDocumentNoteSelector is_disabled={active_layer === FlashCardsTabLayerKey.REVIEW}/>
                     {active_layer === FlashCardsTabLayerKey.SETUP && (
                         <FlashCardsSetupLayer
-                            w={'100%'} h={'100%'}
+                            w={'100%'}
                             reviewFlashCards={(cards) => {
                                 setFlashCards(cards)
                                 setActiveLayer(FlashCardsTabLayerKey.REVIEW);

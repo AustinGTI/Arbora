@@ -8,7 +8,7 @@ import PiLinkButton from "../../pillars-ui/components/buttons/PiLinkButton.tsx";
 import useDocuments from "../../core/services/documents/hooks/useDocuments.tsx";
 import AllDocumentsSection from "./sections/all-documents";
 import {ARBORA_GREEN} from "../../core/constants/styling.ts";
-import TreeAnimationLoader from "../../core/graphics/loaders/TreeAnimationLoader.tsx";
+import TreeAnimationLoaderV2 from "../../core/graphics/loaders/TreeAnimationLoaderV2.tsx";
 
 
 function ArboraHomePageHeader() {
@@ -44,7 +44,7 @@ export default function ArboraHomePage() {
                             <DocumentViewSection h={'97%'}/>
                         </HStack>
                     ) : (
-                        <TreeAnimationLoader w={'100%'} h={'100%'} text={'Documents Loading'}/>
+                        <TreeAnimationLoaderV2 w={'100%'} h={'100%'} text={'Documents Loading'}/>
                     )}
                 </Box>
             </VStack>

@@ -3,7 +3,7 @@ import {Route, Routes, useNavigate} from "react-router-dom";
 import ArboraHomePage from "./home";
 import ArboraLoginPage from "./login";
 import ArboraLogoutPage from "./logout";
-import TreeAnimationLoader from "../core/graphics/loaders/TreeAnimationLoader.tsx";
+import TreeAnimationLoaderV2 from "../core/graphics/loaders/TreeAnimationLoaderV2.tsx";
 import {getCurrentUserService} from "../core/services/users/UsersCRUDServices.ts";
 import {useDispatch} from "react-redux";
 import {logOutUser, setUser} from "../core/redux/auth/auth_slice.ts";
@@ -57,7 +57,7 @@ export default function ArboraWebApp() {
                 <Route path="/logout" element={<ArboraLogoutPage/>}/>
             </Routes>
         ) : (
-            <TreeAnimationLoader text={'Planting Trees'} h={'100vh'} w={'100vw'} position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.bg}/>
+            <TreeAnimationLoaderV2 text={'Planting Trees'} h={'100vh'} w={'100vw'} position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.bg}/>
         )
     )
 }
