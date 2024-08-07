@@ -8,6 +8,7 @@ import {FlashCard} from "../../../../../../core/services/ai/types.ts";
 import {recordNoteReviewService} from "../../../../../../core/services/documents/DocumentsCRUDServices.ts";
 import useGlobalHomeState from "../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
 import {NoteReviewType} from "../../../../../../core/services/documents/types.ts";
+import ArboraNoDataGraphic from "../../../../../../core/graphics/ArboraNoDataGraphic.tsx";
 
 enum FlashCardsTabLayerKey {
     REVIEW = 'review',
@@ -41,22 +42,28 @@ export default function DocumentViewFlashCardsTab() {
 
     return (
         <VStack bg={'white'} w={'100%'} h={'100%'} px={'1rem'}>
-            <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}
-                                        is_disabled={active_layer === FlashCardsTabLayerKey.REVIEW}/>
-            {active_layer === FlashCardsTabLayerKey.SETUP && (
-                <FlashCardsSetupLayer
-                    w={'100%'} h={'100%'}
-                    reviewFlashCards={(cards) => {
-                        setFlashCards(cards)
-                        setActiveLayer(FlashCardsTabLayerKey.REVIEW);
-                    }}/>
-            )}
-            {active_layer === FlashCardsTabLayerKey.REVIEW && (
-                <FlashCardsReviewLayer
-                    w={'100%'} h={'100%'}
-                    flash_cards={flash_cards}
-                    completeReview={recordFlashCardsReview}
-                />
+            {active_document ? (
+                <React.Fragment>
+                    <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}
+                                                is_disabled={active_layer === FlashCardsTabLayerKey.REVIEW}/>
+                    {active_layer === FlashCardsTabLayerKey.SETUP && (
+                        <FlashCardsSetupLayer
+                            w={'100%'} h={'100%'}
+                            reviewFlashCards={(cards) => {
+                                setFlashCards(cards)
+                                setActiveLayer(FlashCardsTabLayerKey.REVIEW);
+                            }}/>
+                    )}
+                    {active_layer === FlashCardsTabLayerKey.REVIEW && (
+                        <FlashCardsReviewLayer
+                            w={'100%'} h={'100%'}
+                            flash_cards={flash_cards}
+                            completeReview={recordFlashCardsReview}
+                        />
+                    )}
+                </React.Fragment>
+            ) : (
+                <ArboraNoDataGraphic text={'Select a document to create flashcards.'}/>
             )}
         </VStack>
     )

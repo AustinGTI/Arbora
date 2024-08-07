@@ -8,7 +8,7 @@ import PiLinkButton from "../../pillars-ui/components/buttons/PiLinkButton.tsx";
 import useDocuments from "../../core/services/documents/hooks/useDocuments.tsx";
 import AllDocumentsSection from "./sections/all-documents";
 import {ARBORA_GREEN} from "../../core/constants/styling.ts";
-import TreeAnimationLoader from "../../pillars-ui/components/graphics/loaders/TreeAnimationLoader.tsx";
+import TreeAnimationLoader from "../../core/graphics/loaders/TreeAnimationLoader.tsx";
 
 
 function ArboraHomePageHeader() {
@@ -22,7 +22,7 @@ function ArboraHomePageHeader() {
             </HStack>
             <HStack w={'100px'} justify={'flex-end'}>
                 <PiLinkButton
-                    to={'/login'}
+                    to={'/logout'}
                     variant={PiButtonVariant.ICON}
                     icon={BiExit} icon_props={{fontSize: '40px'}}/>
             </HStack>

@@ -5,7 +5,7 @@ import {useDispatch} from "react-redux";
 import {clearAuth} from "../../core/redux/auth/auth_slice.ts";
 import {useNavigate} from "react-router-dom";
 import {ARBORA_GREEN} from "../../core/constants/styling.ts";
-import TreeAnimationLoader from "../../pillars-ui/components/graphics/loaders/TreeAnimationLoader.tsx";
+import TreeAnimationLoader from "../../core/graphics/loaders/TreeAnimationLoader.tsx";
 
 const LOGOUT_DELAY = 3000
 

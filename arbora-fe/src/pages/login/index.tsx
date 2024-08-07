@@ -14,13 +14,15 @@ import React from "react";
 import PiButton from "../../pillars-ui/components/buttons/PiButton.tsx";
 import {BiChevronLeft} from "react-icons/bi";
 import {PiButtonVariant} from "../../pillars-ui/components/buttons/types.ts";
-import {store} from "../../core/redux";
 import {setUser} from "../../core/redux/auth/auth_slice.ts";
 import {StandardConsole} from "../../core/helpers/logging.ts";
 import {ARBORA_GREEN} from "../../core/constants/styling.ts";
+import {useDispatch} from "react-redux";
 
 function LoginFormLayer() {
     const navigate = useNavigate()
+
+    const dispatch = useDispatch()
 
     return (
         <VStack>
@@ -33,8 +35,8 @@ function LoginFormLayer() {
                     if (response.is_successful) {
                         // fetch the current user
                         const user_response = await getCurrentUserService()
-                        if (user_response.is_successful && user_response.data?.user) {
-                            store.dispatch(setUser(user_response.data.user))
+                        if (user_response.is_successful) {
+                            dispatch(setUser(user_response.data.user))
                             navigate('/')
                         } else {
                             StandardConsole.error('Could not fetch user')

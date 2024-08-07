@@ -3,6 +3,8 @@ import {StandardConsole} from "../helpers/logging.ts";
 import {getAccessToken} from "../redux/auth/helpers.ts";
 import {refreshAccessTokenService} from "./auth/AuthServices.ts";
 import {showErrorAlert, showSuccessAlert} from "../../pillars-ui/components/alerts/display_functions.tsx";
+import {store} from "../redux";
+import {logOutUser} from "../redux/auth/auth_slice.ts";
 
 interface MakeServiceCallParams<Request extends Object> {
     url: string;
@@ -89,7 +91,8 @@ export async function makeServiceCall<Request extends Object, Response extends G
         } else {
             // refresh token has also expired, log the user out
             StandardConsole.warn('Refresh token has expired, logging out user')
-            window.location.href = '/logout';
+            // window.location.href = '/logout';
+            store.dispatch(logOutUser())
         }
     }
 

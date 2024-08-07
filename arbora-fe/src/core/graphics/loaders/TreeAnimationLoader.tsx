@@ -1,5 +1,5 @@
 import {Center, CenterProps, HStack, VStack} from "@chakra-ui/react";
-import PiPlainText from "../../text/PiPlainText.tsx";
+import PiPlainText from "../../../pillars-ui/components/text/PiPlainText.tsx";
 import {FaTree} from "react-icons/fa";
 import "./loaders.scss"
 import {IconType} from "react-icons";
@@ -50,6 +50,7 @@ function customCurve(t: number, a: number, b: number): number {
     return a + amp * curve * 2;
 }
 
+//todo: optimise performance, i think there's a bottleneck
 function AnimatedTreeIcon
 ({
      t, start_position, end_position, icon: Icon = FaTree, size = 30, padding = 5
@@ -61,10 +62,11 @@ function AnimatedTreeIcon
     return (
         <Center
             w={`${size}px`} h={`${size}px`} p={0} m={0}
-            transform={'auto'} translateX={`${-50 + (t * 100)}%`}
-            opacity={customCurve(relative_t, 0, 1)}
-            scale={customCurve(relative_t, 0.3, 1)}
-        >
+            transform={'auto'} translateX={`${-250 + (t * 500)}%`}
+            // opacity={customCurve(relative_t, 0, 1)}
+            // scale={customCurve(relative_t, 0.3, 1)}
+            scale={relative_t < 0.30 || relative_t > 0.66 ? 0 : customCurve((relative_t - 0.3) / (0.66 - 0.3), 0, 1)}
+            opacity={relative_t < 0.30 || relative_t > 0.66 ? 0 : customCurve((relative_t - 0.3) / (0.66 - 0.3), 0, 1)}>
             <Icon
                 fontSize={`${(size - padding)}px`}/>
         </Center>
@@ -103,8 +105,8 @@ function AnimatedText
     )
 }
 
-const CYCLE_DURATION = 1000
-const FPS = 60
+const CYCLE_DURATION = 3000
+const FPS = 30
 const TREE_ICONS: IconType[] = [FaTree, BsTreeFill, PiTreeFill, PiTreeEvergreenFill]
 
 export default function TreeAnimationLoader
@@ -131,19 +133,36 @@ export default function TreeAnimationLoader
         return () => clearInterval(interval)
     }, []);
 
-    const tree_icon: IconType = React.useMemo(() => {
-        return TREE_ICONS[Math.floor(Math.random() * TREE_ICONS.length)]
-    }, []);
+    // const tree_icon: IconType = React.useMemo(() => {
+    //     return TREE_ICONS[Math.floor(Math.random() * TREE_ICONS.length)]
+    // }, []);
+
+    const tree_icons: IconType[] = React.useMemo(() => {
+        // a random list of tree icons (no_of_trees) long
+        return Array.from({length: no_of_trees}).map(() => {
+            return TREE_ICONS[Math.floor(Math.random() * TREE_ICONS.length)]
+        })
+    }, [no_of_trees]);
 
     return (
         <Center h={'100%'} {...center_props}>
             <VStack align={'center'}>
-                <HStack spacing={0}>
+                <HStack spacing={0} overflow={'hidden'}>
                     {Array.from({length: no_of_trees}).map((_, index) => {
                         return (
                             <AnimatedTreeIcon
-                                key={index} t={t} start_position={index / (no_of_trees)} icon={tree_icon}
-                                end_position={(index + 1) / (no_of_trees)} size={tree_size} padding={tree_padding}/>
+                                key={index} t={t} start_position={index / (no_of_trees * 3)} icon={tree_icons[index]}
+                                end_position={(index) / (no_of_trees * 3) + 1 / 3} size={tree_size}
+                                padding={tree_padding}/>
+                        )
+                    })}
+                    {Array.from({length: no_of_trees}).map((_, index) => {
+                        return (
+                            <AnimatedTreeIcon
+                                key={index} t={t} start_position={(index + no_of_trees) / (no_of_trees * 3)}
+                                icon={tree_icons[index]}
+                                end_position={(index + no_of_trees) / (no_of_trees * 3) + 1 / 3} size={tree_size}
+                                padding={tree_padding}/>
                         )
                     })}
                 </HStack>

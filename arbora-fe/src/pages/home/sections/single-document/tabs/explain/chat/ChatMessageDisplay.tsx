@@ -2,7 +2,7 @@ import React from 'react';
 import {Box, HStack} from "@chakra-ui/react";
 import {ChatMessage, ChatSource} from "../types.ts";
 import PiPlainText from "../../../../../../../pillars-ui/components/text/PiPlainText.tsx";
-import EllipsesLoader from "../../../../../../../pillars-ui/components/graphics/loaders/EllipsesLoader.tsx";
+import EllipsesLoader from "../../../../../../../core/graphics/loaders/EllipsesLoader.tsx";
 import {ARBORA_GREEN} from "../../../../../../../core/constants/styling.ts";
 
 interface ChatMessageDisplayProps {

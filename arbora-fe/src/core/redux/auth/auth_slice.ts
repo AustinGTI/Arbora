@@ -5,13 +5,15 @@ export interface GlobalAuthState {
     user: User | null
     access_token: string
     refresh_token: string
+    authentication_failed: boolean
 }
 
 
 const initial_state: GlobalAuthState = {
     user: null,
     access_token: '',
-    refresh_token: ''
+    refresh_token: '',
+    authentication_failed: false
 }
 
 export const AuthSlice = createSlice({
@@ -20,12 +22,16 @@ export const AuthSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             state.user = action.payload
+            state.authentication_failed = false
         },
         setAccessToken: (state, action) => {
             state.access_token = action.payload
         },
         setRefreshToken: (state, action) => {
             state.refresh_token = action.payload
+        },
+        logOutUser: (state) => {
+            state.authentication_failed = true
         },
         // to be used when user logs out
         clearAuth: (state) => {
@@ -40,5 +46,6 @@ export const {
     setUser,
     setAccessToken,
     setRefreshToken,
-    clearAuth
+    clearAuth,
+    logOutUser
 } = AuthSlice.actions

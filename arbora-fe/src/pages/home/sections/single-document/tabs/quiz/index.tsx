@@ -10,10 +10,10 @@ import {
     OpenEndedQuestion, OpenEndedQuestionAssessment
 } from "../../../../../../core/services/ai/types.ts";
 import useGlobalHomeState from "../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
-import PiPlainText from "../../../../../../pillars-ui/components/text/PiPlainText.tsx";
 import MultipleChoiceQuizSessionLayer from "./session/multiple-choice";
 import {recordNoteReviewService} from "../../../../../../core/services/documents/DocumentsCRUDServices.ts";
 import {NoteReviewType} from "../../../../../../core/services/documents/types.ts";
+import ArboraNoDataGraphic from "../../../../../../core/graphics/ArboraNoDataGraphic.tsx";
 
 enum QuizTabLayerKey {
     SESSION = 'session',
@@ -101,7 +101,7 @@ export default function DocumentViewQuizTab() {
                         ))}
                 </React.Fragment>
             ) : (
-                <PiPlainText value={'Select a document to perform a quiz'}/>
+                <ArboraNoDataGraphic text={'Select a document to do a quiz.'}/>
             )}
         </VStack>
     )

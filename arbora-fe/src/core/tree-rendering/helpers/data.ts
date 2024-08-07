@@ -1,7 +1,6 @@
 import {BranchDirection, BranchType, RawBranchData, TreeBranchData} from "../types.ts";
 import {Document} from "../../services/documents/types.ts";
 import {BoxDimensions} from "../../types.ts";
-import {StandardConsole} from "../../helpers/logging.ts";
 
 /**
  * generate the intermediate branch data map between the final branch data and the document and note information
@@ -285,8 +284,6 @@ export function calculateTreeDimensions(tree_data: TreeBranchData[]): BoxDimensi
             max_x = Math.max(max_x, base_max_x + d_max_x)
             max_y = Math.max(max_y, base_max_y * child_branch_data.position_on_parent + d_max_y)
         })
-
-        StandardConsole.log('min_x', min_x, 'max_x', max_x, 'max_y', max_y, 'at branch', branch_data.id)
 
         return [min_x, max_x, max_y]
     }
