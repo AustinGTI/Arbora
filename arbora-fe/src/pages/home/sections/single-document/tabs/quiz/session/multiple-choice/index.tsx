@@ -4,6 +4,7 @@ import MultipleChoiceProgressSection from "./MultipleChoiceProgressSection.tsx";
 import MultipleChoiceQuestionSection from "./MultipleChoiceQuestionSection.tsx";
 import {MultipleChoiceQuestion} from "../../../../../../../../core/services/ai/types.ts";
 import MultipleChoiceQuizCompleteOverlay from "./MultipleChoiceQuizCompleteOverlay.tsx";
+import PiDivider from "../../../../../../../../pillars-ui/components/layout/PiDivider.tsx";
 
 interface MultipleChoiceQuizSessionLayerProps extends BoxProps {
     questions: MultipleChoiceQuestion[]
@@ -14,6 +15,8 @@ export default function MultipleChoiceQuizSessionLayer
 ({
      questions, completeSession, ...box_props
  }: MultipleChoiceQuizSessionLayerProps) {
+    const [is_grading, setIsGrading] = React.useState<boolean>(false)
+
     const [review_mode, setReviewMode] = React.useState<boolean>(false)
 
     const [overlay_visible, setOverlayVisible] = React.useState<boolean>(false)
@@ -24,18 +27,34 @@ export default function MultipleChoiceQuizSessionLayer
 
     const [performance, setPerformance] = React.useState<Map<string, boolean> | null>(null)
 
-    const nextQuestion = React.useCallback(() => {
-        setActiveQuestionIdx(active_question_idx + 1)
-    }, [active_question_idx, setActiveQuestionIdx]);
 
-    const gradeQuiz = React.useCallback(() => {
+    const gradeQuiz = React.useCallback(async () => {
+        setIsGrading(true)
+        setOverlayVisible(true)
+        // no need to delay but it looks better and is consistent with open ended questions
+        await new Promise(resolve => setTimeout(resolve, 3000))
         const performance = new Map<string, boolean>()
         questions.forEach(question => {
             performance.set(question.id, answers.get(question.id) === question.correct_choice)
         })
+
         setPerformance(performance)
-        setOverlayVisible(true)
-    }, [questions, answers, setPerformance, setOverlayVisible]);
+        setIsGrading(false)
+
+    }, [questions, answers, setPerformance, setOverlayVisible, setIsGrading]);
+    const nextQuestion = React.useCallback(() => {
+        const questions_done = Array.from(answers.values()).filter(answer => answer !== -1).length
+        if (questions_done === questions.length) {
+            gradeQuiz().then()
+            return
+        }
+
+        if (active_question_idx === questions.length - 1) {
+            return
+        }
+
+        setActiveQuestionIdx(active_question_idx + 1)
+    }, [active_question_idx, setActiveQuestionIdx, questions.length, answers, gradeQuiz]);
 
     const restartSession = React.useCallback(() => {
         setReviewMode(false)
@@ -56,18 +75,12 @@ export default function MultipleChoiceQuizSessionLayer
         }
     }, [performance, setReviewMode, setOverlayVisible, setActiveQuestionIdx, questions]);
 
-    React.useEffect(() => {
-        if (active_question_idx === questions.length) {
-            gradeQuiz()
-        }
-    }, [active_question_idx]);
-
     return (
-        <HStack position={'relative'} {...box_props}>
+        <HStack position={'relative'} overflow={'hidden'} {...box_props}>
             {overlay_visible && (
                 <MultipleChoiceQuizCompleteOverlay
-                    is_loading={false}
-                    quiz_performance={performance}
+                    is_loading={is_grading}
+                    performance={performance}
                     completeSession={completeSession}
                     restartSession={restartSession}
                     reviewSession={reviewSession}/>
@@ -77,20 +90,23 @@ export default function MultipleChoiceQuizSessionLayer
                 questions={questions}
                 performance={performance}
                 answers={answers}
+                nextQuestion={nextQuestion}
                 setActiveQuestionIdx={setActiveQuestionIdx}
                 endSession={() => completeSession(performance)}
-                h={'100%'} w={'35%'}
+                h={'100%'} w={'30%'}
             />
+            <PiDivider orientation={'vertical'} length={'80%'} mx={'1rem'}/>
             <MultipleChoiceQuestionSection
+                w={'calc(70% - 2rem - 3px)'} h={'100%'}
+                answer={answers.get(questions[active_question_idx].id) ?? -1}
+                active_question_index={active_question_idx}
                 review_mode={review_mode}
                 active_question={questions[active_question_idx]}
-                is_last_question={active_question_idx === questions.length - 1}
                 setAnswer={(answer) => {
                     const new_answers = new Map(answers)
                     new_answers.set(questions[active_question_idx].id, answer)
                     setAnswers(new_answers)
-                    nextQuestion()
-                }} h={'100%'} w={'60%'}/>
+                }}/>
         </HStack>
     )
 }

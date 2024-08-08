@@ -7,6 +7,7 @@ import {StandardConsole} from "../../../../../../../../core/helpers/logging.ts";
 import useActiveContent from "../../../../../../../../core/redux/home/hooks/useActiveContent.tsx";
 import OpenEndedProgressSection from "./OpenEndedProgressSection.tsx";
 import OpenEndedQuizCompleteOverlay from "./OpenEndedQuizCompleteOverlay.tsx";
+import PiDivider from "../../../../../../../../pillars-ui/components/layout/PiDivider.tsx";
 
 interface OpenQuizSessionLayerProps extends BoxProps {
     questions: OpenEndedQuestion[]
@@ -59,8 +60,18 @@ export function OpenEndedQuizSessionLayer
     }, [setPerformance, setOverlayVisible, setGradingQuiz, questions, active_content, answers]);
 
     const nextQuestion = React.useCallback(() => {
+        const questions_done = Array.from(answers.values()).filter(answer => answer !== "").length
+        // if all questions are answered, grade the quiz
+        if (questions_done === questions.length) {
+            gradeQuiz().then()
+            return
+        }
+
+        if (active_question_idx === questions.length - 1) {
+            return
+        }
         setActiveQuestionIdx(active_question_idx + 1)
-    }, [active_question_idx, setActiveQuestionIdx]);
+    }, [active_question_idx, setActiveQuestionIdx, questions.length, answers, gradeQuiz]);
 
     const restartSession = React.useCallback(() => {
         setReviewMode(false)
@@ -88,7 +99,7 @@ export function OpenEndedQuizSessionLayer
     }, [active_question_idx]);
 
     return (
-        <HStack position={'relative'} {...box_props}>
+        <HStack position={'relative'} overflow={'hidden'} {...box_props}>
             {overlay_visible && (
                 <OpenEndedQuizCompleteOverlay
                     is_loading={grading_quiz}
@@ -101,27 +112,25 @@ export function OpenEndedQuizSessionLayer
                 active_question_idx={active_question_idx}
                 performance={performance}
                 questions={questions}
-                answers={answers}
+                answers={answers} nextQuestion={nextQuestion}
                 setActiveQuestionIdx={setActiveQuestionIdx}
                 endSession={() => completeSession(performance)}
-                h={'100%'} w={'35%'}
+                h={'100%'} w={'30%'}
             />
+            <PiDivider orientation={'vertical'} length={'80%'} mx={'1rem'}/>
             <OpenEndedQuestionSection
+                active_question_idx={active_question_idx}
                 answers={answers}
                 review_mode={review_mode}
                 active_question={questions[active_question_idx]}
                 is_last_question={active_question_idx === questions.length - 1}
                 performance={performance}
                 setAnswer={(answer) => {
-                    nextQuestion()
                     const new_answers = new Map(answers)
                     new_answers.set(questions[active_question_idx].id, answer)
                     setAnswers(new_answers)
-                    if (active_question_idx === questions.length - 1) {
-                        gradeQuiz().then()
-                        return
-                    }
-                }} w={'60%'} h={'100%'}/>
+                }}
+                w={'calc(70% - 2rem - 3px)'} h={'100%'}/>
         </HStack>
 
     )

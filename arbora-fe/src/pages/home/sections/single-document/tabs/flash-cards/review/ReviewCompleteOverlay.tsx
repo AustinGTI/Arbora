@@ -45,9 +45,9 @@ export default function CardReviewCompleteOverlay({
     return (
         <Center
             position={'absolute'}
-            top={0} left={0}
-            zIndex={1000}
-            w={'100%'} h={'100%'}
+            top={0} left={'1rem'}
+            w={'calc(100% - 2rem)'} h={'calc(100% - 1rem)'}
+            zIndex={1000} rounded={'1rem'}
             bg={ARBORA_GREEN.bg}
             {...box_props}>
             <VStack w={'50%'} spacing={'1rem'}>

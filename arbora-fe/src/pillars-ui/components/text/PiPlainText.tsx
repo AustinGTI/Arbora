@@ -1,10 +1,9 @@
-import React from 'react'
-import PiText from "./PiText.tsx";
+import PiText, {PiTextProps} from "./PiText.tsx";
 
 export type PiPlainTextProps = {
     value?: string | number,
     casing?: 'uppercase' | 'lowercase' | 'capitalize'
-} & Omit<React.ComponentProps<typeof PiText>, 'value'>
+} & Omit<PiTextProps, 'value'>
 
 export default function PiPlainText({value, casing, ...base_props}: PiPlainTextProps) {
     let render_value = value?.toString();

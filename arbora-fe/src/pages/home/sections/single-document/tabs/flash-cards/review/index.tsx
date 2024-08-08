@@ -1,10 +1,10 @@
-import {Box, BoxProps, HStack} from "@chakra-ui/react";
+import {BoxProps, HStack} from "@chakra-ui/react";
 import React from "react";
 import CardReviewProgressSection from "./CardReviewProgressSection.tsx";
 import FlashCardSection from "./FlashCardSection.tsx";
 import CardReviewCompleteOverlay from "./ReviewCompleteOverlay.tsx";
 import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
-import {ARBORA_GREEN} from "../../../../../../../core/constants/styling.ts";
+import PiDivider from "../../../../../../../pillars-ui/components/layout/PiDivider.tsx";
 
 
 interface FlashCardReviewProps extends BoxProps {
@@ -102,7 +102,7 @@ export default function FlashCardsReviewLayer({flash_cards, completeReview, ...b
                 setActiveCard={setActiveCard}
                 endSession={() => completeReview(card_reviews)}
             />
-            <Box h={'80%'} w={'3px'} bg={ARBORA_GREEN.hard} mx={'1rem'}/>
+            <PiDivider orientation={'vertical'} length={'80%'} mx={'1rem'}/>
             <FlashCardSection
                 w={'calc(70% - 2rem - 3px)'} h={'100%'}
                 active_card={active_card}

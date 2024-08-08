@@ -39,7 +39,7 @@ export default function GridDataView
                             key={key}
                             onClick={onClick}
                             w={default_cell_size} aspectRatio={1}
-                            rounded={'5px'} bg={color}
+                            rounded={'7px'} bg={color}
                             {...cell_props}>
                             {content}
                         </Box>

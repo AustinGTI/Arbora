@@ -113,9 +113,7 @@ export default function CardReviewProgressSection
                 </VStack>
                 <PiDivider orientation={'horizontal'} length={'50%'} my={'.5rem'}/>
                 <VStack className={'arbora-scrollbar'} w={'100%'} flex={1} overflowY={'auto'}>
-                    <GridDataView grid_data={grid_data} w={'100%'} spacing={7}
-                                  cell_props={{rounded: '7px'}}
-                    />
+                    <GridDataView grid_data={grid_data} w={'100%'} spacing={7}/>
                 </VStack>
                 <PiDivider orientation={'horizontal'} length={'50%'}/>
                 <VStack w={'100%'} py={'1rem'} align={'center'}>

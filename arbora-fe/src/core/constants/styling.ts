@@ -18,3 +18,11 @@ export const ARBORA_GREEN: ColorPalette = {
     loud: '#A7F432'
 }
 
+export const ARBORA_RED: ColorPalette = {
+    loud: '#FF033E',
+    soft: '#FFD6E0',
+    mid: '#FF7A9A',
+    hard: '#FF033E',
+    fg: '#FF7A9A',
+    bg: '#FFD6E0'
+}

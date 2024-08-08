@@ -5,26 +5,39 @@ import PiPlainText from "../../../../../../../../pillars-ui/components/text/PiPl
 import PiButton from "../../../../../../../../pillars-ui/components/buttons/PiButton.tsx";
 import {PiButtonVariant} from "../../../../../../../../pillars-ui/components/buttons/types.ts";
 import {MultipleChoiceQuestion} from "../../../../../../../../core/services/ai/types.ts";
+import {ARBORA_GREEN} from "../../../../../../../../core/constants/styling.ts";
+import PiDivider from "../../../../../../../../pillars-ui/components/layout/PiDivider.tsx";
+import {StandardConsole} from "../../../../../../../../core/helpers/logging.ts";
 
 interface MultipleChoiceQuestionSectionProps extends BoxProps {
+    active_question_index: number
     review_mode: boolean
     active_question: MultipleChoiceQuestion
-    is_last_question: boolean
+    answer: number
     setAnswer: (answer: number) => void
 }
 
 export default function MultipleChoiceQuestionSection({
+                                                          active_question_index,
                                                           review_mode,
                                                           active_question,
-                                                          setAnswer,
-                                                          is_last_question,
+                                                          answer, setAnswer,
                                                           ...box_props
                                                       }: MultipleChoiceQuestionSectionProps) {
-    const [selected_choice, setSelectedChoice] = React.useState<number | null>(null)
+    const [selected_choice, setSelectedChoice] = React.useState<number>(-1)
 
     React.useEffect(() => {
-        setSelectedChoice(null)
+        setSelectedChoice(-1)
     }, [active_question]);
+
+    React.useEffect(() => {
+        if (selected_choice === -1) {
+            return
+        }
+        setAnswer(selected_choice)
+    }, [selected_choice]);
+
+    StandardConsole.log('current question is ', active_question, 'of index', active_question_index, 'and answer given is ', answer)
 
     return (
         <Center overflow={'hidden'} h={'100%'} {...box_props}>
@@ -32,9 +45,11 @@ export default function MultipleChoiceQuestionSection({
                 <AnimatePresence mode={'wait'}>
                     <motion.div
                         style={{
-                            backgroundColor: 'beige',
+                            backgroundColor: ARBORA_GREEN.bg,
                             width: '90%',
-                            height: '70%',
+                            height: 'calc(100% - 2rem)',
+                            marginBottom: '1.5rem',
+                            marginTop: '0.5rem',
                             overflow: 'hidden',
                             borderRadius: '1rem',
                         }}
@@ -43,35 +58,62 @@ export default function MultipleChoiceQuestionSection({
                         animate={{y: 0, opacity: 1}}
                         exit={{y: -300, opacity: 0}}
                         transition={{duration: 0.3}}>
-                        <VStack w={'100%'} h={'100%'} justify={'center'} spacing={'1rem'}>
-                            <PiPlainText value={active_question.question} align={'center'} fontSize={'22px'}
-                                         fontWeight={500}/>
-                            <SimpleGrid columns={2} spacing={4}>
-                                {active_question.choices.map((choice, index) => {
-                                    // highlight the correct choice if in review mode
-                                    return (
-                                        <PiButton
-                                            key={index}
-                                            label={choice}
-                                            variant={PiButtonVariant.GHOST}
-                                            onClick={() => setSelectedChoice(index)}
-                                            bg={review_mode && active_question.correct_choice === index ? '#afa' : 'transparent'}
-                                            color={selected_choice === index ? 'blue' : 'black'}
-                                        />
-                                    );
-                                })}
-                            </SimpleGrid>
-                            <HStack w={'100%'} justifyContent={'center'}>
-                                <PiButton
-                                    label={is_last_question ? 'Finish' : 'Next'}
-                                    isDisabled={selected_choice === null}
-                                    onClick={() => {
-                                        if (selected_choice === null) {
-                                            return
+                        <VStack position={'relative'} w={'100%'} h={'100%'} justify={'center'} spacing={'0px'}>
+                            <Center position={'absolute'} top={0} left={0} p={'1rem'}>
+                                <PiPlainText value={`${active_question_index + 1}.`} fontSize={'24px'}
+                                             fontWeight={700}/>
+                            </Center>
+                            <VStack
+                                className={'arbora-scrollbar'}
+                                overflowY={'scroll'}
+                                h={'50%'} justify={'space-around'} px={'1rem'}>
+                                <PiPlainText value={active_question.question} align={'center'} fontSize={'20px'}
+                                             fontWeight={500}/>
+                            </VStack>
+                            <PiDivider orientatin={'horizontal'} length={'80%'}/>
+                            <VStack
+                                className={'arbora-scrollbar'}
+                                overflowY={'scroll'} overflowX={'hidden'}
+                                h={'50%'} justify={'flex-start'} p={'1rem'} pb={0}>
+                                <SimpleGrid
+                                    h={'50%'} w={'100%'} columns={2} spacing={1}>
+                                    {active_question.choices.map((choice, index) => {
+                                        let choice_highlight = 'transparent'
+                                        if (review_mode) {
+                                            if (active_question.correct_choice === index) {
+                                                choice_highlight = '#afa'
+                                            } else if (index === answer) {
+                                                choice_highlight = '#fba'
+                                            }
                                         }
-                                        setAnswer(selected_choice)
-                                    }}/>
-                            </HStack>
+                                        // highlight the correct choice if in review mode
+                                        return (
+                                            <PiButton
+                                                key={index}
+                                                variant={PiButtonVariant.GHOST}
+                                                onClick={() => {
+                                                    if (review_mode) {
+                                                        return
+                                                    }
+                                                    setSelectedChoice(index);
+                                                }}
+                                                with_tooltip={choice.length > 50}
+                                                tooltip_label={choice} tooltip_placement={'left'}
+                                                bg={choice_highlight} rounded={'7px'} py={'0.5rem'}
+                                                color={selected_choice === index ? 'blue' : 'black'}>
+                                                <HStack w={'100%'} h={'3.5rem'}>
+                                                    <PiPlainText value={String.fromCharCode(65 + index) + '.'}
+                                                                 fontSize={'15px'} fontWeight={700}/>
+                                                    <PiPlainText value={
+                                                        choice.length > 50 ? choice.slice(0, 50) + '...' : choice
+                                                    } fontSize={'13px'} fontWeight={500}
+                                                                 overflowWrap={'break-word'} whiteSpace={'normal'}/>
+                                                </HStack>
+                                            </PiButton>
+                                        );
+                                    })}
+                                </SimpleGrid>
+                            </VStack>
                         </VStack>
                     </motion.div>
                 </AnimatePresence>

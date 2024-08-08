@@ -26,6 +26,8 @@ export default function DocumentViewQuizTab() {
 
     const {documents: {active_document, active_note}} = useGlobalHomeState()
     const recordMultipleChoiceQuizReview = React.useCallback((session_records: Map<string, boolean> | null) => {
+        setActiveLayer(QuizTabLayerKey.SETUP);
+
         if (!session_records) {
             StandardConsole.warn('Quiz ended before completion, no review recorded')
             return
@@ -38,7 +40,6 @@ export default function DocumentViewQuizTab() {
         // calculate the review score
         const score = Array.from(session_records.values()).filter(v => v).length / session_records.size
 
-        setActiveLayer(QuizTabLayerKey.SETUP);
         recordNoteReviewService({
             document_id: active_document.id,
             note_id: active_note ?? '1',
@@ -50,6 +51,8 @@ export default function DocumentViewQuizTab() {
     }, [active_document, setActiveLayer, active_note]);
 
     const recordOpenChoiceQuizReview = React.useCallback((session_records: Map<string, OpenEndedQuestionAssessment> | null) => {
+        setActiveLayer(QuizTabLayerKey.SETUP);
+
         if (!session_records) {
             StandardConsole.warn('Quiz ended before completion, no review recorded')
             return
@@ -62,7 +65,6 @@ export default function DocumentViewQuizTab() {
         // calculate the review score
         const score = Array.from(session_records.values()).reduce((acc, {grade}) => acc + grade, 0) / (session_records.size * 5)
 
-        setActiveLayer(QuizTabLayerKey.SETUP);
         recordNoteReviewService({
             document_id: active_document.id,
             note_id: active_note ?? '1',
