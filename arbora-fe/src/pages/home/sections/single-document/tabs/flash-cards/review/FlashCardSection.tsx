@@ -69,7 +69,8 @@ export default function FlashCardSection({active_card, handleCardReview, ...box_
                                         w={'100%'} h={'calc(100% - 40px - 1.5rem)'} justify={'space-around'}>
                                         <PiPlainText value={active_card.answer}/>
                                     </VStack>
-                                    <HStack w={'100%'} h={'calc(40px + 1.5rem)'} boxSizing={'border-box'} justifyContent={'space-around'}>
+                                    <HStack w={'100%'} h={'calc(40px + 1.5rem)'} boxSizing={'border-box'}
+                                            justifyContent={'space-around'}>
                                         <PiButton label={'Easy'} onClick={() => handleCardReview(1)}/>
                                         <PiButton label={'Medium'} onClick={() => handleCardReview(3)}/>
                                         <PiButton label={'Hard'} onClick={() => handleCardReview(5)}/>

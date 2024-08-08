@@ -1,6 +1,7 @@
 import {Document} from "../../services/documents/types.ts";
 import {createSlice} from "@reduxjs/toolkit";
 import {generateRandomString} from "../../helpers/strings.ts";
+import {RectProps} from "../../types.ts";
 
 export enum DocumentViewTabKey {
     EDITOR = 'editor',
@@ -29,6 +30,15 @@ export interface GlobalHomeState {
             qa_data: any
             explain_data: any
         }
+    },
+    all_documents_view: {
+        canvas_loading: boolean
+        // negative for backwards, positive for forwards, 0 for stop
+        canvas_motion: number
+        // the pixel offset of the canvas from the starting position
+        canvas_motion_delta: number,
+
+        canvas_box_rect: RectProps | null
     }
 }
 
@@ -52,6 +62,12 @@ const initial_state: GlobalHomeState = {
             qa_data: null,
             explain_data: null
         }
+    },
+    all_documents_view: {
+        canvas_loading: true,
+        canvas_motion: -1,
+        canvas_motion_delta: 0,
+        canvas_box_rect: null,
     }
 }
 
@@ -90,6 +106,19 @@ export const HomeSlice = createSlice({
 
         setEditorContent: (state, action: { payload: string }) => {
             state.document_view.tab_data.editor_data.content = action.payload
+        },
+
+        setCanvasLoadingState: (state, action: { payload: boolean }) => {
+            state.all_documents_view.canvas_loading = action.payload
+        },
+        setCanvasBoxRect: (state, action: { payload: RectProps }) => {
+            state.all_documents_view.canvas_box_rect = action.payload
+        },
+        setCanvasMotion: (state, action: { payload: number }) => {
+            state.all_documents_view.canvas_motion = action.payload
+        },
+        updateCanvasMotionDelta: (state, action: { payload: number }) => {
+            state.all_documents_view.canvas_motion_delta += action.payload
         }
     }
 })
@@ -102,5 +131,9 @@ export const {
     reloadHomeData,
     collapseDocumentView,
     setEditorEditable,
-    setEditorContent
+    setEditorContent,
+    setCanvasLoadingState,
+    setCanvasBoxRect,
+    updateCanvasMotionDelta,
+    setCanvasMotion
 } = HomeSlice.actions

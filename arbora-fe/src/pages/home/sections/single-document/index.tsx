@@ -21,6 +21,7 @@ import QuizIcon from "../../../../assets/ai/AIQuizAction.svg?react"
 import FlashCardsIcon from "../../../../assets/ai/AIFlashCardsActionV2.svg?react"
 // @ts-ignore
 import DocumentIcon from "../../../../assets/ai/Document.svg?react"
+import {StandardConsole} from "../../../../core/helpers/logging.ts";
 
 
 interface SingleDocumentSectionProps extends BoxProps {
@@ -76,6 +77,8 @@ export default function DocumentViewSection({w, width, ...box_props}: SingleDocu
     } = useGlobalHomeState()
     const dispatch = useDispatch()
 
+
+    StandardConsole.log('doc view running')
 
     const collapse_state = useCollapse(collapsed, DOCUMENT_VIEW_COLLAPSE_TIMERS)
     const collapse_button = React.useMemo(() => {

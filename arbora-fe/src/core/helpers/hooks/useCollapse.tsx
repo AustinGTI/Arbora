@@ -18,7 +18,7 @@ export default function useCollapse(collapsed: boolean, timers: CollapseTimer[])
         return state
     })
 
-    StandardConsole.log('collapse state is ',collapse_state)
+    // StandardConsole.log('collapse state is ',collapse_state)
 
     // to prevent race conditions, we group the keys with similar delays together so that they are updated at the same time
     const delay_to_keys: Map<string, string[]> = React.useMemo(() => {

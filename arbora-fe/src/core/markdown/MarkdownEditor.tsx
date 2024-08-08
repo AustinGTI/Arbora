@@ -12,7 +12,6 @@ import {addAIButtonToHeaders} from "./dom.ts";
 import useGlobalHomeState from "../redux/home/hooks/useGlobalHomeState.tsx";
 import {useDispatch} from "react-redux";
 import {setEditorContent, setEditorEditable} from "../redux/home/home_slice.ts";
-import {StandardConsole} from "../helpers/logging.ts";
 import {replaceAll} from "@milkdown/utils"
 import {ARBORA_GREEN} from "../constants/styling.ts";
 import PiPlainText from "../../pillars-ui/components/text/PiPlainText.tsx";
@@ -87,11 +86,9 @@ function MilkdownEditor({initial_content, editable, setActiveContent}: MilkdownE
                     editable: () => editable,
                 }))
                 if (initial_content_ref.current !== initial_content) {
-                    StandardConsole.log('setting to initial content', initial_content)
                     ctx.set(defaultValueCtx, initial_content)
                     initial_content_ref.current = initial_content
                 } else {
-                    StandardConsole.log('setting to current content', current_content)
                     ctx.set(defaultValueCtx, current_content)
                 }
             }

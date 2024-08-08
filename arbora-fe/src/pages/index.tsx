@@ -25,7 +25,10 @@ export default function ArboraWebApp() {
 
     const navigate = useNavigate()
     React.useEffect(() => {
-        if (AUTH_PAGES.includes(window.location.pathname)) return
+        if (AUTH_PAGES.includes(window.location.pathname)) {
+            setLoadingUserData(false)
+            return
+        }
         setLoadingUserData(true)
         // fetch user single_doc_section
         getCurrentUserService().then((response) => {
