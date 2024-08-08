@@ -13,6 +13,7 @@ import {ARBORA_GREEN} from "../core/constants/styling.ts";
 
 const AUTH_PAGES: string[] = [
     '/login',
+    '/logout'
 ]
 
 export default function ArboraWebApp() {
@@ -45,7 +46,7 @@ export default function ArboraWebApp() {
     React.useEffect(() => {
         if (AUTH_PAGES.includes(window.location.pathname)) return
         if (user_logged_out) {
-            navigate('/login')
+            navigate('/logout')
         }
     }, [user_logged_out]);
 
@@ -57,7 +58,8 @@ export default function ArboraWebApp() {
                 <Route path="/logout" element={<ArboraLogoutPage/>}/>
             </Routes>
         ) : (
-            <TreeAnimationLoaderV2 text={'Planting Trees'} h={'100vh'} w={'100vw'} position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.bg}/>
+            <TreeAnimationLoaderV2 text={'Planting Trees'} h={'100vh'} w={'100vw'} position={'absolute'} top={0}
+                                   left={0} bg={ARBORA_GREEN.bg}/>
         )
     )
 }

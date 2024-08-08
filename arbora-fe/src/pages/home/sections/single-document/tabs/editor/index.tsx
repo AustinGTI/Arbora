@@ -8,7 +8,11 @@ import {
     updateDocumentService
 } from "../../../../../../core/services/documents/DocumentsCRUDServices.ts";
 import {reloadHomeData, setActiveDocument, setEditorEditable} from "../../../../../../core/redux/home/home_slice.ts";
-import {ButtonOnClickFunction, PiButtonIcon} from "../../../../../../pillars-ui/components/buttons/types.ts";
+import {
+    ButtonOnClickFunction,
+    PiButtonIcon,
+    PiButtonVariant
+} from "../../../../../../pillars-ui/components/buttons/types.ts";
 import {Box, HStack, VStack} from "@chakra-ui/react";
 import PiButton from "../../../../../../pillars-ui/components/buttons/PiButton.tsx";
 import {MarkdownEditor} from "../../../../../../core/markdown/MarkdownEditor.tsx";
@@ -152,11 +156,13 @@ export default function DocumentViewEditorTab() {
                     <HStack>
                         <PiButton
                             icon={PiButtonIcon.DELETE}
+                            variant={PiButtonVariant.SOLID}
                             icon_props={{fontSize: '25px'}}
                             px={'.7rem'}
                             onClick={deleteActiveDocument}/>
                         <PiButton
                             icon={PiButtonIcon.SAVE}
+                            variant={PiButtonVariant.SOLID}
                             icon_props={{fontSize: '25px'}}
                             px={'.7rem'}
                             onClick={async () => {

@@ -126,15 +126,19 @@ export default function ExplainTabChatSection({...box_props}: ExplainTabChatSect
     return (
         <Box w={'100%'} h={'100%'} {...box_props}>
             <VStack h={'95%'} w={'100%'}>
-                <HStack w={'100%'}>
-                    <ActiveDocumentNoteSelector w={'100%'} py={'1rem'}/>
-                    <PiButton
-                        label={'Restart Chat'}
-                        onClick={() => {
-                            setChatMessages([initial_message])
-                            setChatComplete(false)
-                        }}
-                    />
+                <HStack w={'100%'} justify={'space-between'}>
+                    <HStack w={'100px'}/>
+                    <ActiveDocumentNoteSelector w={'calc(100% - 200px)'} py={'1rem'}/>
+
+                    <HStack w={'100px'}>
+                        <PiButton
+                            label={'Restart Chat'}
+                            onClick={() => {
+                                setChatMessages([initial_message])
+                                setChatComplete(false)
+                            }}
+                        />
+                    </HStack>
                 </HStack>
                 <Box flex={1}/>
                 <VStack ref={chat_box_ref} w={'100%'} maxH={'85%'} h={'fit-content'} spacing={'1rem'} p={'1rem'}

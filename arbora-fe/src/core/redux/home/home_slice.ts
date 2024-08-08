@@ -41,7 +41,7 @@ const initial_state: GlobalHomeState = {
         reload_state: 'reload.88088.site',
     },
     document_view: {
-        collapsed: false,
+        collapsed: true,
         active_tab: DocumentViewTabKey.EDITOR,
         tab_data: {
             editor_data: {

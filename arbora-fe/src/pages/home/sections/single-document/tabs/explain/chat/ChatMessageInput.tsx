@@ -28,7 +28,7 @@ export default function ChatMessageInput
                 isDisabled={is_disabled}
                 onInputChange={(value) => setInputText(value)}
                 placeholder={'Respond to Arby'}
-                rows={3}/>
+                rows={3} borderRadius={'8px'}/>
             {!is_disabled ? (
                 <PiButton
                     label={'Send'}
