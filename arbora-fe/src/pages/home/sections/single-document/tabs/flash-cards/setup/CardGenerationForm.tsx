@@ -22,10 +22,12 @@ interface CardGenFormProps extends SimpleFormProps<CardGenFormObject> {
 
 function CardGenFormFields() {
     return (
-        <PiFormFields flex={undefined} h={'fit-content'} py={0} my={0}>
-            <PiTextInput<CardGenFormObject>
-                name={'no_of_cards'} type={'number'} label={'No. of Cards'} placeholder={'Number of Flash Cards'}
-                is_required input_container_props={{label_alignment: 'center'}}/>
+        <PiFormFields flex={1} h={'fit-content'} my={0}>
+            <VStack h={'100%'}>
+                <PiTextInput<CardGenFormObject>
+                    name={'no_of_cards'} type={'number'} label={'No. of Cards'} placeholder={'Number of Flash Cards'}
+                    is_required input_container_props={{label_alignment: 'center'}}/>
+            </VStack>
         </PiFormFields>
     )
 }

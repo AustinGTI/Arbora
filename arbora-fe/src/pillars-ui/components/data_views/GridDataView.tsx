@@ -11,33 +11,36 @@ export interface GridCellData {
 interface GridDataViewProps extends BoxProps {
     grid_data: GridCellData[]
     /**
-     * default 30
-     */
-    cell_size?: number
-    /**
-     * default 5
-     */
-    cell_border_radius?: number
-    /**
      * default 5
      */
     spacing?: number
+    /**
+     * by default is 5, if this is set, do not set the cell width in the cell_props,
+     * it is manipulated by this prop to ensure a perfect fit
+     */
+    cells_per_row?: number
+    cell_props?: BoxProps
 }
 
 export default function GridDataView
 ({
-     grid_data, cell_size = 30, cell_border_radius = 5, spacing = 5, ...box_props
+     grid_data, cell_props, spacing = 5, cells_per_row = 5, ...box_props
  }: GridDataViewProps) {
+    const default_cell_size = React.useMemo(() => {
+        return `calc(calc(100% - ${spacing * (cells_per_row - 1)}px) / ${cells_per_row})`
+    }, [spacing, cells_per_row]);
+
     return (
         <Box {...box_props}>
-            <HStack w={'100%'} h={'100%'} flexWrap={'wrap'}>
+            <HStack w={'100%'} h={'100%'} flexWrap={'wrap'} spacing={`${spacing}px`}>
                 {grid_data.map(({key, color, content, onClick}) => {
                     return (
                         <Box
                             key={key}
                             onClick={onClick}
-                            w={`${cell_size}px`} h={`${cell_size}px`}
-                            rounded={cell_border_radius} bg={color}>
+                            w={default_cell_size} aspectRatio={1}
+                            rounded={'5px'} bg={color}
+                            {...cell_props}>
                             {content}
                         </Box>
                     )

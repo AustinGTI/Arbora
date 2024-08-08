@@ -40,7 +40,9 @@ export default function FlashCardsSetupLayer({reviewFlashCards, ...box_props}: F
         <Center w={'100%'} h={'calc(100% - 40px)'} mb={'1rem'} mt={'0.5rem'} {...box_props}>
             {!generating_flash_cards ? (
                 <VStack w={'40%'} h={'100%'} justify={'center'} rounded={'10px'} bg={ARBORA_GREEN.bg} p={'1rem'}>
-                    <CardGenerationForm submitFunction={handleOnClickGenerateCards}/>
+                    <CardGenerationForm
+                        initial_values={{no_of_cards: 10}}
+                        submitFunction={handleOnClickGenerateCards}/>
                 </VStack>
             ) : (
                 <TreeAnimationLoaderV2 text={'Generating Flash Cards'} pb={'5rem'}/>

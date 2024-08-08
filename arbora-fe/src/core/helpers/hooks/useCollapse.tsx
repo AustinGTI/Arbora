@@ -1,4 +1,5 @@
 import React from "react";
+import {StandardConsole} from "../logging.ts";
 
 export interface CollapseTimer {
     key: string
@@ -17,13 +18,7 @@ export default function useCollapse(collapsed: boolean, timers: CollapseTimer[])
         return state
     })
 
-    // const delays: Map<string, number> = React.useMemo(() => {
-    //     const delays = new Map<string, number>()
-    //     timers.forEach(timer => {
-    //         delays.set(timer.key, timer.delay)
-    //     })
-    //     return delays
-    // }, [timers]);
+    StandardConsole.log('collapse state is ',collapse_state)
 
     // to prevent race conditions, we group the keys with similar delays together so that they are updated at the same time
     const delay_to_keys: Map<string, string[]> = React.useMemo(() => {

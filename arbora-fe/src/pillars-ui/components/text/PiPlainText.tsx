@@ -33,6 +33,6 @@ export default function PiPlainText({value, casing, ...base_props}: PiPlainTextP
         }
     }
     return (
-        <PiText value={render_value} casing={casing} {...base_props}/>
+        <PiText value={render_value} casing={casing} fontWeight={500} {...base_props}/>
     )
 }

@@ -44,7 +44,7 @@ export default function DocumentViewEditorTab() {
         })
     }, [active_document, dispatch, content]);
 
-    const createNewDocument: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
+    const createNewDocument: ButtonOnClickFunction = React.useCallback(async () => {
         // check if there is an active document
         if (active_document) {
             StandardConsole.warn('There is an active document, cannot create a new document')
@@ -55,8 +55,7 @@ export default function DocumentViewEditorTab() {
             StandardConsole.warn('Cannot create a new document without content')
             return
         }
-        setButtonLoadingState(true)
-        await createDocumentService({
+        createDocumentService({
             content: content
         }).then((response) => {
             if (response.is_successful) {
@@ -70,16 +69,14 @@ export default function DocumentViewEditorTab() {
                 }
             }
         })
-        setButtonLoadingState(false)
     }, [active_document, dispatch, content]);
 
-    const deleteActiveDocument: ButtonOnClickFunction = React.useCallback(async (setButtonLoadingState) => {
+    const deleteActiveDocument = React.useCallback(async () => {
         // check if there is an active document
         if (!active_document) {
             StandardConsole.warn('No active document to delete')
             return
         }
-        setButtonLoadingState(true)
         await deleteDocumentService({
             id: active_document.id
         }).then((response) => {
@@ -87,7 +84,6 @@ export default function DocumentViewEditorTab() {
                 dispatch(reloadHomeData({with_note_reset: true}))
             }
         })
-        setButtonLoadingState(false)
     }, [active_document, dispatch]);
 
 
@@ -163,10 +159,8 @@ export default function DocumentViewEditorTab() {
                             icon={PiButtonIcon.SAVE}
                             icon_props={{fontSize: '25px'}}
                             px={'.7rem'}
-                            onClick={async (setButtonLoadingState) => {
-                                setButtonLoadingState(true)
+                            onClick={async () => {
                                 await updateActiveDocument()
-                                setButtonLoadingState(false)
                             }}/>
                         {/*<Box px={'.5rem'}>*/}
                         {/*    <PiPlainText value={`Last auto-saved ${AUTOSAVE_INTERVAL_IN_S - t_minus_autosave}s ago`}*/}

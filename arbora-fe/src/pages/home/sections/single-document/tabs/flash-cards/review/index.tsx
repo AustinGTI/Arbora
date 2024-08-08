@@ -1,9 +1,10 @@
-import {BoxProps, HStack} from "@chakra-ui/react";
+import {Box, BoxProps, HStack} from "@chakra-ui/react";
 import React from "react";
 import CardReviewProgressSection from "./CardReviewProgressSection.tsx";
 import FlashCardSection from "./FlashCardSection.tsx";
 import CardReviewCompleteOverlay from "./ReviewCompleteOverlay.tsx";
 import {FlashCard} from "../../../../../../../core/services/ai/types.ts";
+import {ARBORA_GREEN} from "../../../../../../../core/constants/styling.ts";
 
 
 interface FlashCardReviewProps extends BoxProps {
@@ -63,6 +64,7 @@ export default function FlashCardsReviewLayer({flash_cards, completeReview, ...b
 
     // place the card at the top of the stack, remove it from the stack if there
     const setActiveCard = React.useCallback((id: string) => {
+
         const new_card_stack = [id, ...card_stack.filter(card_id => card_id !== id)]
         setCardStack(new_card_stack)
     }, [card_stack, setCardStack]);
@@ -84,7 +86,7 @@ export default function FlashCardsReviewLayer({flash_cards, completeReview, ...b
     }, [active_card]);
 
     return (
-        <HStack position={'relative'} {...box_props}>
+        <HStack position={'relative'} overflowY={'hidden'} {...box_props}>
             {overlay_visible && (
                 <CardReviewCompleteOverlay
                     card_review_records={card_reviews}
@@ -93,12 +95,16 @@ export default function FlashCardsReviewLayer({flash_cards, completeReview, ...b
                     w={'100%'} h={'100%'}/>
             )}
             <CardReviewProgressSection
-                w={'35%'} h={'100%'}
+                w={'30%'} h={'100%'}
+                active_card={active_card}
                 flash_cards={flash_cards}
                 card_reviews={card_reviews}
-                setActiveCard={setActiveCard}/>
+                setActiveCard={setActiveCard}
+                endSession={() => completeReview(card_reviews)}
+            />
+            <Box h={'80%'} w={'3px'} bg={ARBORA_GREEN.hard} mx={'1rem'}/>
             <FlashCardSection
-                w={'60%'} h={'100%'}
+                w={'calc(70% - 2rem - 3px)'} h={'100%'}
                 active_card={active_card}
                 handleCardReview={handleReviewCard}/>
         </HStack>

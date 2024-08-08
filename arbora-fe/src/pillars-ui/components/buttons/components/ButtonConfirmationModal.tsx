@@ -1,7 +1,16 @@
-import {Box, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Text} from "@chakra-ui/react";
+import {
+    Box,
+    Flex,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalOverlay,
+    Text
+} from "@chakra-ui/react";
 import React from "react";
 import PiButton from "../PiButton.tsx";
-import {PiButtonVariant} from "../types";
+import {ButtonOnClickFunction, PiButtonVariant} from "../types";
 import useModalId, {calculateZIndexAboveModal} from "../../utils/modal-utils/useModalId";
 import {IoMdCheckmarkCircleOutline} from "react-icons/io";
 import {BsQuestionCircle} from "react-icons/bs";
@@ -10,8 +19,8 @@ export type ButtonConfirmationModalProps = {
     title: string,
     message: string,
     closeModal: () => void,
-    onConfirm: () => void,
-    onDeny?: () => void,
+    onConfirm: ButtonOnClickFunction,
+    onDeny?: ButtonOnClickFunction,
     isOpen: boolean
 }
 
@@ -29,14 +38,14 @@ export default function ButtonConfirmationModal({
 
     const modal_id = useModalId(anchor_ref, isOpen)
 
-    const handleYes = React.useCallback(() => {
+    const handleYes: ButtonOnClickFunction = React.useCallback((e) => {
         closeModal()
-        onConfirm()
+        onConfirm(e)
     }, [closeModal, onConfirm])
 
-    const handleNo = React.useCallback(() => {
+    const handleNo: ButtonOnClickFunction = React.useCallback((e) => {
         closeModal()
-        if (onDeny) onDeny()
+        onDeny?.(e)
     }, [closeModal, onDeny])
 
     const modal_z_index: number = React.useMemo(() => {

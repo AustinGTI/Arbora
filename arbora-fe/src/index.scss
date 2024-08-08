@@ -1,0 +1,35 @@
+// variable for arbora green colors
+$arbora-green-hard: #5E8248;
+$arbora-green-soft: #F0FFF0;
+$arbora-green-mid: #A8E4A0;
+$arbora-green-fg: #BFE3BF;
+$arbora-green-bg: #F0FFF0;
+$arbora-green-loud: #8EE53F;
+
+
+@mixin custom-scrollbar($bg-soft, $bg-hard: darken($bg-soft, 20%)) {
+  // Style for the scrollbar track
+  &::-webkit-scrollbar {
+    width: 10px;
+    background-color: transparent;
+  }
+
+  // Style for the scrollbar thumb
+  &::-webkit-scrollbar-thumb {
+    background-color: $bg-hard;
+    box-shadow: inset 0 0 0 3px $bg-soft;
+
+    &:hover {
+      background-color: darken($bg-soft, 10%);
+    }
+  }
+
+  // Removing scrollbar buttons
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+
+.arbora-scrollbar {
+    @include custom-scrollbar($arbora-green-soft, $arbora-green-hard);
+}

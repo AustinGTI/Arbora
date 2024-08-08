@@ -17,3 +17,4 @@ export const ARBORA_GREEN: ColorPalette = {
     bg: '#F0FFF0',
     loud: '#A7F432'
 }
+

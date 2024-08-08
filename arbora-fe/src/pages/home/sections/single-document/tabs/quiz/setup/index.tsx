@@ -60,7 +60,12 @@ export default function QuizSetupLayer({takeQuiz, ...box_props}: QuizSetupLayerP
         <Center w={'100%'} h={'calc(100% - 40px)'} mb={'1rem'} mt={'0.5rem'} {...box_props}>
             {!generating_quiz ? (
                 <VStack w={'40%'} h={'100%'} justify={'center'} rounded={'10px'} bg={ARBORA_GREEN.bg} p={'1rem'}>
-                    <QuizGenerationForm submitFunction={handleOnClickTakeQuiz}/>
+                    <QuizGenerationForm
+                        initial_values={{
+                            quiz_type: QuizType.MULTIPLE_CHOICE,
+                            no_of_questions: 10
+                        }}
+                        submitFunction={handleOnClickTakeQuiz}/>
                 </VStack>
             ) : (
                 <TreeAnimationLoaderV2

@@ -7,6 +7,9 @@ import {HStack, VStack} from "@chakra-ui/react";
 import PiFormSubmitButton
     from "../../../../../../../pillars-ui/components/forms/helper_components/PiFormSubmitButton.tsx";
 import {QuizType} from "../types.ts";
+import PiDropdownSelectInput
+    from "../../../../../../../pillars-ui/components/forms/inputs/select/PiDropdownSelectInput.tsx";
+import {capitalCase} from 'change-case'
 
 export interface QuizGenFormObject {
     no_of_questions: number
@@ -25,10 +28,20 @@ interface QuizGenFormProps extends SimpleFormProps<QuizGenFormObject> {
 
 function QuizGenFormFields() {
     return (
-        <PiFormFields flex={undefined} h={'fit-content'} py={0} my={0}>
-            <PiTextInput<QuizGenFormObject>
-                name={'no_of_questions'} type={'number'} label={'No. of Questions'} placeholder={'Number of Flash Cards'}
-                is_required input_container_props={{label_alignment: 'center'}}/>
+        <PiFormFields flex={1} h={'fit-content'} py={0} my={0}>
+            <VStack h={'60%'} justify={'space-around'}>
+                <PiDropdownSelectInput
+                    name={'quiz_type'} label={'Quiz Type'}
+                    placeholder={'Select Quiz Type..'}
+                    input_container_props={{label_alignment: 'center'}}
+                    choices={Object.values(QuizType)}
+                    getDisplayValue={(choice: string) => capitalCase(choice)}
+                />
+                <PiTextInput<QuizGenFormObject>
+                    name={'no_of_questions'} type={'number'} label={'No. of Questions'}
+                    placeholder={'Number of Questions'}
+                    is_required input_container_props={{label_alignment: 'center'}}/>
+            </VStack>
         </PiFormFields>
     )
 }

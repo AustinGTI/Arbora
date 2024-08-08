@@ -27,7 +27,7 @@ export enum PiButtonIcon {
     SWAP = 'swap',
 
     UP = 'up',
-    DOWN= 'down'
+    DOWN = 'down'
 }
 
 export enum PiButtonVariant {
@@ -107,7 +107,7 @@ export type ButtonStylingProps = {
     icon_props?: IconProps
 }
 
-export type ButtonOnClickFunction = (setButtonLoadingState: (state: boolean) => void) => void | Promise<void>
+export type ButtonOnClickFunction = (event: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>
 
 export type ButtonActionProps = {
     /**

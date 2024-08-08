@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, ButtonProps, Icon, Tooltip, useDisclosure} from "@chakra-ui/react";
-import {ButtonActionProps, PiButtonPalette, PiButtonVariant, GenericButtonProps} from "./types.ts";
+import {ButtonActionProps, GenericButtonProps, PiButtonPalette, PiButtonVariant} from "./types.ts";
 import ButtonConfirmationModal from "./components/ButtonConfirmationModal.tsx";
 import {convertIconStringToIconComponent, variantAndPaletteToStylingProps} from "./helpers.ts";
 
@@ -20,7 +20,7 @@ const PiButton = React.forwardRef<HTMLButtonElement, PiButtonProps>
                        onClick = () => {
                        },
 
-                       variant = PiButtonVariant.SOLID,
+                       variant = label ? PiButtonVariant.SOLID : PiButtonVariant.ICON,
                        palette = PiButtonPalette.PURE_GREEN,
                        icon_position = "left",
                        icon_props,
@@ -73,13 +73,15 @@ const PiButton = React.forwardRef<HTMLButtonElement, PiButtonProps>
                     onClick={
                         with_confirmation ?
                             onOpen :
-                            () => {
+                            async (e) => {
                                 // if the button is loading, then the onClick function should not be called
                                 // this is to prevent the user from clicking the button multiple times
                                 if (is_loading || button_props.isLoading) {
                                     return;
                                 }
-                                onClick(setLoadingState);
+                                setLoadingState(true)
+                                await onClick?.(e);
+                                setLoadingState(false)
                             }
                     }
                     isLoading={is_loading || button_props.isLoading}>
@@ -102,7 +104,7 @@ const PiButton = React.forwardRef<HTMLButtonElement, PiButtonProps>
             </Tooltip>
             <ButtonConfirmationModal title={confirmation_title} message={confirmation_message}
                                      closeModal={onClose}
-                                     onConfirm={() => onClick(setLoadingState)} isOpen={isOpen}/>
+                                     onConfirm={(e) => onClick(e)} isOpen={isOpen}/>
         </>
     );
 })

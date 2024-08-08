@@ -1,11 +1,4 @@
-// variable for arbora green colors
-$arbora-green-hard: #5E8248;
-$arbora-green-soft: #F0FFF0;
-$arbora-green-mid: #A8E4A0;
-$arbora-green-fg: #BFE3BF;
-$arbora-green-bg: #F0FFF0;
-$arbora-green-loud: #8EE53F;
-
+@import '../../index';
 
 .milkdown-editor {
   width: 100%;
@@ -129,29 +122,7 @@ $arbora-green-loud: #8EE53F;
 }
 
 .milkdown-wrapper {
-  // Style for the scrollbar track
-  &::-webkit-scrollbar {
-    width: 10px; // Set the width of the scrollbar
-    background-color: transparent; // Set the background color of the scrollbar track
-  }
-
-
-  // Style for the scrollbar thumb (the part that you drag)
-  &::-webkit-scrollbar-thumb {
-    background-color: $arbora-green-hard; // Set the color of the scrollbar thumb
-    //border-radius: 0px;
-    box-shadow: inset 0 0 0 3px $arbora-green-soft; // Adjust the color and size as needed
-
-
-    &:hover {
-      background-color: darken(lightgray, 10%); // Slightly darken the thumb on hover for better UI interaction
-    }
-  }
-
-  // Removing scrollbar buttons (arrows)
-  &::-webkit-scrollbar-button {
-    display: none; // This will remove the arrows from the scrollbar
-  }
+  @include custom-scrollbar($arbora-green-soft, $arbora-green-hard);
 }
 
 // region ANIMATIONS
