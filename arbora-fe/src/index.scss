@@ -31,5 +31,9 @@ $arbora-green-loud: #8EE53F;
 }
 
 .arbora-scrollbar {
-    @include custom-scrollbar($arbora-green-soft, $arbora-green-hard);
+  @include custom-scrollbar($arbora-green-soft, $arbora-green-hard);
+}
+
+.arbora-selector-scrollbar {
+  @include custom-scrollbar($arbora-green-fg, $arbora-green-hard);
 }

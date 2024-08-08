@@ -15,7 +15,6 @@ import {useDispatch} from "react-redux";
 import {setCanvasBoxRect} from "../../../../../core/redux/home/home_slice.ts";
 import {MIN_CANVAS_WIDTH, GROUND_LEVEL_CONSTANT, MAX_CANVAS_WIDTH} from "./constants.ts";
 import useMoveToActiveDocument from "./hooks/useMoveToActiveDocument.tsx";
-import DocumentSelector from "./components/DocumentSelector.tsx";
 
 interface SlideControlProps {
     tree_data: TreeData[]
@@ -100,36 +99,35 @@ export default function ForestCanvas() {
     }, []);
 
     return (
-        <Box
-            className={'hidden-scrollbar forest-canvas-wrapper'}
-            position={'absolute'}
-            transition={'opacity 0.5s'}
-            top={0} left={0} opacity={0}
-            ref={wrapper_box_ref} w={'100%'} h={'100%'} overflowX={'scroll'} overflowY={'hidden'}>
-            <Box position={'absolute'} top={0} left={0} p={'1rem'}>
-                <DocumentSelector/>
+        <React.Fragment>
+            <Box
+                className={'hidden-scrollbar forest-canvas-wrapper'}
+                position={'absolute'}
+                transition={'opacity 0.5s'}
+                top={0} left={0} opacity={0}
+                ref={wrapper_box_ref} w={'100%'} h={'100%'} overflowX={'scroll'} overflowY={'hidden'}>
+                {canvas_box_rect ? (
+                    <Stage width={canvas_box_rect.width} height={canvas_box_rect.height} options={{
+                        background: '#efe',
+                        antialias: true
+                    }}>
+                        {trees.map((tree_data) => {
+                            return (
+                                <TreeRender
+                                    key={tree_data.document.id}
+                                    tree_data={tree_data}/>
+                            );
+                        })}
+                        <GroundRender rect={{
+                            x: 0,
+                            y: ground_level,
+                            width: canvas_box_rect.width,
+                            height: canvas_box_rect.height - ground_level
+                        }}/>
+                        <SlideControl tree_data={trees}/>
+                    </Stage>
+                ) : null}
             </Box>
-            {canvas_box_rect ? (
-                <Stage width={canvas_box_rect.width} height={canvas_box_rect.height} options={{
-                    background: '#efe',
-                    antialias: true
-                }}>
-                    {trees.map((tree_data) => {
-                        return (
-                            <TreeRender
-                                key={tree_data.document.id}
-                                tree_data={tree_data}/>
-                        );
-                    })}
-                    <GroundRender rect={{
-                        x: 0,
-                        y: ground_level,
-                        width: canvas_box_rect.width,
-                        height: canvas_box_rect.height - ground_level
-                    }}/>
-                    <SlideControl tree_data={trees}/>
-                </Stage>
-            ) : null}
-        </Box>
+        </React.Fragment>
     )
 }

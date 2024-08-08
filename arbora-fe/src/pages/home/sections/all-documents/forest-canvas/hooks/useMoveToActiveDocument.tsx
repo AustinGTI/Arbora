@@ -8,8 +8,11 @@ import {
 import {store} from "../../../../../../core/redux";
 import useCanvasMotion from "../../../../../../core/redux/home/hooks/useCanvasMotion.tsx";
 import {useTick} from "@pixi/react";
+import { easeOut} from "../../../../../../core/helpers/math.ts";
 
-const MOVE_SPEED = 10
+const MOVE_SPEED = 20
+
+const WAIT_PER_MOTION_UPDATE = 100
 
 /**
  * move the canvas such that the active document is centered
@@ -26,6 +29,32 @@ export default function useMoveToActiveDocument(tree_data: TreeData[]) {
     const seconds_to_target = React.useRef<number | null>(null);
 
     const cumulative_delta = React.useRef<number>(0)
+
+    const tweenCanvasMotion = React.useCallback((total_dist: number, max_speed: number) => {
+        seconds_to_target.current = total_dist
+
+        const mul = Math.sign(total_dist)
+
+        total_dist = Math.abs(total_dist)
+
+        store.dispatch(setCanvasMotion(mul * 0.2))
+
+        let interval: number;
+        // @ts-ignore
+        interval = setInterval(() => {
+            if (seconds_to_target.current === null) {
+                clearInterval(interval)
+                return
+            }
+            // calculate the distance moved so far, then update canvas motion based on that
+            const proportion_covered = (total_dist - Math.abs(seconds_to_target.current)) / total_dist
+            const new_speed = mul * easeOut(proportion_covered, max_speed)
+
+            StandardConsole.log('setting speed to ', new_speed, 'at proportion', proportion_covered)
+
+            store.dispatch(setCanvasMotion(new_speed))
+        }, WAIT_PER_MOTION_UPDATE)
+    }, []);
 
     useTick((delta) => {
         cumulative_delta.current += delta * motion
@@ -70,15 +99,9 @@ export default function useMoveToActiveDocument(tree_data: TreeData[]) {
 
         const distance_to_target = tgt_x - curr_x
 
-        seconds_to_target.current = distance_to_target
-
-        // start the motion in the direction of the target from curr
-
-        if (distance_to_target > 0) {
-            store.dispatch(setCanvasMotion(MOVE_SPEED))
-        } else {
-            store.dispatch(setCanvasMotion(-MOVE_SPEED))
-        }
+        setTimeout(() => {
+            tweenCanvasMotion(distance_to_target, MOVE_SPEED)
+        }, 500)
     }, [active_document]);
 
 

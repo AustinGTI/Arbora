@@ -97,6 +97,15 @@ export default function DocumentViewSection({w, width, ...box_props}: SingleDocu
         )
     }, [collapse_state, dispatch, collapsed]);
 
+
+    const tabs: DocumentViewTab[] = React.useMemo(() => {
+        if (collapse_state.get('content-display')) {
+            return []
+        } else {
+            return DOCUMENT_VIEW_TABS
+        }
+    }, [collapse_state]);
+
     return (
         <Box
             position={'absolute'}
@@ -116,7 +125,7 @@ export default function DocumentViewSection({w, width, ...box_props}: SingleDocu
                 w={'100%'} h={'100%'} overflow={'hidden'}>
                 <HStack w={'100%'} px={'1rem'} h={'70px'}>
                     {
-                        DOCUMENT_VIEW_TABS.map(({key, title, icon: Icon}) => {
+                        tabs.map(({key, title, icon: Icon}) => {
                             const is_active_tab = key === active_tab
                             const icon_size = is_active_tab ? '30px' : '20px'
                             return (

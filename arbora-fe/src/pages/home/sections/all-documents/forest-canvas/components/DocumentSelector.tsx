@@ -1,10 +1,13 @@
 import useGlobalHomeState from "../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
-import {Center, CenterProps, VStack} from "@chakra-ui/react";
+import {Box, CenterProps, HStack, VStack} from "@chakra-ui/react";
 import {useDispatch} from "react-redux";
 import {Document} from "../../../../../../core/services/documents/types.ts";
 import PiPlainText from "../../../../../../pillars-ui/components/text/PiPlainText.tsx";
 import {setActiveDocument} from "../../../../../../core/redux/home/home_slice.ts";
-
+import {ARBORA_GREEN} from "../../../../../../core/constants/styling.ts";
+import {MdClose} from "react-icons/md";
+import React from "react";
+import {AnimatePresence, motion} from "framer-motion";
 
 interface DocumentPaneProps extends CenterProps {
     document: Document
@@ -14,25 +17,94 @@ function DocumentPane({document, ...center_props}: DocumentPaneProps) {
     const dispatch = useDispatch()
 
     return (
-        <Center
+        <HStack
             _hover={{opacity: 0.7}}
             onClick={() => {
                 dispatch(setActiveDocument(document))
             }}
-            w={'100%'} h={'100%'} {...center_props}>
-            <PiPlainText fontSize={'14px'} fontWeight={600} value={document.title}/>
-        </Center>
+            w={'100%'} h={'100%'} p={'.7rem'} {...center_props}>
+            <Box w={'6px'} h={'6px'} rounded={'full'} bg={ARBORA_GREEN.hard}/>
+            <PiPlainText align={'left'} fontSize={'14px'} fontWeight={600} value={document.title}/>
+        </HStack>
+    )
+}
+
+function DropdownContent() {
+    const {documents: {documents}} = useGlobalHomeState()
+
+    return (
+        <VStack className={'arbora-selector-scrollbar'} w={'100%'} maxH={'50vh'} overflowY={'scroll'}
+                overflowX={'hidden'}>
+            {documents.map((document) => (
+                <DocumentPane key={document.id} document={document}/>
+            ))}
+        </VStack>
     )
 }
 
 export default function DocumentSelector() {
-    const {documents: {documents}} = useGlobalHomeState()
+    const selector_ref = React.useRef<HTMLDivElement | null>(null);
+    const [dropdown_open, setDropdownOpen] = React.useState<boolean>(false)
+    const {documents: {active_document}} = useGlobalHomeState()
+
+    const dispatch = useDispatch()
+
+    // open dropdown on mouse enter, close on leave
+    React.useEffect(() => {
+        if (!selector_ref.current) {
+            return
+        }
+
+        const handleMouseEnter = () => {
+            setDropdownOpen(true)
+        }
+        const handleMouseLeave = () => {
+            setDropdownOpen(false)
+        }
+        selector_ref.current.addEventListener('mouseenter', handleMouseEnter)
+        selector_ref.current.addEventListener('mouseleave', handleMouseLeave)
+        return () => {
+            selector_ref.current?.removeEventListener('mouseenter', handleMouseEnter)
+            selector_ref.current?.removeEventListener('mouseleave', handleMouseLeave)
+        }
+    }, []);
 
     return (
-        <VStack w={'200px'}>
-            {documents.map((document) => (
-                <DocumentPane key={document.id} document={document}/>
-            ))}
+        <VStack
+            ref={selector_ref}
+            transition={'height 0.3s'}
+            bg={ARBORA_GREEN.fg} rounded={'10px'} spacing={0} pr={'0.1rem'}>
+            <HStack
+                cursor={'pointer'}
+                onClick={() => setDropdownOpen(state => !state)}
+                w={'100%'} h={'50px'} bg={ARBORA_GREEN.fg} px={'1rem'} rounded={'10px'} justify={'space-between'}>
+                <PiPlainText
+                    value={
+                        active_document?.title ?? 'Documents'
+                    } fontSize={'18px'} fontWeight={600}
+                    color={ARBORA_GREEN.hard}/>
+                {active_document && (
+                    <Box onClick={() => dispatch(setActiveDocument(null))}>
+                        <MdClose
+                            fontSize={'22px'} color={ARBORA_GREEN.hard}/>
+                    </Box>
+                )}
+            </HStack>
+            <AnimatePresence mode={'sync'}>
+                {dropdown_open && (
+                    <motion.div
+                        initial={{height: 0}}
+                        animate={{height: 'fit-content'}}
+                        exit={{height: 0}}
+                        transition={{duration: 0.4}}
+                        style={{overflow: "hidden"}}
+                    >
+                        <div>
+                            <DropdownContent/>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </VStack>
     )
 }

@@ -1,18 +1,17 @@
 import useGlobalHomeState from "./useGlobalHomeState.tsx";
 import {generateNotesGraph} from "../../../services/documents/helpers.ts";
-import {StandardConsole} from "../../../helpers/logging.ts";
 
 export default function useActiveContent(): string | undefined {
 
     const {documents: {active_document, active_note}} = useGlobalHomeState()
 
     if (!active_document) {
-        StandardConsole.warn('No active document to get content from')
+        // StandardConsole.warn('No active document to get content from')
         return undefined
     }
 
     if (!active_note) {
-        StandardConsole.warn('No active note to get content from, passing in the whole document content')
+        // StandardConsole.warn('No active note to get content from, passing in the whole document content')
         return active_document.content
     }
 
