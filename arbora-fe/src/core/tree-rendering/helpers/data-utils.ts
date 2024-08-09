@@ -125,6 +125,38 @@ export function calculateTreeDimensions(tree_data: TreeBranchData[]): BoxDimensi
     }
 }
 
+/**
+ * this function uses rel position to find the dimensions, recursively iterate through all
+ * branches to find the bounds and use them to calculate the dims
+ * @param tree_data
+ */
+export function calculateTreeDimensionsV2(tree_data: TreeBranchData[]): BoxDimensions {
+    let min_x = 0
+    let max_x = 0
+    let min_y = 0
+
+    function calculateBranchDimensions(branch_data: TreeBranchData) {
+        min_x = Math.min(min_x, branch_data.rel_position.x - branch_data.canopy_radius)
+        max_x = Math.max(max_x, branch_data.rel_position.x + branch_data.canopy_radius)
+        min_y = Math.min(min_y, branch_data.rel_position.y - branch_data.canopy_radius)
+
+        branch_data.children.forEach(child_branch_data => {
+            calculateBranchDimensions(child_branch_data)
+        })
+    }
+
+    tree_data.forEach(branch_data => {
+        calculateBranchDimensions(branch_data)
+    })
+
+    return {
+        width: max_x - min_x,
+        height: -min_y
+    }
+
+
+}
+
 export function calculateChildPositions(
     tree_branch_data: TreeBranchData,
     parent_position: Coords2D,

@@ -11,8 +11,7 @@ import {setCanvasBoxRect} from "../../../../../core/redux/home/home_slice.ts";
 import {MIN_CANVAS_WIDTH, GROUND_LEVEL_CONSTANT, MAX_CANVAS_WIDTH} from "./constants.ts";
 import useMoveToActiveDocument from "./hooks/useMoveToActiveDocument.tsx";
 import {
-    calculateTreeDimensions,
-    generateRawBranchDataMap
+    calculateTreeDimensionsV2, generateRawBranchDataMap
 } from "../../../../../core/tree-rendering/helpers/data-utils.ts";
 import {generateTreeBranchDataV2} from "../../../../../core/tree-rendering/helpers/data-v2.ts";
 
@@ -41,8 +40,8 @@ export default function ForestCanvas() {
         let curr_x = 200
         return documents.map((document) => {
             const tree_data = generateTreeBranchDataV2(generateRawBranchDataMap(document))
-            // const tree_dimensions = calculateTreeDimensions(tree_data)
-            const tree_dimensions = {width: 500,height: 500}
+            const tree_dimensions = calculateTreeDimensionsV2(tree_data)
+            // const tree_dimensions = {width: 500,height: 500}
             curr_x += tree_dimensions.width / 2
             const data = {
                 root_branches: tree_data,

@@ -43,8 +43,10 @@ export async function refreshAccessTokenService(): Promise<GenericServiceRespons
     const response = await makeServiceCall<Object, RefreshAccessTokenResponse>
     ({
         url: `${BACKEND_URL}/refresh-token`,
-        method: "GET",
-        request: null,
+        method: "POST",
+        request: {
+            refresh_token: store.getState().auth.refresh_token
+        },
         service_name: "refreshAccessTokenService",
         with_access_token: false,
         display_error_alert: false

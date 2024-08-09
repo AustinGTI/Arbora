@@ -65,7 +65,7 @@ export default function BranchRender({position, tree_branch_data}: BranchRenderP
                 break
             case BranchState.NORMAL:
             default:
-                adjustBranchAndCanopyOpacity(1, 0.6, delta)
+                adjustBranchAndCanopyOpacity(0.9, 0.6, delta)
         }
     })
 

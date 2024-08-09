@@ -1,10 +1,10 @@
 import {BranchDirection, BranchType, RawBranchData, TreeBranchData} from "../types.ts";
-import {getMaxBranchVolume} from "./data-utils.ts";
+import {addNoise, getMaxBranchVolume} from "./data-utils.ts";
 import {
     BRANCH_INNER_CURVE,
     BRANCH_OUTER_CURVE, calculateBranchGirth,
     calculateCanopyRadius,
-    calculatePositionOnParent, calculateTrunkGirth, calculateTrunkLength,
+     calculateTrunkGirth, calculateTrunkLength,
     MIN_BRANCH_TAPER, TRUNK_ROUNDNESS
 } from "./constants.ts";
 import {Coords2D} from "../../types.ts";
@@ -17,14 +17,14 @@ interface CanopyData {
 
 const STEP_SIZE = 5
 const NO_OF_RAYS = 16
-const AVOIDANCE_FACTOR = 0.6
+const AVOIDANCE_FACTOR = 0.7
 
 const BRANCH_OFFSET_FROM_ROOT = 30
 
 const MAX_STEPS = 300
 
 // branches at 90 degrees from their roots
-const IDEAL_BRANCH_ANGLE = 90
+const IDEAL_BRANCH_ANGLE = 30
 const IDEAL_BRANCH_ANGLE_WEIGHT = 0.5
 
 
@@ -39,7 +39,7 @@ function calculateClosestVacantSpaceAlongRay(start_pos: Coords2D, angle: number,
         // StandardConsole.log('with angle', angle, 'at step', i, 'x:', x, 'y:', y, 'from start pos', start_pos)
 
         // if distance between xy and any canopy is less than (the canopy radius + radius) * avoidance factor, continue search
-        if (canopies.every(canopy => Math.hypot(canopy.position.x - x, canopy.position.y - y) > (canopy.radius + radius) * AVOIDANCE_FACTOR)) {
+        if (canopies.every(canopy => Math.hypot(canopy.position.x - x, canopy.position.y - y) > (canopy.radius + radius) * (AVOIDANCE_FACTOR * radius/100))) {
             return [{x, y}, i * STEP_SIZE]
         }
     }
@@ -114,8 +114,12 @@ export function generateTreeBranchDataV2(raw_branch_data_map: Map<string, RawBra
         // ? ........................
         // endregion ........................
 
+        // sort the children by gross content size, the order is used to decide the positioning on the parent,
+        const sorted_children_ids : string[] = raw_branch_data.children.sort((a,b) => {
+            return raw_branch_data_map.get(a)!.gross_content_size - raw_branch_data_map.get(b)!.gross_content_size
+        })
 
-        const children = raw_branch_data.children.map(raw_branch_child_id => {
+        const children = sorted_children_ids.map((raw_branch_child_id,index) => {
             let direction: BranchDirection;
             // if the weight balance is 0, pick randomly between left and right
             if (weight_balance === 0) {
@@ -127,7 +131,8 @@ export function generateTreeBranchDataV2(raw_branch_data_map: Map<string, RawBra
             // add the child weight to the balance if the direction is right, subtract if left
             weight_balance += direction === 'right' ? raw_branch_data_map.get(raw_branch_child_id)!.gross_content_size : -raw_branch_data_map.get(raw_branch_child_id)!.gross_content_size
 
-            const position_on_parent = calculatePositionOnParent(raw_branch_data_map.get(raw_branch_child_id)!.gross_content_size, raw_branch_data.gross_content_size)
+            // const position_on_parent = calculatePositionOnParent(raw_branch_data_map.get(raw_branch_child_id)!.gross_content_size, raw_branch_data.gross_content_size)
+            const position_on_parent = addNoise(0.2 + ((index + 1)/sorted_children_ids.length * 0.6),0.1)
 
             const child_rel_pos = {x: rel_position.x, y: rel_position.y}
 

@@ -52,7 +52,7 @@ class RefreshTokenResponse(BaseModel):
     message: str
 
 
-@auth_router.get("/refresh-token", description="refresh the access token", response_model=LoginResponse, status_code=status.HTTP_200_OK)
+@auth_router.post("/refresh-token", description="refresh the access token", response_model=LoginResponse, status_code=status.HTTP_200_OK)
 async def refresh_token(refresh_token_params: RefreshTokenRequest, payload: JWTPayload = Depends(JWTBearer())):
     # check if the refresh token is valid
     if not validateJWTToken(refresh_token_params.refresh_token):

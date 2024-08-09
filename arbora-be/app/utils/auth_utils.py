@@ -40,6 +40,7 @@ def decodeJWTToken(token: str) -> Optional[JWTPayload]:
 
 def validateJWTToken(token: str) -> bool:
     payload = decodeJWTToken(token)
+    print('token is ', payload)
     if payload is not None and payload.expires > time.time():
         return True
     return False

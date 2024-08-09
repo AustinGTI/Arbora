@@ -3,9 +3,9 @@ import {addNoise} from "./data-utils.ts";
 /**
  * girth per character of text in the note
  */
-const TRUNK_GIRTH_CONSTANT: number = 100
+const TRUNK_GIRTH_CONSTANT: number = 50
 const MAX_TRUNK_GIRTH: number = 50
-const MIN_TRUNK_GIRTH: number = 10
+const MIN_TRUNK_GIRTH: number = 5
 const BRANCH_GIRTH_CONSTANT: number = 50
 const MAX_BRANCH_GIRTH: number = 20
 const MIN_BRANCH_GIRTH: number = 5
