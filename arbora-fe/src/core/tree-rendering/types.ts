@@ -42,6 +42,7 @@ export interface NormalBranchConfig {
 
 export interface TreeBranchData {
     id: string
+    rel_position: Coords2D
     branch_direction: BranchDirection
     branch_config: NormalBranchConfig | TrunkBranchConfig
     position_on_parent: number

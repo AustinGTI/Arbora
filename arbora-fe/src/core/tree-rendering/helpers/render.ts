@@ -1,6 +1,7 @@
 import {Graphics as PixiGraphics} from '@pixi/graphics'
 import {BranchDirection, BranchState, NormalBranchConfig, TrunkBranchConfig} from "../types.ts";
 import {Coords2D} from "../../types.ts";
+import {StandardConsole} from "../../helpers/logging.ts";
 
 export function branchStateToOpacity(opacity: number, branch_state: BranchState): number {
     switch (branch_state) {
@@ -115,7 +116,7 @@ export function renderBranch(u: Coords2D, g: PixiGraphics, config: NormalBranchC
 }
 
 export function renderBranchV2(u: Coords2D, g: PixiGraphics, config: NormalBranchConfig, direction: BranchDirection): Coords2D {
-    const {v_length: lv, h_length: lh, inner_curve} = config
+    const {v_length: lv, h_length: lh, inner_curve,girth} = config
 
     const mul = direction === 'left' ? 1 : -1
 
@@ -124,12 +125,19 @@ export function renderBranchV2(u: Coords2D, g: PixiGraphics, config: NormalBranc
     const vb: Coords2D = {x: cp1.x, y: cp1.y - lh * inner_curve}
     const v: Coords2D = {x: cp1.x, y: cp1.y - lv}
 
+
     g.moveTo(u.x, u.y)
 
-    g.lineTo(ub.x, ub.y)
-    g.quadraticCurveTo(cp1.x, cp1.y, vb.x, vb.y)
+    // if the height of the branch is too low, do not draw a quadratic curve
+    if (u.y - v.y < girth * 1.1) {
+        g.lineTo(cp1.x, cp1.y)
+    } else {
+        g.lineTo(ub.x, ub.y)
+        g.quadraticCurveTo(cp1.x, cp1.y, vb.x, vb.y)
+    }
 
     g.lineTo(v.x, v.y)
+
 
     return v
 }
@@ -141,6 +149,7 @@ export function renderCanopy(u: Coords2D, g: PixiGraphics, canopy_radius: number
     const utl: Coords2D = {x: ul.x, y: ul.y - canopy_radius * height}
     const utr: Coords2D = {x: u.x + canopy_radius, y: ul.y - canopy_radius * height}
     const ur: Coords2D = {x: utr.x, y: u.y}
+
 
     g.moveTo(ul.x, ul.y)
     g.bezierCurveTo(utl.x, utl.y, utr.x, utr.y, ur.x, ur.y)

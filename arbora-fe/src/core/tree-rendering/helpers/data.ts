@@ -1,179 +1,19 @@
 import {BranchDirection, BranchType, RawBranchData, TreeBranchData} from "../types.ts";
-import {Document} from "../../services/documents/types.ts";
-import {BoxDimensions} from "../../types.ts";
+import {getMaxBranchVolume} from "./data-utils.ts";
+import {
+    BRANCH_INNER_CURVE,
+    BRANCH_OUTER_CURVE,
+    calculateBranchGirth,
+    calculateBranchHorizontalLength,
+    calculateBranchVerticalLength,
+    calculateCanopyRadius,
+    calculatePositionOnParent,
+    calculateTrunkGirth,
+    calculateTrunkLength,
+    MIN_BRANCH_TAPER,
+    TRUNK_ROUNDNESS
+} from "./constants.ts";
 
-/**
- * generate the intermediate branch data map between the final branch data and the document and note information
- * in the global context
- * @param document
- */
-export function generateRawBranchDataMap(document: Document): Map<string, RawBranchData> {
-    const map = new Map<string, RawBranchData>()
-
-    const root_notes: string[] = []
-
-    Object.keys(document.notes)
-        // sort by length to ensure a child note is not created before its parent
-        .sort((a, b) => {
-            return a.length - b.length
-        })
-        .forEach(note_id => {
-            const note_content_size = document.notes[note_id].content.length
-            map.set(note_id, {
-                id: note_id,
-                net_content_size: note_content_size,
-                gross_content_size: 0,
-                no_of_descendants: 0,
-                children: []
-            })
-
-            if (!note_id.includes('.')) {
-                root_notes.push(note_id)
-                return
-            }
-
-            const parent_branch = map.get(note_id.split('.').slice(0, -1).join('.'))
-
-            if (!parent_branch) {
-                throw Error('child rendering before parent')
-            }
-
-            map.set(parent_branch.id, {
-                ...parent_branch,
-                children: [...parent_branch.children, note_id]
-            })
-        })
-
-
-    function updateContentSizeAndDescendantCount(note_id: string): [number, number] {
-        const branch_data = map.get(note_id)!;
-        let gross_content_size: number = branch_data.net_content_size
-        let no_of_descendants: number = branch_data.children.length
-
-
-        branch_data.children.forEach(child_note_id => {
-            const [child_no_of_descendants, child_gross_content_size] = updateContentSizeAndDescendantCount(child_note_id)
-            no_of_descendants += child_no_of_descendants
-            gross_content_size += child_gross_content_size
-        })
-
-        map.set(note_id, {
-            ...branch_data,
-            gross_content_size,
-            no_of_descendants
-        })
-        return [no_of_descendants, gross_content_size]
-    }
-
-    root_notes.forEach(note_id => {
-        updateContentSizeAndDescendantCount(note_id)
-    })
-
-    return map
-}
-
-/**
- * girth per character of text in the note
- */
-const TRUNK_GIRTH_CONSTANT: number = 100
-const MAX_TRUNK_GIRTH: number = 50
-const MIN_TRUNK_GIRTH: number = 10
-
-const BRANCH_GIRTH_CONSTANT: number = 50
-const MAX_BRANCH_GIRTH: number = 20
-const MIN_BRANCH_GIRTH: number = 5
-
-const BRANCH_INNER_CURVE: number = 0.7
-const BRANCH_OUTER_CURVE: number = 0.5
-const MIN_BRANCH_TAPER: number = 0.7
-
-/**
- * tree length in px per descendant
- */
-const TREE_BASE_HEIGHT: number = 50
-const TRUNK_LENGTH_CONSTANT: number = 400
-const MAX_TRUNK_LENGTH: number = 200
-const TRUNK_ROUNDNESS: number = 0.6
-const TRUNK_LENGTH_NOISE: number = 0.1
-
-
-const BRANCH_HORIZONTAL_LENGTH_CONSTANT: number = 7000
-const MAX_BRANCH_HORIZONTAL_LENGTH: number = 500
-const MIN_BRANCH_HORIZONTAL_LENGTH: number = 30
-const BRANCH_HORIZONTAL_LENGTH_NOISE: number = 0.3
-
-const BRANCH_VERTICAL_LENGTH_CONSTANT: number = 7000
-const MAX_BRANCH_VERTICAL_LENGTH: number = 500
-const MIN_BRANCH_VERTICAL_LENGTH: number = 30
-const BRANCH_VERTICAL_LENGTH_NOISE: number = 0.2
-
-const MAX_CANOPY_RADIUS: number = 100
-const CANOPY_RADIUS_CONSTANT: number = 300
-const MIN_CANOPY_RADIUS: number = 10
-const CANOPY_RADIUS_NOISE: number = 0.2
-
-const MIN_POSITION_ON_PARENT: number = 0.3
-const POSITION_ON_PARENT_NOISE: number = 0.1
-
-function standardizeContentSize(content_size: number): number {
-    return Math.min(content_size / 1000, 1)
-}
-
-function standardizeDescendantCount(no_of_descendants: number): number {
-    return Math.min(no_of_descendants / 100, 1)
-}
-
-function addNoise(value: number, noise: number): number {
-    return value + value * 2 * noise * (Math.random() - 0.5)
-}
-
-function calculateTrunkGirth(content_size: number): number {
-    content_size = standardizeContentSize(content_size)
-    return addNoise(Math.min(MAX_TRUNK_GIRTH, Math.max(MIN_TRUNK_GIRTH, content_size * TRUNK_GIRTH_CONSTANT)), 0.1)
-}
-
-function calculateBranchGirth(content_size: number): number {
-    content_size = standardizeContentSize(content_size)
-    return addNoise(Math.min(MAX_BRANCH_GIRTH, Math.max(MIN_BRANCH_GIRTH, content_size * BRANCH_GIRTH_CONSTANT)), 0.1)
-}
-
-function calculateTrunkLength(no_of_descendants: number): number {
-    no_of_descendants = standardizeDescendantCount(no_of_descendants)
-    return addNoise(Math.min(TREE_BASE_HEIGHT + no_of_descendants * TRUNK_LENGTH_CONSTANT, MAX_TRUNK_LENGTH), TRUNK_LENGTH_NOISE)
-}
-
-function calculateBranchHorizontalLength(no_of_descendants: number, content_size: number): number {
-    no_of_descendants = standardizeDescendantCount(no_of_descendants)
-    content_size = standardizeContentSize(content_size)
-    return addNoise(Math.min(MAX_BRANCH_HORIZONTAL_LENGTH, Math.max(MIN_BRANCH_HORIZONTAL_LENGTH, content_size * no_of_descendants * BRANCH_HORIZONTAL_LENGTH_CONSTANT)), BRANCH_HORIZONTAL_LENGTH_NOISE)
-}
-
-function calculateBranchVerticalLength(no_of_descendants: number, content_size: number): number {
-    no_of_descendants = standardizeDescendantCount(no_of_descendants)
-    content_size = standardizeContentSize(content_size)
-    return addNoise(Math.min(MAX_BRANCH_VERTICAL_LENGTH, Math.max(MIN_BRANCH_VERTICAL_LENGTH, no_of_descendants * content_size * BRANCH_VERTICAL_LENGTH_CONSTANT)), BRANCH_VERTICAL_LENGTH_NOISE)
-}
-
-function calculatePositionOnParent(content_size: number, parent_content_size: number): number {
-    return addNoise(Math.min(MIN_POSITION_ON_PARENT + (1 - MIN_POSITION_ON_PARENT) * content_size / parent_content_size, 1), POSITION_ON_PARENT_NOISE)
-}
-
-function calculateCanopyRadius(net_content_size: number): number {
-    net_content_size = standardizeContentSize(net_content_size)
-    return addNoise(Math.min(MAX_CANOPY_RADIUS, Math.max(MIN_CANOPY_RADIUS, net_content_size ** 1 / 2 * CANOPY_RADIUS_CONSTANT)), CANOPY_RADIUS_NOISE)
-}
-
-
-function getMaxBranchVolume(root_branch_id: string, raw_branch_data_map: Map<string, RawBranchData>): number {
-    // recursively get the max branch volume
-    const root_branch_data = raw_branch_data_map.get(root_branch_id)!
-    const volume = root_branch_data.gross_content_size * root_branch_data.no_of_descendants
-    let max_child_volume = 0
-    root_branch_data.children.forEach(child_id => {
-        max_child_volume = Math.max(max_child_volume, getMaxBranchVolume(child_id, raw_branch_data_map))
-    })
-    return volume + max_child_volume
-}
 
 function treeBranchDataValidation(tree_branch_data: TreeBranchData): TreeBranchData {
     // this function uses a series of rules to validate the tree branch data and correct mistakes
@@ -248,7 +88,8 @@ export function generateTreeBranchData(raw_branch_data_map: Map<string, RawBranc
                 end: completion_end
             },
             canopy_radius: calculateCanopyRadius(raw_branch_data.net_content_size),
-            position_on_parent: position_on_parent
+            position_on_parent: position_on_parent,
+            rel_position: {x: 0, y: 0}
         })
     }
 
@@ -267,40 +108,3 @@ export function generateTreeBranchData(raw_branch_data_map: Map<string, RawBranc
 }
 
 
-export function calculateTreeDimensions(tree_data: TreeBranchData[]): BoxDimensions {
-
-    function calculateBranchDimensions(branch_data: TreeBranchData) {
-        let base_min_x = branch_data.branch_direction === 'left' && branch_data.branch_config.branch_type === BranchType.NORMAL ? -branch_data.branch_config.h_length : 0
-        let base_max_x = branch_data.branch_direction === 'right' && branch_data.branch_config.branch_type === BranchType.NORMAL ? branch_data.branch_config.h_length : 0
-        let base_max_y = branch_data.branch_config.branch_type === BranchType.TRUNK ? branch_data.branch_config.length : branch_data.branch_config.v_length
-
-        let min_x = base_min_x - branch_data.canopy_radius
-        let max_x = base_max_x + branch_data.canopy_radius
-        let max_y = base_max_y + branch_data.canopy_radius
-
-        branch_data.children.forEach(child_branch_data => {
-            const [d_min_x, d_max_x, d_max_y] = calculateBranchDimensions(child_branch_data)
-            min_x = Math.min(min_x, base_min_x + d_min_x)
-            max_x = Math.max(max_x, base_max_x + d_max_x)
-            max_y = Math.max(max_y, base_max_y * child_branch_data.position_on_parent + d_max_y)
-        })
-
-        return [min_x, max_x, max_y]
-    }
-
-    let min_x = 0
-    let max_x = 0
-    let max_y = 0
-
-    tree_data.forEach(branch_data => {
-        const [d_min_x, d_max_x, d_max_y] = calculateBranchDimensions(branch_data)
-        min_x = Math.min(min_x, d_min_x)
-        max_x = Math.max(max_x, d_max_x)
-        max_y = Math.max(max_y, d_max_y)
-    })
-
-    return {
-        width: max_x - min_x,
-        height: max_y
-    }
-}
