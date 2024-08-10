@@ -17,9 +17,10 @@ class NoteReview(BaseModel):
 
 class Note(BaseModel):
     created_at: str
-    edits: list[NoteEdit]
-    reviews: list[NoteReview]
-    content: str
+    edits: list[NoteEdit] = []
+    reviews: list[NoteReview] = []
+    content: str = ''
     title: str
     level: int
-    children: list[str]
+    children: list[str] = []
+    recall_probability: float = 0

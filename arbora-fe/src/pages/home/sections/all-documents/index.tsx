@@ -11,7 +11,7 @@ export default function AllDocumentsSection(box_props: AllDocumentsSectionProps)
         <Box
             position={'relative'}
             {...box_props}>
-            <Box zIndex={1000} position={'absolute'} top={0} left={0} p={'0.5rem'} ml={'1rem'} w={'320px'}>
+            <Box zIndex={1000} position={'absolute'} top={-5} left={0} p={'0.5rem'} ml={'1rem'} w={'350px'}>
                 <DocumentSelector/>
             </Box>
             <ForestCanvas/>

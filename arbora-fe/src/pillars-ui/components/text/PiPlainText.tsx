@@ -1,11 +1,13 @@
 import PiText, {PiTextProps} from "./PiText.tsx";
+import {Tooltip} from "@chakra-ui/react";
 
 export type PiPlainTextProps = {
     value?: string | number,
     casing?: 'uppercase' | 'lowercase' | 'capitalize'
+    character_limit?: number
 } & Omit<PiTextProps, 'value'>
 
-export default function PiPlainText({value, casing, ...base_props}: PiPlainTextProps) {
+export default function PiPlainText({value, casing, character_limit, ...base_props}: PiPlainTextProps) {
     let render_value = value?.toString();
     if (render_value) {
         switch (casing) {
@@ -29,6 +31,16 @@ export default function PiPlainText({value, casing, ...base_props}: PiPlainTextP
                 // should never happen because of type checking
                 console.error(`Invalid casing value: ${casing}`)
                 break;
+        }
+        if (character_limit && render_value.length > character_limit) {
+            return (
+                <Tooltip label={render_value} placement={'top'}>
+                    <span>
+                        <PiText value={render_value.slice(0, character_limit) + '...'} casing={casing}
+                                fontWeight={500} {...base_props}/>
+                    </span>
+                </Tooltip>
+            )
         }
     }
     return (

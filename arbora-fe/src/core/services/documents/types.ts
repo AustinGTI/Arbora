@@ -18,6 +18,8 @@ export interface Note {
     title: string
     content: string
     level: number
+    children: string[]
+    recall_probability: number
 }
 
 export enum NoteReviewType {

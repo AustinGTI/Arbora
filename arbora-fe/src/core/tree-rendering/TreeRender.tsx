@@ -10,23 +10,29 @@ import useCanvasMotion from "../redux/home/hooks/useCanvasMotion.tsx";
 import {TREE_EDGE_THRESHOLD} from "../../pages/home/sections/all-documents/forest-canvas/constants.ts";
 
 interface TreeRenderProps {
+    is_interactive: boolean,
     tree_data: TreeData
 }
 
 interface TreeRenderContextProps {
+    is_interactive: boolean
     document: Document | null
     hovered_branch_id: string | null
     setHoveredBranchId: (id: string | null) => void
 }
 
 export const TreeRenderContext = React.createContext<TreeRenderContextProps>({
+    is_interactive: true,
     document: null,
     hovered_branch_id: null,
     setHoveredBranchId: () => {
     }
 })
 
-export default function TreeRender({tree_data: {position, document, root_branches, dimensions}}: TreeRenderProps) {
+export default function TreeRender({
+                                       tree_data: {position, document, root_branches, dimensions},
+                                       is_interactive
+                                   }: TreeRenderProps) {
     const [hovered_branch_id, setHoveredBranchId] = React.useState<string | null>(null)
 
     const [tree_position, setTreePosition] = React.useState<Coords2D>(position)
@@ -48,13 +54,14 @@ export default function TreeRender({tree_data: {position, document, root_branche
         })
     })
 
-    const context = React.useMemo(() => {
+    const context: TreeRenderContextProps = React.useMemo(() => {
         return {
+            is_interactive,
             document,
             hovered_branch_id,
             setHoveredBranchId
         }
-    }, [hovered_branch_id, setHoveredBranchId, document]);
+    }, [hovered_branch_id, setHoveredBranchId, document, is_interactive]);
 
     React.useEffect(() => {
         StandardConsole.log('hovered_branch_id', hovered_branch_id)
@@ -70,10 +77,16 @@ export default function TreeRender({tree_data: {position, document, root_branche
                     }} document={document} note={hovered_branch_id}/>
             )}
             {root_branches.map((branch, idx) => {
-                return <BranchRender key={branch.id} position={{
+                return <BranchRender key={branch.id + '-branches'} position={{
                     x: tree_position.x + 200 * idx,
                     y: tree_position.y
-                }} tree_branch_data={branch}/>
+                }} tree_branch_data={branch} render_action={'branches'}/>
+            })}
+            {root_branches.map((branch, idx) => {
+                return <BranchRender key={branch.id + '-canopies'} position={{
+                    x: tree_position.x + 200 * idx,
+                    y: tree_position.y
+                }} tree_branch_data={branch} render_action={'canopies'}/>
             })}
         </TreeRenderContext.Provider>
     )

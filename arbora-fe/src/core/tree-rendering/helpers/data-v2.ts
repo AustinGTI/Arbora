@@ -98,11 +98,6 @@ export function generateTreeBranchDataV2(raw_branch_data_map: Map<string, RawBra
 
         const [h_length, v_length] = is_root ? [0, -calculateTrunkLength(raw_branch_data.no_of_descendants)] : calculateBranchHLengthAndVLength(raw_branch_data, rel_position, direction, canopies)
 
-        StandardConsole.log('h and v are ', h_length, v_length)
-        if (v_length > 0) {
-            StandardConsole.log('v length is positive',v_length,'for ', raw_branch_id)
-        }
-
         canopies.push({
             position: {
                 x: rel_position.x + h_length,

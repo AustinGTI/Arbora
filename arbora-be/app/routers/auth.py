@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Depends
 
 from auth_bearer import JWTBearer
 from user import User
-from utils.auth_utils import hashPassword, generateJWTToken, verifyPassword, JWTPayload, validateJWTToken
+from utils.auth_utils import hashPassword, generateJWTToken, verifyPassword, JWTPayload, validateJWTToken, decodeJWTToken
 from pydantic import BaseModel, EmailStr
 from starlette import status
 from starlette.responses import JSONResponse
@@ -53,11 +53,12 @@ class RefreshTokenResponse(BaseModel):
 
 
 @auth_router.post("/refresh-token", description="refresh the access token", response_model=LoginResponse, status_code=status.HTTP_200_OK)
-async def refresh_token(refresh_token_params: RefreshTokenRequest, payload: JWTPayload = Depends(JWTBearer())):
+async def refresh_token(refresh_token_params: RefreshTokenRequest):
     # check if the refresh token is valid
     if not validateJWTToken(refresh_token_params.refresh_token):
         response = RefreshTokenResponse(message="Invalid refresh token", is_successful=False)
         return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
     # if it is valid, generate a new access token
-    response = RefreshTokenResponse(is_successful=True, message="Token refreshed", access_token=generateJWTToken(payload.user_id))
+    response = RefreshTokenResponse(is_successful=True, message="Token refreshed", access_token=generateJWTToken(decodeJWTToken(
+        refresh_token_params.refresh_token).user_id))
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)

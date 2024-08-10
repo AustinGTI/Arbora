@@ -1,9 +1,9 @@
 import useGlobalHomeState from "../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
-import {Box, CenterProps, HStack, VStack} from "@chakra-ui/react";
+import {Box, Center, CenterProps, HStack, VStack} from "@chakra-ui/react";
 import {useDispatch} from "react-redux";
 import {Document} from "../../../../../../core/services/documents/types.ts";
 import PiPlainText from "../../../../../../pillars-ui/components/text/PiPlainText.tsx";
-import {setActiveDocument} from "../../../../../../core/redux/home/home_slice.ts";
+import {setActiveDocument, setCanvasInteractivity} from "../../../../../../core/redux/home/home_slice.ts";
 import {ARBORA_GREEN} from "../../../../../../core/constants/styling.ts";
 import {MdClose} from "react-icons/md";
 import React from "react";
@@ -33,7 +33,8 @@ function DropdownContent() {
     const {documents: {documents}} = useGlobalHomeState()
 
     return (
-        <VStack className={'arbora-selector-scrollbar'} w={'100%'} maxH={'50vh'} overflowY={'scroll'}
+        <VStack className={'arbora-selector-scrollbar'} w={'100%'} maxH={'50vh'}
+                overflowY={'scroll'}
                 overflowX={'hidden'}>
             {documents.map((document) => (
                 <DocumentPane key={document.id} document={document}/>
@@ -45,7 +46,7 @@ function DropdownContent() {
 export default function DocumentSelector() {
     const selector_ref = React.useRef<HTMLDivElement | null>(null);
     const [dropdown_open, setDropdownOpen] = React.useState<boolean>(false)
-    const {documents: {active_document}} = useGlobalHomeState()
+    const {documents: {active_document, documents}} = useGlobalHomeState()
 
     const dispatch = useDispatch()
 
@@ -57,9 +58,11 @@ export default function DocumentSelector() {
 
         const handleMouseEnter = () => {
             setDropdownOpen(true)
+            dispatch(setCanvasInteractivity(false))
         }
         const handleMouseLeave = () => {
             setDropdownOpen(false)
+            dispatch(setCanvasInteractivity(true))
         }
         selector_ref.current.addEventListener('mouseenter', handleMouseEnter)
         selector_ref.current.addEventListener('mouseleave', handleMouseLeave)
@@ -77,17 +80,21 @@ export default function DocumentSelector() {
             <HStack
                 cursor={'pointer'}
                 onClick={() => setDropdownOpen(state => !state)}
-                w={'100%'} h={'50px'} bg={ARBORA_GREEN.fg} px={'1rem'} rounded={'10px'} justify={'space-between'}>
+                w={'100%'} h={'60px'} bg={ARBORA_GREEN.fg} px={'1rem'} rounded={'10px'} justify={'space-between'}>
                 <PiPlainText
                     value={
                         active_document?.title ?? 'Documents'
-                    } fontSize={'18px'} fontWeight={600}
+                    } fontSize={'18px'} fontWeight={600} character_limit={25}
                     color={ARBORA_GREEN.hard}/>
-                {active_document && (
+                {active_document ? (
                     <Box onClick={() => dispatch(setActiveDocument(null))}>
                         <MdClose
                             fontSize={'22px'} color={ARBORA_GREEN.hard}/>
                     </Box>
+                ) : (
+                    <Center bg={ARBORA_GREEN.hard} rounded={'30%'} h={'30px'} px={'0.5rem'}>
+                        <PiPlainText color={ARBORA_GREEN.soft} value={documents.length ?? 0}/>
+                    </Center>
                 )}
             </HStack>
             <AnimatePresence mode={'sync'}>

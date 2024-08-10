@@ -1,19 +1,6 @@
 import {Graphics as PixiGraphics} from '@pixi/graphics'
-import {BranchDirection, BranchState, NormalBranchConfig, TrunkBranchConfig} from "../types.ts";
+import {BranchDirection, NormalBranchConfig, TrunkBranchConfig} from "../types.ts";
 import {Coords2D} from "../../types.ts";
-import {StandardConsole} from "../../helpers/logging.ts";
-
-export function branchStateToOpacity(opacity: number, branch_state: BranchState): number {
-    switch (branch_state) {
-        case BranchState.HIDDEN:
-            return 0.1
-        case BranchState.HIGHLIGHTED:
-            return 1
-        case BranchState.NORMAL:
-        default:
-            return opacity
-    }
-}
 
 export function renderTrunk(u: Coords2D, g: PixiGraphics, config: TrunkBranchConfig): Coords2D {
     const {girth, length, taper, roundness: b} = config

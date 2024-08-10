@@ -12,6 +12,7 @@ from document_utils import calculateContentEdit, extractDocumentTitle
 from markdown_utils import generateNewDocumentNotes, generateUpdatedDocumentNotes
 from models.document import Document, ReviewType, Folder
 from note import NoteReview, Note
+from note_review_utils import updateNotesRecallProbabilities
 from routers import GenericResponse
 
 document_router = APIRouter(dependencies=[Depends(JWTBearer())])
@@ -57,6 +58,11 @@ class ListDocumentsResponse(GenericResponse):
 async def list_documents(request: Request):
     user_id = request.state.user_id
     documents = await request.app.mongodb["documents"].find({"creator_id": user_id}).to_list(length=100)
+
+    # update the note recall probabilities for all documents
+    for document in documents:
+        updateNotesRecallProbabilities(document['notes'])
+
     response = ListDocumentsResponse(
         documents=documents,
         is_successful=True,

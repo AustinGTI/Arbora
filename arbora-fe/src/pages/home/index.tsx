@@ -16,13 +16,16 @@ import {StandardConsole} from "../../core/helpers/logging.ts";
 function ArboraHomePageHeader() {
     return (
         <HStack w={'100%'} h={'100px'} align={'center'} justify={'space-between'} px={'1rem'}>
-            <Box w={'100px'}>
+            <HStack w={'400px'}>
                 <ArboraLogo size={'50px'}/>
-            </Box>
+                {/*<Box zIndex={1000} position={'absolute'} top={6} left={50} p={'0.5rem'} ml={'1rem'} w={'320px'}>*/}
+                {/*    <DocumentSelector/>*/}
+                {/*</Box>*/}
+            </HStack>
             <HStack pt={'1rem'}>
                 <ArboraBanner size={'70px'}/>
             </HStack>
-            <HStack w={'100px'} justify={'flex-end'}>
+            <HStack w={'400px'} justify={'flex-end'}>
                 <PiLinkButton
                     to={'/logout'}
                     variant={PiButtonVariant.ICON}

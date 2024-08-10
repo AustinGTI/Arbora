@@ -27,7 +27,7 @@ function SlideControl({tree_data}: SlideControlProps) {
 export default function ForestCanvas() {
     const wrapper_box_ref = React.useRef<HTMLDivElement | null>(null);
 
-    const {documents: {documents}, all_documents_view: {canvas_box_rect}} = useGlobalHomeState();
+    const {documents: {documents}, all_documents_view: {canvas_box_rect,canvas_interactive}} = useGlobalHomeState();
     const dispatch = useDispatch()
 
 
@@ -109,13 +109,17 @@ export default function ForestCanvas() {
                 {canvas_box_rect ? (
                     <Stage width={canvas_box_rect.width} height={canvas_box_rect.height} options={{
                         background: '#efe',
-                        antialias: true
+                        antialias: true,
+                    }} style={{
+                        pointerEvents: 'none'
                     }}>
                         {trees.map((tree_data) => {
                             return (
                                 <TreeRender
                                     key={tree_data.document.id}
-                                    tree_data={tree_data}/>
+                                    tree_data={tree_data}
+                                    is_interactive={canvas_interactive}
+                                />
                             );
                         })}
                         <GroundRender rect={{

@@ -9,11 +9,13 @@ import {TreeRenderContext} from "./TreeRender.tsx";
 import {setActiveDocument, setActiveNote} from "../redux/home/home_slice.ts";
 import {store} from "../redux";
 import "@pixi/events"
-import {calculateGreenShade} from "../helpers/colors.ts";
+import {uniqueColor} from "../helpers/colors.ts";
+import {Note} from "../services/documents/types.ts";
 
 interface BranchRenderProps {
     position: Coords2D
     tree_branch_data: TreeBranchData
+    render_action: 'canopies' | 'branches'
 }
 
 
@@ -27,11 +29,17 @@ function calculateOpacityAdjustDirection(current: number, target: number, tolera
     }
 }
 
+function calculateCanopyColor(note_id: string, note: Note | undefined): string {
+    if (!note) {
+        return 'red'
+    }
+    return uniqueColor(note.recall_probability ?? Math.random(), note_id)
 
-export default function BranchRender({position, tree_branch_data}: BranchRenderProps) {
-    const {document, hovered_branch_id, setHoveredBranchId} = React.useContext(TreeRenderContext)
+}
 
-    const [next_position, setNextPosition] = React.useState<Coords2D | null>(null)
+
+export default function BranchRender({position, tree_branch_data, render_action}: BranchRenderProps) {
+    const {document, hovered_branch_id, setHoveredBranchId, is_interactive} = React.useContext(TreeRenderContext)
     const branch_state: BranchState = React.useMemo(() => {
         if (hovered_branch_id?.startsWith(tree_branch_data.id)) {
             return BranchState.HIGHLIGHTED
@@ -73,24 +81,29 @@ export default function BranchRender({position, tree_branch_data}: BranchRenderP
         g.clear()
         if (tree_branch_data.branch_config.branch_type === BranchType.TRUNK) {
             g.beginFill('#704241', branch_opacity)
-            setNextPosition(renderTrunk(position, g, tree_branch_data.branch_config))
+            renderTrunk(position, g, tree_branch_data.branch_config)
             g.endFill()
         } else {
             const girth = tree_branch_data.branch_config.girth
             g.beginFill('#704241', 0)
             g.lineStyle(girth, '#704241', branch_opacity)
-            setNextPosition(renderBranchV2(position, g, tree_branch_data.branch_config, tree_branch_data.branch_direction))
+            renderBranchV2(position, g, tree_branch_data.branch_config, tree_branch_data.branch_direction)
             g.endFill()
         }
-    }, [tree_branch_data.branch_config, tree_branch_data.branch_direction, setNextPosition, position, branch_opacity])
+    }, [tree_branch_data.branch_config, tree_branch_data.branch_direction, position, branch_opacity])
 
     const drawCanopy = React.useCallback((g: PixiGraphics) => {
-        if (!next_position) return
+        const mul = tree_branch_data.branch_direction === 'left' ? -1 : 1
+        const config = tree_branch_data.branch_config
+        const branch_end: Coords2D = {
+            x: position.x + mul * (config.branch_type === BranchType.TRUNK ? 0 : config.h_length),
+            y: position.y - (config.branch_type === BranchType.TRUNK ? config.length : config.v_length)
+        }
         g.clear()
-        g.beginFill(calculateGreenShade(tree_branch_data.id), canopy_opacity)
-        renderCanopy(next_position, g, tree_branch_data.canopy_radius)
+        g.beginFill(calculateCanopyColor(tree_branch_data.id, document?.notes[tree_branch_data.id]), canopy_opacity)
+        renderCanopy(branch_end, g, tree_branch_data.canopy_radius)
         g.endFill()
-    }, [next_position, tree_branch_data.canopy_radius, canopy_opacity, tree_branch_data.id])
+    }, [tree_branch_data.canopy_radius, canopy_opacity, tree_branch_data.id, document?.notes, tree_branch_data.branch_direction, tree_branch_data.branch_config, position.x, position.y])
 
     const selectBranch = React.useCallback(() => {
         store.dispatch(setActiveDocument(document))
@@ -103,23 +116,29 @@ export default function BranchRender({position, tree_branch_data}: BranchRenderP
 
     return (
         <React.Fragment>
-            <Graphics draw={drawBranch}
-                      eventMode={'dynamic'}
-                      onpointerenter={() => setHoveredBranchId(tree_branch_data.id)}
-                      onpointerleave={() => setHoveredBranchId(null)}/>
+            {render_action === 'branches' && (
+                <Graphics draw={drawBranch}
+                          eventMode={'dynamic'}
+                          isInteractive={() => is_interactive}
+                          onpointerenter={() => setHoveredBranchId(tree_branch_data.id)}
+                          onpointerleave={() => setHoveredBranchId(null)}/>
+            )}
 
-            {next_position && tree_branch_data.children.map((child) => {
+            {tree_branch_data.children.map((child) => {
                 const child_position: Coords2D = {
                     x: position.x + (child.rel_position.x - tree_branch_data.rel_position.x),
                     y: position.y + (child.rel_position.y - tree_branch_data.rel_position.y)
                 }
-                return <BranchRender key={child.id} position={child_position} tree_branch_data={child}/>
+                return <BranchRender key={child.id} position={child_position} tree_branch_data={child} render_action={render_action}/>
             })}
-            <Graphics draw={drawCanopy}
-                      eventMode={'dynamic'}
-                      onpointerenter={() => setHoveredBranchId(tree_branch_data.id)}
-                      onpointerleave={() => setHoveredBranchId(null)}
-                      pointerdown={selectBranch}/>
+            {render_action === 'canopies' && (
+                <Graphics draw={drawCanopy}
+                          eventMode={'dynamic'}
+                          isInteractive={() => is_interactive}
+                          onpointerenter={() => setHoveredBranchId(tree_branch_data.id)}
+                          onpointerleave={() => setHoveredBranchId(null)}
+                          pointerdown={selectBranch}/>
+            )}
         </React.Fragment>
     )
 }

@@ -33,10 +33,9 @@ export interface GlobalHomeState {
     },
     all_documents_view: {
         canvas_loading: boolean
+        canvas_interactive: boolean
         // negative for backwards, positive for forwards, 0 for stop
         canvas_motion: number
-        // the pixel offset of the canvas from the starting position
-        canvas_motion_delta: number,
 
         canvas_box_rect: RectProps | null
     }
@@ -65,8 +64,8 @@ const initial_state: GlobalHomeState = {
     },
     all_documents_view: {
         canvas_loading: true,
+        canvas_interactive: true,
         canvas_motion: -1,
-        canvas_motion_delta: 0,
         canvas_box_rect: null,
     }
 }
@@ -117,8 +116,8 @@ export const HomeSlice = createSlice({
         setCanvasMotion: (state, action: { payload: number }) => {
             state.all_documents_view.canvas_motion = action.payload
         },
-        updateCanvasMotionDelta: (state, action: { payload: number }) => {
-            state.all_documents_view.canvas_motion_delta += action.payload
+        setCanvasInteractivity: (state, action: { payload: boolean }) => {
+            state.all_documents_view.canvas_interactive = action.payload
         }
     }
 })
@@ -134,6 +133,6 @@ export const {
     setEditorContent,
     setCanvasLoadingState,
     setCanvasBoxRect,
-    updateCanvasMotionDelta,
-    setCanvasMotion
+    setCanvasMotion,
+    setCanvasInteractivity
 } = HomeSlice.actions
