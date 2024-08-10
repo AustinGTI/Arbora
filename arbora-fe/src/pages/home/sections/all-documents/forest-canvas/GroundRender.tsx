@@ -19,13 +19,25 @@ export default function GroundRender({rect}: GroundSpriteProps) {
         }, 1000)
     }, []);
 
-    const drawTree = React.useCallback((g: PixiGraphics) => {
+    const drawGround = React.useCallback((g: PixiGraphics) => {
         g.clear()
         g.beginFill(ARBORA_GREEN.hard)
         g.drawRect(rect.x, rect.y, rect.width, rect.height)
+        drawGroundMarkers(g)
     }, [rect])
 
+    const drawGroundMarkers = React.useCallback((g: PixiGraphics) => {
+        // draw ground markers every 100 px with the px count/100 as text
+        g.lineStyle(1, 0x000000, 0.5)
+        for (let i = 0; i < rect.width; i += 100) {
+            g.moveTo(i, rect.y)
+            g.lineTo(i, rect.y + rect.height)
+            g.beginFill(0x000000)
+            g.endFill()
+        }
+    }, [rect.width, rect.y, rect.height]);
+
     return (
-        <Graphics draw={drawTree}/>
+        <Graphics draw={drawGround}/>
     )
 }

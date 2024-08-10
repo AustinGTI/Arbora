@@ -6,11 +6,10 @@ import '@pixi/events'
 import {Coords2D} from "../types.ts";
 import {renderBranchV2, renderCanopy, renderTrunk} from "./helpers/render.ts";
 import {TreeRenderContext} from "./TreeRender.tsx";
-import {setActiveDocument, setActiveNote} from "../redux/home/home_slice.ts";
+import {collapseDocumentView, setActiveDocument, setActiveNote} from "../redux/home/home_slice.ts";
 import {store} from "../redux";
-import "@pixi/events"
-import {uniqueColor} from "../helpers/colors.ts";
 import {Note} from "../services/documents/types.ts";
+import {recallProbabilityToColor} from "./helpers/color.ts";
 
 interface BranchRenderProps {
     position: Coords2D
@@ -33,7 +32,7 @@ function calculateCanopyColor(note_id: string, note: Note | undefined): string {
     if (!note) {
         return 'red'
     }
-    return uniqueColor(note.recall_probability ?? Math.random(), note_id)
+    return recallProbabilityToColor(note.recall_probability ?? Math.random(), note_id)
 
 }
 
@@ -51,7 +50,7 @@ export default function BranchRender({position, tree_branch_data, render_action}
     }, [hovered_branch_id, tree_branch_data.id]);
 
     const [branch_opacity, setBranchOpacity] = React.useState<number>(1)
-    const [canopy_opacity, setCanopyOpacity] = React.useState<number>(0.6)
+    const [canopy_opacity, setCanopyOpacity] = React.useState<number>(0.8)
 
     const adjustBranchAndCanopyOpacity = React.useCallback((branch_opacity_target: number, canopy_opacity_target: number, delta: number) => {
         setBranchOpacity(value => {
@@ -73,7 +72,7 @@ export default function BranchRender({position, tree_branch_data, render_action}
                 break
             case BranchState.NORMAL:
             default:
-                adjustBranchAndCanopyOpacity(0.9, 0.6, delta)
+                adjustBranchAndCanopyOpacity(0.9, 0.8, delta)
         }
     })
 
@@ -106,13 +105,13 @@ export default function BranchRender({position, tree_branch_data, render_action}
     }, [tree_branch_data.canopy_radius, canopy_opacity, tree_branch_data.id, document?.notes, tree_branch_data.branch_direction, tree_branch_data.branch_config, position.x, position.y])
 
     const selectBranch = React.useCallback(() => {
+        console.log('selecting branch and document')
         store.dispatch(setActiveDocument(document))
-        store.dispatch(setActiveNote(null))
         setTimeout(() => {
             store.dispatch(setActiveNote(tree_branch_data.id))
+            store.dispatch(collapseDocumentView(false))
         }, 500)
     }, [tree_branch_data.id, document]);
-
 
     return (
         <React.Fragment>
@@ -120,8 +119,9 @@ export default function BranchRender({position, tree_branch_data, render_action}
                 <Graphics draw={drawBranch}
                           eventMode={'dynamic'}
                           isInteractive={() => is_interactive}
-                          onpointerenter={() => setHoveredBranchId(tree_branch_data.id)}
-                          onpointerleave={() => setHoveredBranchId(null)}/>
+                          onmouseenter={() => setHoveredBranchId(tree_branch_data.id)}
+                          pointerdown={() => console.log('tapped')}
+                          onmouseleave={() => setHoveredBranchId(null)}/>
             )}
 
             {tree_branch_data.children.map((child) => {
@@ -129,15 +129,16 @@ export default function BranchRender({position, tree_branch_data, render_action}
                     x: position.x + (child.rel_position.x - tree_branch_data.rel_position.x),
                     y: position.y + (child.rel_position.y - tree_branch_data.rel_position.y)
                 }
-                return <BranchRender key={child.id} position={child_position} tree_branch_data={child} render_action={render_action}/>
+                return <BranchRender key={child.id} position={child_position} tree_branch_data={child}
+                                     render_action={render_action}/>
             })}
             {render_action === 'canopies' && (
                 <Graphics draw={drawCanopy}
                           eventMode={'dynamic'}
                           isInteractive={() => is_interactive}
-                          onpointerenter={() => setHoveredBranchId(tree_branch_data.id)}
-                          onpointerleave={() => setHoveredBranchId(null)}
-                          pointerdown={selectBranch}/>
+                          onmouseenter={() => setHoveredBranchId(tree_branch_data.id)}
+                          onmouseleave={() => setHoveredBranchId(null)}
+                          onpointerdown={selectBranch}/>
             )}
         </React.Fragment>
     )

@@ -8,26 +8,17 @@ import TreeRender from "../../../../../core/tree-rendering/TreeRender.tsx";
 import {TreeData} from "../../../../../core/tree-rendering/types.ts";
 import {useDispatch} from "react-redux";
 import {setCanvasBoxRect} from "../../../../../core/redux/home/home_slice.ts";
-import {MIN_CANVAS_WIDTH, GROUND_LEVEL_CONSTANT, MAX_CANVAS_WIDTH} from "./constants.ts";
-import useMoveToActiveDocument from "./hooks/useMoveToActiveDocument.tsx";
+import {MIN_CANVAS_WIDTH, GROUND_LEVEL_CONSTANT, MAX_CANVAS_WIDTH, TREE_POSITION_PADDING} from "./constants.ts";
 import {
     calculateTreeDimensionsV2, generateRawBranchDataMap
 } from "../../../../../core/tree-rendering/helpers/data-utils.ts";
 import {generateTreeBranchDataV2} from "../../../../../core/tree-rendering/helpers/data-v2.ts";
-
-interface SlideControlProps {
-    tree_data: TreeData[]
-}
-
-function SlideControl({tree_data}: SlideControlProps) {
-    useMoveToActiveDocument(tree_data)
-    return <></>
-}
+import CanvasMotionController from "./motion-control/CanvasMotionController.tsx";
 
 export default function ForestCanvas() {
     const wrapper_box_ref = React.useRef<HTMLDivElement | null>(null);
 
-    const {documents: {documents}, all_documents_view: {canvas_box_rect,canvas_interactive}} = useGlobalHomeState();
+    const {documents: {documents}, all_documents_view: {canvas_box_rect, canvas_interactive}} = useGlobalHomeState();
     const dispatch = useDispatch()
 
 
@@ -42,14 +33,14 @@ export default function ForestCanvas() {
             const tree_data = generateTreeBranchDataV2(generateRawBranchDataMap(document))
             const tree_dimensions = calculateTreeDimensionsV2(tree_data)
             // const tree_dimensions = {width: 500,height: 500}
-            curr_x += tree_dimensions.width / 2
+            curr_x += tree_dimensions.width / 2 + TREE_POSITION_PADDING
             const data = {
                 root_branches: tree_data,
                 position: {x: curr_x, y: ground_level},
                 document, dimensions: tree_dimensions
             }
             StandardConsole.log('Tree data for ', document.title, data)
-            curr_x += tree_dimensions.width / 2
+            curr_x += tree_dimensions.width / 2 + TREE_POSITION_PADDING
             return data
         });
     }, [documents, ground_level]);
@@ -101,7 +92,8 @@ export default function ForestCanvas() {
     return (
         <React.Fragment>
             <Box
-                className={'hidden-scrollbar forest-canvas-wrapper'}
+                id={'forest-canvas-box'}
+                className={'hidden-scrollbar'}
                 position={'absolute'}
                 transition={'opacity 0.5s'}
                 top={0} left={0} opacity={0}
@@ -110,25 +102,24 @@ export default function ForestCanvas() {
                     <Stage width={canvas_box_rect.width} height={canvas_box_rect.height} options={{
                         background: '#efe',
                         antialias: true,
-                    }} style={{
-                        pointerEvents: 'none'
                     }}>
-                        {trees.map((tree_data) => {
-                            return (
-                                <TreeRender
-                                    key={tree_data.document.id}
-                                    tree_data={tree_data}
-                                    is_interactive={canvas_interactive}
-                                />
-                            );
-                        })}
-                        <GroundRender rect={{
-                            x: 0,
-                            y: ground_level,
-                            width: canvas_box_rect.width,
-                            height: canvas_box_rect.height - ground_level
-                        }}/>
-                        <SlideControl tree_data={trees}/>
+                        <CanvasMotionController tree_data={trees} canvas_box_rect={canvas_box_rect}>
+                            {trees.map((tree_data) => {
+                                return (
+                                    <TreeRender
+                                        key={tree_data.document.id}
+                                        tree_data={tree_data}
+                                        is_interactive={canvas_interactive}
+                                    />
+                                );
+                            })}
+                            <GroundRender rect={{
+                                x: 0,
+                                y: ground_level,
+                                width: canvas_box_rect.width,
+                                height: canvas_box_rect.height - ground_level
+                            }}/>
+                        </CanvasMotionController>
                     </Stage>
                 ) : null}
             </Box>

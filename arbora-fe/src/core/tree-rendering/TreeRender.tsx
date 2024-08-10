@@ -6,8 +6,10 @@ import {StandardConsole} from "../helpers/logging.ts";
 import TextRender from "./TextRender.tsx";
 import {Coords2D} from "../types.ts";
 import {useTick} from "@pixi/react";
-import useCanvasMotion from "../redux/home/hooks/useCanvasMotion.tsx";
 import {TREE_EDGE_THRESHOLD} from "../../pages/home/sections/all-documents/forest-canvas/constants.ts";
+import {
+    CanvasMotionControllerContext
+} from "../../pages/home/sections/all-documents/forest-canvas/motion-control/CanvasMotionController.tsx";
 
 interface TreeRenderProps {
     is_interactive: boolean,
@@ -37,10 +39,19 @@ export default function TreeRender({
 
     const [tree_position, setTreePosition] = React.useState<Coords2D>(position)
 
-    const {rect, motion} = useCanvasMotion()
+    const {
+        motion_speed, canvas_box_rect: rect,
+        active_tree_id, setActiveTreeXPos
+    } = React.useContext(CanvasMotionControllerContext)
 
+    // if this is the active tree, set the active tree x position
+    React.useEffect(() => {
+        if (active_tree_id === document?.id) {
+            setActiveTreeXPos(tree_position.x)
+        }
+    }, [active_tree_id])
     useTick((delta) => {
-        let new_x = tree_position.x + motion * delta
+        let new_x = tree_position.x + motion_speed * delta
         // if x is past the width of the canvas, reset it to the start
         if (rect && new_x > rect.width + TREE_EDGE_THRESHOLD) {
             new_x = -TREE_EDGE_THRESHOLD

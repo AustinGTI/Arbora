@@ -86,3 +86,7 @@ div:focus-visible {
         background-color: #f9f9f9;
     }
 }
+
+#forest-canvas-box {
+    scroll-behavior: smooth;
+}

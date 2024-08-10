@@ -27,7 +27,7 @@ import FlashCardsIcon from "../../../../assets/ai/AIFlashCardsActionV2.svg?react
 // @ts-ignore
 import DocumentIcon from "../../../../assets/ai/Document.svg?react"
 import {Note} from "../../../../core/services/documents/types.ts";
-import {uniqueColor} from "../../../../core/helpers/colors.ts";
+import {recallProbabilityToColor} from "../../../../core/tree-rendering/helpers/color.ts";
 
 
 interface SingleDocumentSectionProps extends BoxProps {
@@ -87,7 +87,7 @@ function NoteRecallProbabilityView({note_id, note}: NoteRecallProbabilityViewPro
         // the probability should be 3 characters, . then 2 decimal values
         const prob = '.' + note.recall_probability.toFixed(2).split('.')[1]
 
-        const color = uniqueColor(note.recall_probability, note_id)
+        const color = recallProbabilityToColor(note.recall_probability, note_id)
         return [prob, color]
     }, [note.recall_probability, note_id]);
 

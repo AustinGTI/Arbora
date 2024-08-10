@@ -84,7 +84,7 @@ function NotePane({note_id, ...stack_props}: NotePaneProps) {
                 <HStack cursor={'pointer'} flex={1} onClick={onSelectNote}>
                     <PiPlainText
                         align={'left'}
-                        value={notes[note_id].title}
+                        value={notes[note_id]?.title ?? note_id}
                         fontWeight={selected_note === note_id ? 700 : 400}
                         color={selected_note === note_id ? ARBORA_GREEN.hard : 'black'}/>
                 </HStack>
@@ -130,7 +130,7 @@ export default function NoteSelectionDropdown
 
     const notes_graph: Map<string, string[]> = React.useMemo(() => {
         const visible_note_ids = Object.keys(document.notes).filter(note_id => {
-            return !search_query || document.notes[note_id].title.toLowerCase().includes(search_query.toLowerCase())
+            return !search_query || (document.notes[note_id].title ?? note_id).toLowerCase().includes(search_query.toLowerCase())
         })
         return generateNotesGraph(visible_note_ids)
     }, [document.notes, search_query]);

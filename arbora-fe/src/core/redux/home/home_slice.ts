@@ -79,6 +79,7 @@ export const HomeSlice = createSlice({
         },
         setActiveDocument: (state, action: { payload: Document | null }) => {
             state.documents.active_document = action.payload
+            state.documents.active_note = null
         },
         setActiveNote: (state, action: { payload: string | null }) => {
             state.documents.active_note = action.payload

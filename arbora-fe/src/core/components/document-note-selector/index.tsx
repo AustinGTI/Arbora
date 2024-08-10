@@ -28,7 +28,7 @@ export default function ActiveDocumentNoteSelector
             return 'No document selected'
         }
         if (active_note) {
-            return active_document.notes[active_note].title
+            return active_document.notes[active_note]?.title ?? active_note
         }
         return active_document.title
     }, [active_document, active_note]);

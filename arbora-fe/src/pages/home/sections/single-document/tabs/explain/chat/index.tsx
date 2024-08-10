@@ -20,15 +20,26 @@ export default function ExplainTabChatSection({...box_props}: ExplainTabChatSect
     const active_content = useActiveContent()
     const {documents: {active_document, active_note}} = useGlobalHomeState()
 
+    const title: string = React.useMemo(() => {
+        if (active_document) {
+            if (active_note) {
+                return active_document.notes[active_note]?.title ?? 'your notes'
+            } else {
+                return active_document.title ?? 'this document'
+            }
+        } else {
+            return 'your notes'
+        }
+
+    }, [active_document, active_note]);
     const initial_message: ChatMessage = React.useMemo(() => {
-        const title = active_note ? active_document!.notes[active_note].title : active_document!.title
         return {
             id: 'initial-message',
             source: ChatSource.ARBY,
             message: `Hello! I am Arby, Would you like to explain "${title}" to me?`,
             unix_timestamp: Math.round(Date.now() / 1000)
         }
-    }, [active_note, active_document]);
+    }, [title]);
 
     const chat_box_ref = React.useRef<HTMLDivElement | null>(null);
     const cancel_response_flag = React.useRef<boolean>(false);

@@ -10,7 +10,7 @@ export default function useActiveContent(): string | undefined {
         return undefined
     }
 
-    if (!active_note) {
+    if (!active_note || !active_document.notes[active_note]) {
         // StandardConsole.warn('No active note to get content from, passing in the whole document content')
         return active_document.content
     }

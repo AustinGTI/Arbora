@@ -3,7 +3,11 @@ import {Box, Center, CenterProps, HStack, VStack} from "@chakra-ui/react";
 import {useDispatch} from "react-redux";
 import {Document} from "../../../../../../core/services/documents/types.ts";
 import PiPlainText from "../../../../../../pillars-ui/components/text/PiPlainText.tsx";
-import {setActiveDocument, setCanvasInteractivity} from "../../../../../../core/redux/home/home_slice.ts";
+import {
+    collapseDocumentView,
+    setActiveDocument,
+    setCanvasInteractivity
+} from "../../../../../../core/redux/home/home_slice.ts";
 import {ARBORA_GREEN} from "../../../../../../core/constants/styling.ts";
 import {MdClose} from "react-icons/md";
 import React from "react";
@@ -21,10 +25,11 @@ function DocumentPane({document, ...center_props}: DocumentPaneProps) {
             _hover={{opacity: 0.7}}
             onClick={() => {
                 dispatch(setActiveDocument(document))
-            }}
+                dispatch(collapseDocumentView(false))
+            }} cursor={'pointer'}
             w={'100%'} h={'100%'} p={'.7rem'} {...center_props}>
             <Box w={'6px'} h={'6px'} rounded={'full'} bg={ARBORA_GREEN.hard}/>
-            <PiPlainText align={'left'} fontSize={'14px'} fontWeight={600} value={document.title}/>
+            <PiPlainText align={'left'} fontSize={'14px'} fontWeight={500} value={document.title}/>
         </HStack>
     )
 }
@@ -46,7 +51,9 @@ function DropdownContent() {
 export default function DocumentSelector() {
     const selector_ref = React.useRef<HTMLDivElement | null>(null);
     const [dropdown_open, setDropdownOpen] = React.useState<boolean>(false)
-    const {documents: {active_document, documents}} = useGlobalHomeState()
+    const {documents: {active_document, active_note, documents}} = useGlobalHomeState()
+
+    console.log('active document is ', active_document, 'active note is ', active_note)
 
     const dispatch = useDispatch()
 
@@ -84,7 +91,7 @@ export default function DocumentSelector() {
                 <PiPlainText
                     value={
                         active_document?.title ?? 'Documents'
-                    } fontSize={'18px'} fontWeight={600} character_limit={25}
+                    } fontSize={'18px'} fontWeight={600} character_limit={28}
                     color={ARBORA_GREEN.hard}/>
                 {active_document ? (
                     <Box onClick={() => dispatch(setActiveDocument(null))}>
