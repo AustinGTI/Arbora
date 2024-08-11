@@ -19,11 +19,12 @@ export interface QuizGenFormObject {
 
 const form_schema: yup.ObjectSchema<QuizGenFormObject> = yup.object()
     .shape({
-        no_of_questions: yup.number().required('Kindly enter the number of questions to generate'),
+        no_of_questions: yup.number().required('Kindly enter the number of questions to generate').max(25, 'Max 25 questions'),
         quiz_type: yup.string().oneOf(Object.values(QuizType)).required('Kindly select a quiz type')
     })
 
 interface QuizGenFormProps extends SimpleFormProps<QuizGenFormObject> {
+    submit_disabled?: boolean
 }
 
 function QuizGenFormFields() {
@@ -50,6 +51,7 @@ function QuizGenFormFields() {
 export default function QuizGenerationForm
 ({
      initial_values,
+    submit_disabled,
      submitFunction
  }: QuizGenFormProps) {
     return (
@@ -59,7 +61,10 @@ export default function QuizGenerationForm
             <VStack justify={'center'} w={'100%'} flex={1}>
                 <QuizGenFormFields/>
                 <HStack w={'100%'} justify={'center'} mt={'1rem'}>
-                    <PiFormSubmitButton label={'Generate Quiz'}/>
+                    <PiFormSubmitButton
+                        with_tooltip={submit_disabled}
+                        tooltip_label={'There must be content to generate questions from'}
+                        label={'Generate Quiz'} isDisabled={submit_disabled}/>
                 </HStack>
             </VStack>
         </PiForm>

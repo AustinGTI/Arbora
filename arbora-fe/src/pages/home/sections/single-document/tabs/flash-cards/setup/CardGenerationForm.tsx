@@ -14,10 +14,11 @@ export interface CardGenFormObject {
 
 const form_schema: yup.ObjectSchema<CardGenFormObject> = yup.object()
     .shape({
-        no_of_cards: yup.number().required('Kindly enter the number of cards to generate')
+        no_of_cards: yup.number().required('Kindly enter the number of cards to generate').max(25, 'Max 25 cards')
     })
 
 interface CardGenFormProps extends SimpleFormProps<CardGenFormObject> {
+    submit_disabled?: boolean
 }
 
 function CardGenFormFields() {
@@ -36,6 +37,7 @@ function CardGenFormFields() {
 export default function CardGenerationForm
 ({
      initial_values,
+     submit_disabled,
      submitFunction
  }: CardGenFormProps) {
     return (
@@ -45,7 +47,10 @@ export default function CardGenerationForm
             <VStack justify={'center'} w={'100%'} flex={1}>
                 <CardGenFormFields/>
                 <HStack w={'100%'} justify={'center'} mt={'1rem'}>
-                    <PiFormSubmitButton label={'Generate Flash Cards'}/>
+                    <PiFormSubmitButton
+                        with_tooltip={submit_disabled}
+                        tooltip_label={'There must be content to generate flash cards from'}
+                        label={'Generate Flash Cards'} isDisabled={submit_disabled}/>
                 </HStack>
             </VStack>
         </PiForm>

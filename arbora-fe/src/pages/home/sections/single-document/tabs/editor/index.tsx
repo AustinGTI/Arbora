@@ -59,7 +59,7 @@ export default function DocumentViewEditorTab() {
             StandardConsole.warn('Cannot create a new document without content')
             return
         }
-        createDocumentService({
+        await createDocumentService({
             content: content
         }).then((response) => {
             if (response.is_successful) {

@@ -160,7 +160,7 @@ export function MarkdownEditor() {
                         with_tooltip
                         tooltip_label={`Toggle document to ${editable ? 'view' : 'edit'} mode`}
                         tooltip_placement={'left'}
-                        py={'3px'} px={'10px'} rounded={'6px'}
+                        py={'3px'} px={'20px'} rounded={'6px'}
                         onClick={() => {
                             dispatch(setEditorEditable(!editable))
                         }}/>

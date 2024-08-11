@@ -4,20 +4,27 @@ import secrets
 
 def calculateContentEdit(before: str, after: str) -> tuple[int, int]:
     """
-     Returns the number of characters added and deleted in the edit from before to after.
+    Returns the number of characters added and deleted in the edit from before to after.
 
-    :param before:
-    :param after:
-    :return:
+    :param before: Original text
+    :param after: Modified text
+    :return: Tuple of (added_chars, deleted_chars)
     """
-    before_lines = before.splitlines()
-    after_lines = after.splitlines()
+    # Use SequenceMatcher to compare the strings
+    matcher = difflib.SequenceMatcher(None, before, after)
 
-    d = difflib.Differ()
-    diff = list(d.compare(before_lines, after_lines))
+    added_chars = 0
+    deleted_chars = 0
 
-    added_chars = sum(len(x[2:]) for x in diff if x.startswith('+ '))
-    deleted_chars = sum(len(x[2:]) for x in diff if x.startswith('- '))
+    # Iterate through the operations
+    for opcode, i1, i2, j1, j2 in matcher.get_opcodes():
+        if opcode == 'insert':
+            added_chars += j2 - j1
+        elif opcode == 'delete':
+            deleted_chars += i2 - i1
+        elif opcode == 'replace':
+            added_chars += j2 - j1
+            deleted_chars += i2 - i1
 
     return added_chars, deleted_chars
 
