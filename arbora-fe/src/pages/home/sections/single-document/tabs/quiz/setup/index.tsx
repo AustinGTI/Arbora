@@ -65,6 +65,7 @@ export default function QuizSetupLayer({takeQuiz, ...box_props}: QuizSetupLayerP
                             quiz_type: QuizType.MULTIPLE_CHOICE,
                             no_of_questions: 10
                         }}
+                        submit_disabled={!quiz_content}
                         submitFunction={handleOnClickTakeQuiz}/>
                 </VStack>
             ) : (

@@ -42,6 +42,7 @@ export default function FlashCardsSetupLayer({reviewFlashCards, ...box_props}: F
                 <VStack w={'40%'} h={'100%'} justify={'center'} rounded={'10px'} bg={ARBORA_GREEN.bg} p={'1rem'}>
                     <CardGenerationForm
                         initial_values={{no_of_cards: 10}}
+                        submit_disabled={!active_content}
                         submitFunction={handleOnClickGenerateCards}/>
                 </VStack>
             ) : (

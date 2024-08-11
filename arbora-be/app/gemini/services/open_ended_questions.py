@@ -25,7 +25,8 @@ SYSTEM_INSTRUCTION: str = '''
     These questions should test the user's understanding of the content and require detailed, thoughtful responses.
     The questions should be designed to elicit answers of at least several words, encouraging critical thinking and analysis.
     Focus on creating questions that explore the deeper implications, connections, or applications of the information provided.
-    You may use your own knowledge to formulate questions, but prioritize information from the given content.
+    You may use your own knowledge to formulate questions, but prioritize information from the given content, if there is not 
+    much information in the content, ask questions from your own knowledge of the subject matter. DO NOT GET REPETITIVE.
     
     Here's an example of the input and output format:
 ''' + '\n'.join([f'INPUT: {ex["input"]}\nOUTPUT: {ex["output"]}\n' for ex in INPUT_OUTPUT_EXAMPLES])

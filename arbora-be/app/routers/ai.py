@@ -23,19 +23,29 @@ class GetFlashCardsRequest(BaseModel):
     content: str
 
 
-class GetFlashCardsRequestResponse(GenericResponse):
+class GetFlashCardsResponse(GenericResponse):
     flash_cards: list[FlashCard]
 
 
-@ai_router.post("/get-flash-cards", description="generate flash cards given the number and content", response_model=GetFlashCardsRequestResponse)
+@ai_router.post("/get-flash-cards", description="generate flash cards given the number and content", response_model=GetFlashCardsResponse)
 async def get_flash_cards(request: Request, params: GetFlashCardsRequest):
+    # if the number of cards are more than 25, return an error
+    if params.no_of_flash_cards > 25:
+        response = GetFlashCardsResponse(is_successful=False, message="Number of flash-cards cannot be more than 25", questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    # if there is no content, throw an error
+    if not len(params.content):
+        response = GetFlashCardsResponse(is_successful=False, message="There is no content to create cards from", flash_cards=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
     try:
         flash_cards = generateFlashCards(params.no_of_flash_cards, params.content)
     except Exception as e:
-        response = GetFlashCardsRequestResponse(is_successful=False, message="Internal error getting flash cards " + str(e), flash_cards=[])
+        response = GetFlashCardsResponse(is_successful=False, message="Internal error getting flash cards " + str(e), flash_cards=[])
         return JSONResponse(content=response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    response = GetFlashCardsRequestResponse(is_successful=True, message="Flash cards generated successfully", flash_cards=flash_cards)
+    response = GetFlashCardsResponse(is_successful=True, message="Flash cards generated successfully", flash_cards=flash_cards)
     return JSONResponse(content=response.dict(), status_code=status.HTTP_200_OK)
 
 
@@ -51,6 +61,16 @@ class GetMultipleChoiceQuestionsResponse(GenericResponse):
 @ai_router.post("/get-multiple-choice-questions", description="generate multiple choice questions given the number and content",
                 response_model=GetMultipleChoiceQuestionsResponse)
 async def get_multiple_choice_questions(request: Request, params: GetMultipleChoiceQuestionsRequest):
+    # if the number of questions are more than 25, return an error
+    if params.no_of_questions > 25:
+        response = GetMultipleChoiceQuestionsResponse(is_successful=False, message="Number of questions cannot be more than 25", questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    # if there is no content, throw an error
+    if not len(params.content):
+        response = GetMultipleChoiceQuestionsResponse(is_successful=False, message="There is no content to create questions from", questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
     try:
         mc_questions = generateMultipleChoiceQuestions(params.no_of_questions, params.content)
     except Exception as e:
@@ -74,6 +94,16 @@ class GetOpenEndedQuestionsResponse(GenericResponse):
 @ai_router.post("/get-open-ended-questions", description="generate open ended questions given the number and content",
                 response_model=GetOpenEndedQuestionsResponse)
 async def get_open_ended_questions(request: Request, params: GetOpenEndedQuestionsRequest):
+    # if the number of questions are more than 25, return an error
+    if params.no_of_questions > 25:
+        response = GetOpenEndedQuestionsResponse(is_successful=False, message="Number of questions cannot be more than 25", questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
+    # if there is no content, throw an error
+    if not len(params.content):
+        response = GetOpenEndedQuestionsResponse(is_successful=False, message="There is no content to create questions from", questions=[])
+        return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
+
     try:
         oe_questions = generateOpenEndedQuestions(params.no_of_questions, params.content)
     except Exception as e:
