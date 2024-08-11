@@ -42,7 +42,7 @@ export default function TextRender
             return ['.00', [0, 0, 0]]
         }
         // the probability should be 3 characters, . then 2 decimal values
-        const prob = '.' + document.notes[note].recall_probability.toFixed(2).split('.')[1]
+        const prob = '.' + Math.min(0.99, document.notes[note].recall_probability).toFixed(2).split('.')[1]
 
         const color = recallProbabilityToColor(document.notes[note].recall_probability, note)
         // convert hex to rgb
@@ -84,7 +84,7 @@ export default function TextRender
             <Container
                 ref={note_container_ref}
                 anchor={0.5}
-                x={position.x - note_text_container_width/2}
+                x={position.x - note_text_container_width / 2}
                 y={position.y + y_offset - y_padding}>
                 <Text
                     text={prob.toString()}

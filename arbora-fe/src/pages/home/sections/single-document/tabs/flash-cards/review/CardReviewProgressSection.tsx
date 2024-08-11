@@ -98,7 +98,6 @@ export default function CardReviewProgressSection
             <Center position={'absolute'} p={'1rem'} top={1} left={1}>
                 <PiButton
                     onClick={endSession}
-                    with_confirmation
                     icon_props={{fontSize: '20px'}}
                     confirmation_message={'Are you sure you want to leave before reviewing all the flash cards?'}
                     icon={FaArrowLeft}/>

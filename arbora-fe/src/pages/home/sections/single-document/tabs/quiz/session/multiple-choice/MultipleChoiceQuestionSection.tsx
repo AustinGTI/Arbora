@@ -70,7 +70,7 @@ export default function MultipleChoiceQuestionSection({
                                 <PiPlainText value={active_question.question} align={'center'} fontSize={'20px'}
                                              fontWeight={500}/>
                             </VStack>
-                            <PiDivider orientatin={'horizontal'} length={'80%'}/>
+                            <PiDivider orientation={'horizontal'} length={'80%'}/>
                             <VStack
                                 className={'arbora-scrollbar'}
                                 overflowY={'scroll'} overflowX={'hidden'}
@@ -106,7 +106,7 @@ export default function MultipleChoiceQuestionSection({
                                                                  fontSize={'15px'} fontWeight={700}/>
                                                     <PiPlainText value={
                                                         choice.length > 50 ? choice.slice(0, 50) + '...' : choice
-                                                    } fontSize={'13px'} fontWeight={500}
+                                                    } align={'left'} fontSize={'13px'} fontWeight={500}
                                                                  overflowWrap={'break-word'} whiteSpace={'normal'}/>
                                                 </HStack>
                                             </PiButton>

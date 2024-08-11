@@ -11,6 +11,7 @@ import {StandardConsole} from "../../../../../../../../core/helpers/logging.ts";
 
 
 interface MultipleChoiceProgressSectionProps extends BoxProps {
+    review_mode: boolean
     active_question_idx: number
     questions: OpenEndedQuestion[] | MultipleChoiceQuestion[]
     answers: Map<string, string | number>
@@ -90,7 +91,7 @@ export default function MultipleChoiceProgressSection
             <Center position={'absolute'} p={'1rem'} top={0} left={0}>
                 <PiButton
                     onClick={endSession}
-                    with_confirmation
+                    with_confirmation={!performance}
                     icon_props={{fontSize: '20px'}}
                     confirmation_message={'Are you sure you want to leave before answering all the questions?'}
                     icon={FaArrowLeft}/>

@@ -9,6 +9,8 @@ import {recordNoteReviewService} from "../../../../../../core/services/documents
 import useGlobalHomeState from "../../../../../../core/redux/home/hooks/useGlobalHomeState.tsx";
 import {NoteReviewType} from "../../../../../../core/services/documents/types.ts";
 import ArboraNoDataGraphic from "../../../../../../core/graphics/ArboraNoDataGraphic.tsx";
+import {useDispatch} from "react-redux";
+import {reloadHomeData} from "../../../../../../core/redux/home/home_slice.ts";
 
 enum FlashCardsTabLayerKey {
     REVIEW = 'review',
@@ -21,6 +23,7 @@ export default function DocumentViewFlashCardsTab() {
 
     const {documents: {active_document, active_note}} = useGlobalHomeState()
 
+    const dispatch = useDispatch()
     const recordFlashCardsReview = React.useCallback((review_records: Map<string, number[]>) => {
         if (!active_document) {
             StandardConsole.warn('No active document to review in the flash cards tab')
@@ -36,9 +39,12 @@ export default function DocumentViewFlashCardsTab() {
             note_id: active_note ?? '1',
             review_type: NoteReviewType.FLASH_CARDS,
             score
-        }).then()
-
-    }, [active_document, setActiveLayer, active_note]);
+        }).then(response => {
+            if (response.is_successful) {
+                dispatch(reloadHomeData({with_note_reset: false}))
+            }
+        })
+    }, [active_document, setActiveLayer, active_note, dispatch]);
 
     return (
         <VStack w={'100%'} h={'100%'}>

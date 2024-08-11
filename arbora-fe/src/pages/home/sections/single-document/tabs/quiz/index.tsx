@@ -14,6 +14,8 @@ import MultipleChoiceQuizSessionLayer from "./session/multiple-choice";
 import {recordNoteReviewService} from "../../../../../../core/services/documents/DocumentsCRUDServices.ts";
 import {NoteReviewType} from "../../../../../../core/services/documents/types.ts";
 import ArboraNoDataGraphic from "../../../../../../core/graphics/ArboraNoDataGraphic.tsx";
+import {reloadHomeData} from "../../../../../../core/redux/home/home_slice.ts";
+import {useDispatch} from "react-redux";
 
 enum QuizTabLayerKey {
     SESSION = 'session',
@@ -23,6 +25,8 @@ enum QuizTabLayerKey {
 export default function DocumentViewQuizTab() {
     const [active_layer, setActiveLayer] = React.useState<QuizTabLayerKey>(QuizTabLayerKey.SETUP)
     const [questions, setQuestions] = React.useState<OpenEndedQuestion[] | MultipleChoiceQuestion[]>([])
+
+    const dispatch = useDispatch()
 
     const {documents: {active_document, active_note}} = useGlobalHomeState()
     const recordMultipleChoiceQuizReview = React.useCallback((session_records: Map<string, boolean> | null) => {
@@ -46,9 +50,13 @@ export default function DocumentViewQuizTab() {
             review_type: NoteReviewType.MULTIPLE_CHOICE_QUESTIONS,
             // sum of true values divided by total number of questions
             score
-        }).then()
+        }).then(response => {
+            if (response.is_successful) {
+                dispatch(reloadHomeData({with_note_reset: false}))
+            }
+        })
 
-    }, [active_document, setActiveLayer, active_note]);
+    }, [active_document, setActiveLayer, active_note, dispatch]);
 
     const recordOpenChoiceQuizReview = React.useCallback((session_records: Map<string, OpenEndedQuestionAssessment> | null) => {
         setActiveLayer(QuizTabLayerKey.SETUP);
@@ -71,9 +79,13 @@ export default function DocumentViewQuizTab() {
             review_type: NoteReviewType.OPEN_ENDED_QUESTIONS,
             // sum of scores divided by total number of questions
             score
-        }).then()
+        }).then(response => {
+            if (response.is_successful) {
+                dispatch(reloadHomeData({with_note_reset: false}))
+            }
+        })
 
-    }, [active_document, setActiveLayer, active_note]);
+    }, [active_document, setActiveLayer, active_note, dispatch]);
 
     return (
         <VStack w={'100%'} h={'100%'}>

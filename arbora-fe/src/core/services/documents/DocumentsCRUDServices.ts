@@ -111,6 +111,9 @@ export async function recordNoteReviewService(request: RecordNoteReviewServiceRe
         url: `${BACKEND_URL}/record-note-review`,
         method: "POST",
         request: request,
+        display_success_alert: true,
+        display_error_alert: true,
+        success_message: 'Session recorded successfully',
         service_name: "recordNoteReviewService",
         with_access_token: true
     })

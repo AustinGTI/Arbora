@@ -85,7 +85,7 @@ interface NoteRecallProbabilityViewProps {
 function NoteRecallProbabilityView({note_id, note}: NoteRecallProbabilityViewProps) {
     const [prob, color] = React.useMemo(() => {
         // the probability should be 3 characters, . then 2 decimal values
-        const prob = '.' + note.recall_probability.toFixed(2).split('.')[1]
+        const prob = '.' + Math.min(0.99, note.recall_probability).toFixed(2).split('.')[1]
 
         const color = recallProbabilityToColor(note.recall_probability, note_id)
         return [prob, color]
@@ -93,7 +93,7 @@ function NoteRecallProbabilityView({note_id, note}: NoteRecallProbabilityViewPro
 
     return (
         <Tooltip label={`
-                    Recall : The estimated probability you remember the information in this note based on your flash-card reviews, quizzes taken and chats with Arby
+                    Recall : The estimated probability you remember the information in this note based on your flash-card reviews and quizzes taken
                             `} placement={'bottom-end'}>
             <HStack cursor={'pointer'} flex={1} justify={'flex-end'} pr={'2.5rem'} pb={'7px'}>
                 <Box h={'22px'} aspectRatio={1} rounded={'7px'} bg={color}/>

@@ -7,7 +7,7 @@ import {
     ModalContent,
     ModalOverlay,
     Text,
-    useDisclosure
+    useDisclosure, VStack
 } from "@chakra-ui/react";
 import {IoMdCheckmarkCircleOutline} from "react-icons/io";
 import {PiButtonVariant} from "../buttons/types.ts";
@@ -31,9 +31,9 @@ export default function BaseConfirmationAlert({message, handleYes, handleNo}: Ba
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay/>
             <ModalContent borderRadius="25px">
-                <ModalCloseButton size={'lg'}/>
-                <ModalBody py={'2rem'} px={'3.5rem'} pb={'1rem'}>
-                    <Flex width={'100%'} flexDirection="column" justifyContent="center" alignItems="center">
+                <ModalCloseButton size={'md'}/>
+                <ModalBody>
+                    <VStack width={'100%'} align={"center"}>
                         <Text fontWeight="500" fontSize="14px" color={"black.300"} mt={'20px'}
                               textAlign="center">
                             {message}
@@ -44,7 +44,7 @@ export default function BaseConfirmationAlert({message, handleYes, handleNo}: Ba
                             <PiButton variant={PiButtonVariant.OUTLINE} onClick={handleNo}
                                       label={'Close'}/>
                         </Flex>
-                    </Flex>
+                    </VStack>
                 </ModalBody>
             </ModalContent>
         </Modal>
