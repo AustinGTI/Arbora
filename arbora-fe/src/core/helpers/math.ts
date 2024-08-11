@@ -1,18 +1,10 @@
-function compressedSigmoid(x: number): number {
-    return 1 / (1 + Math.exp(-20 * (x - 0.25)))
-}
-
-/**
- * sigmoid ease in out
- */
-export function easeInOut(unit_interval: number, peak_val: number): number {
-    return (unit_interval <= 0.5 ? compressedSigmoid(unit_interval) : compressedSigmoid(1 - unit_interval)) * peak_val
-}
-
-export function easeIn(unit_interval: number, peak_val: number): number {
-    return compressedSigmoid(unit_interval / 2) * peak_val
-}
-
-export function easeOut(unit_interval: number, peak_val: number): number {
-    return compressedSigmoid((1 - unit_interval) / 2) * peak_val
+export function seededRandom(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
+    // Normalize the hash to a value between 0 and 1
+    return (hash & 0x7FFFFFFF) / 0x7FFFFFFF;
 }

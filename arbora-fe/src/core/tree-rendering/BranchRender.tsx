@@ -12,6 +12,7 @@ import {Note} from "../services/documents/types.ts";
 import {recallProbabilityToColor} from "./helpers/color.ts";
 
 interface BranchRenderProps {
+    completion: number
     position: Coords2D
     tree_branch_data: TreeBranchData
     render_action: 'canopies' | 'branches'
@@ -37,7 +38,7 @@ function calculateCanopyColor(note_id: string, note: Note | undefined): string {
 }
 
 
-export default function BranchRender({position, tree_branch_data, render_action}: BranchRenderProps) {
+export default function BranchRender({completion, position, tree_branch_data, render_action}: BranchRenderProps) {
     const {document, hovered_branch_id, setHoveredBranchId, is_interactive} = React.useContext(TreeRenderContext)
     const branch_state: BranchState = React.useMemo(() => {
         if (hovered_branch_id?.startsWith(tree_branch_data.id)) {
@@ -52,14 +53,18 @@ export default function BranchRender({position, tree_branch_data, render_action}
     const [branch_opacity, setBranchOpacity] = React.useState<number>(1)
     const [canopy_opacity, setCanopyOpacity] = React.useState<number>(0.8)
 
+    const local_completion: number = React.useMemo(() => {
+        return Math.max(0, Math.min(1, (completion - tree_branch_data.completion_window.start) / (tree_branch_data.completion_window.end - tree_branch_data.completion_window.start)))
+    }, [completion, tree_branch_data.completion_window.start, tree_branch_data.completion_window.end]);
+
     const adjustBranchAndCanopyOpacity = React.useCallback((branch_opacity_target: number, canopy_opacity_target: number, delta: number) => {
         setBranchOpacity(value => {
-            const direction = calculateOpacityAdjustDirection(value, branch_opacity_target, 0.1)
-            return value + direction * 0.1 * delta
+            const direction = calculateOpacityAdjustDirection(value, branch_opacity_target, 0.05)
+            return value + direction * 0.05 * delta
         })
         setCanopyOpacity(value => {
-            const direction = calculateOpacityAdjustDirection(value, canopy_opacity_target, 0.1)
-            return value + direction * 0.1 * delta
+            const direction = calculateOpacityAdjustDirection(value, canopy_opacity_target, 0.05)
+            return value + direction * 0.05 * delta
         })
     }, [setBranchOpacity, setCanopyOpacity]);
     useTick((delta) => {
@@ -72,7 +77,7 @@ export default function BranchRender({position, tree_branch_data, render_action}
                 break
             case BranchState.NORMAL:
             default:
-                adjustBranchAndCanopyOpacity(0.9, 0.8, delta)
+                adjustBranchAndCanopyOpacity(1, 0.8, delta)
         }
     })
 
@@ -80,16 +85,16 @@ export default function BranchRender({position, tree_branch_data, render_action}
         g.clear()
         if (tree_branch_data.branch_config.branch_type === BranchType.TRUNK) {
             g.beginFill('#704241', branch_opacity)
-            renderTrunk(position, g, tree_branch_data.branch_config)
+            renderTrunk(position, g, tree_branch_data.branch_config, local_completion)
             g.endFill()
         } else {
             const girth = tree_branch_data.branch_config.girth
             g.beginFill('#704241', 0)
             g.lineStyle(girth, '#704241', branch_opacity)
-            renderBranchV2(position, g, tree_branch_data.branch_config, tree_branch_data.branch_direction)
+            renderBranchV2(position, g, tree_branch_data.branch_config, tree_branch_data.branch_direction, local_completion)
             g.endFill()
         }
-    }, [tree_branch_data.branch_config, tree_branch_data.branch_direction, position, branch_opacity])
+    }, [tree_branch_data.branch_config, tree_branch_data.branch_direction, position, branch_opacity, local_completion])
 
     const drawCanopy = React.useCallback((g: PixiGraphics) => {
         const mul = tree_branch_data.branch_direction === 'left' ? -1 : 1
@@ -107,8 +112,8 @@ export default function BranchRender({position, tree_branch_data, render_action}
     const selectBranch = React.useCallback(() => {
         console.log('selecting branch and document')
         store.dispatch(setActiveDocument(document))
+        store.dispatch(setActiveNote(tree_branch_data.id))
         setTimeout(() => {
-            store.dispatch(setActiveNote(tree_branch_data.id))
             store.dispatch(collapseDocumentView(false))
         }, 500)
     }, [tree_branch_data.id, document]);
@@ -130,7 +135,7 @@ export default function BranchRender({position, tree_branch_data, render_action}
                     y: position.y + (child.rel_position.y - tree_branch_data.rel_position.y)
                 }
                 return <BranchRender key={child.id} position={child_position} tree_branch_data={child}
-                                     render_action={render_action}/>
+                                     render_action={render_action} completion={completion}/>
             })}
             {render_action === 'canopies' && (
                 <Graphics draw={drawCanopy}

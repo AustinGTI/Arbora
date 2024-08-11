@@ -15,7 +15,7 @@ export interface GlobalHomeState {
         documents: Document[]
         active_document: Document | null
         active_note: string | null
-
+        hovered_document_note: string | null
         reload_state: string
     },
     document_view: {
@@ -26,17 +26,11 @@ export interface GlobalHomeState {
                 editable: boolean
                 content: string
             }
-            flash_cards_data: any
-            qa_data: any
-            explain_data: any
         }
     },
     all_documents_view: {
         canvas_loading: boolean
         canvas_interactive: boolean
-        // negative for backwards, positive for forwards, 0 for stop
-        canvas_motion: number
-
         canvas_box_rect: RectProps | null
     }
 }
@@ -46,6 +40,7 @@ const initial_state: GlobalHomeState = {
         documents: [],
         active_document: null,
         active_note: null,
+        hovered_document_note: null,
 
         reload_state: 'reload.88088.site',
     },
@@ -57,15 +52,11 @@ const initial_state: GlobalHomeState = {
                 editable: false,
                 content: ''
             },
-            flash_cards_data: null,
-            qa_data: null,
-            explain_data: null
         }
     },
     all_documents_view: {
         canvas_loading: true,
         canvas_interactive: true,
-        canvas_motion: -1,
         canvas_box_rect: null,
     }
 }
@@ -83,6 +74,9 @@ export const HomeSlice = createSlice({
         },
         setActiveNote: (state, action: { payload: string | null }) => {
             state.documents.active_note = action.payload
+        },
+        setHoveredDocumentNote: (state, action: { payload: string | null }) => {
+            state.documents.hovered_document_note = action.payload
         },
         setActiveTab: (state, action: { payload: DocumentViewTabKey }) => {
             state.document_view.active_tab = action.payload
@@ -114,9 +108,6 @@ export const HomeSlice = createSlice({
         setCanvasBoxRect: (state, action: { payload: RectProps }) => {
             state.all_documents_view.canvas_box_rect = action.payload
         },
-        setCanvasMotion: (state, action: { payload: number }) => {
-            state.all_documents_view.canvas_motion = action.payload
-        },
         setCanvasInteractivity: (state, action: { payload: boolean }) => {
             state.all_documents_view.canvas_interactive = action.payload
         }
@@ -127,6 +118,7 @@ export const {
     setDocuments,
     setActiveDocument,
     setActiveNote,
+    setHoveredDocumentNote,
     setActiveTab,
     reloadHomeData,
     collapseDocumentView,
@@ -134,6 +126,5 @@ export const {
     setEditorContent,
     setCanvasLoadingState,
     setCanvasBoxRect,
-    setCanvasMotion,
     setCanvasInteractivity
 } = HomeSlice.actions

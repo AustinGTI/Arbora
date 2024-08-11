@@ -139,7 +139,7 @@ export default function DocumentViewEditorTab() {
                 header_elem.classList.add('active-header')
 
 
-                editor_elem.scrollTo({
+                editor_elem.scrollBy({
                     top: header_elem.getBoundingClientRect().top - editor_elem.getBoundingClientRect().top,
                     behavior: 'smooth'
                 })

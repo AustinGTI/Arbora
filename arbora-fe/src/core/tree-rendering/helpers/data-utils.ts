@@ -1,6 +1,7 @@
 import {BranchType, RawBranchData, TreeBranchData} from "../types.ts";
 import {Document} from "../../services/documents/types.ts";
-import {BoxDimensions, Coords2D} from "../../types.ts";
+import {BoxDimensions} from "../../types.ts";
+import {seededRandom} from "../../helpers/math.ts";
 
 /**
  * generate the intermediate branch data map between the final branch data and the document and note information
@@ -70,10 +71,6 @@ export function generateRawBranchDataMap(document: Document): Map<string, RawBra
     })
 
     return map
-}
-
-export function addNoise(value: number, noise: number): number {
-    return value + value * 2 * noise * (Math.random() - 0.5)
 }
 
 export function getMaxBranchVolume(root_branch_id: string, raw_branch_data_map: Map<string, RawBranchData>): number {
@@ -157,31 +154,24 @@ export function calculateTreeDimensionsV2(tree_data: TreeBranchData[]): BoxDimen
 
 }
 
-export function calculateChildPositions(
-    tree_branch_data: TreeBranchData,
-    parent_position: Coords2D,
-): Map<string, Coords2D> {
-    const map = new Map<string, Coords2D>()
+// region NOISE
+// ? ........................
 
-    tree_branch_data.children.forEach(child_branch_data => {
-        const relative_position = child_branch_data.position_on_parent
-        if (tree_branch_data.branch_config.branch_type === BranchType.TRUNK) {
-            // if trunk, the child positions are along the trunk from the root
-            map.set(
-                child_branch_data.id,
-                {
-                    x: parent_position.x,
-                    y: parent_position.y - tree_branch_data.branch_config.length * relative_position
-                }
-            )
-        } else {
-            // first we get to the bottom of the vertical section
-            map.set(child_branch_data.id, {
-                x: parent_position.x + (tree_branch_data.branch_direction === 'left' ? -1 : 1) * tree_branch_data.branch_config.h_length,
-                y: parent_position.y - tree_branch_data.branch_config.v_length * relative_position
-            })
-        }
-    })
 
-    return map
+export function addNoise(value: number, noise: number): number {
+    return value + value * 2 * noise * (Math.random() - 0.5)
 }
+
+/**
+ * to keep the tree dimensions consistent, the noise needs to be deterministic
+ * @param value
+ * @param noise
+ * @param seed
+ */
+export function addSeededNoise(value: number, noise: number, seed: string): number {
+    const hash = seededRandom(seed);
+    return value + value * 2 * noise * (hash - 0.5);
+}
+
+// ? ........................
+// endregion ........................

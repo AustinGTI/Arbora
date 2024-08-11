@@ -7,7 +7,7 @@ import GroundRender from "./GroundRender.tsx";
 import TreeRender from "../../../../../core/tree-rendering/TreeRender.tsx";
 import {TreeData} from "../../../../../core/tree-rendering/types.ts";
 import {useDispatch} from "react-redux";
-import {setCanvasBoxRect} from "../../../../../core/redux/home/home_slice.ts";
+import {setCanvasBoxRect, setHoveredDocumentNote} from "../../../../../core/redux/home/home_slice.ts";
 import {MIN_CANVAS_WIDTH, GROUND_LEVEL_CONSTANT, MAX_CANVAS_WIDTH, TREE_POSITION_PADDING} from "./constants.ts";
 import {
     calculateTreeDimensionsV2, generateRawBranchDataMap
@@ -18,7 +18,16 @@ import CanvasMotionController from "./motion-control/CanvasMotionController.tsx"
 export default function ForestCanvas() {
     const wrapper_box_ref = React.useRef<HTMLDivElement | null>(null);
 
-    const {documents: {documents}, all_documents_view: {canvas_box_rect, canvas_interactive}} = useGlobalHomeState();
+    const {
+        documents: {
+            documents,
+            hovered_document_note,
+        },
+        all_documents_view: {
+            canvas_box_rect,
+            canvas_interactive
+        }
+    } = useGlobalHomeState();
     const dispatch = useDispatch()
 
 
@@ -30,7 +39,7 @@ export default function ForestCanvas() {
     const trees: TreeData[] = React.useMemo(() => {
         let curr_x = 200
         return documents.map((document) => {
-            const tree_data = generateTreeBranchDataV2(generateRawBranchDataMap(document))
+            const tree_data = generateTreeBranchDataV2(document.id,generateRawBranchDataMap(document))
             const tree_dimensions = calculateTreeDimensionsV2(tree_data)
             // const tree_dimensions = {width: 500,height: 500}
             curr_x += tree_dimensions.width / 2 + TREE_POSITION_PADDING
@@ -110,6 +119,10 @@ export default function ForestCanvas() {
                                         key={tree_data.document.id}
                                         tree_data={tree_data}
                                         is_interactive={canvas_interactive}
+                                        hovered_document_note_id={hovered_document_note}
+                                        setHoveredDocumentNoteId={(document_note_id) => {
+                                            dispatch(setHoveredDocumentNote(document_note_id))
+                                        }}
                                     />
                                 );
                             })}

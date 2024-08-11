@@ -3,6 +3,8 @@
 
 import {StandardConsole} from "../helpers/logging.ts";
 import {createAIMainButton, HeadingTag} from "./buttons.ts";
+import {store} from "../redux";
+import {setActiveNote, setHoveredDocumentNote} from "../redux/home/home_slice.ts";
 
 //todo: make this customizable to a specific dom element and its children
 
@@ -17,14 +19,14 @@ interface HeaderTreeNode {
 }
 
 
-function iterateThroughHeaders(action: (header_key: string, header: Element, level: number) => void, editor_id?: string) {
+function iterateThroughHeaders(action: (header_key: string, header: HTMLHeadingElement, level: number) => void, editor_id?: string) {
     if (editor_id && !document.querySelector('#' + editor_id)) {
         StandardConsole.warn(`editor id ${editor_id} not found`)
         return
     }
     const elem = (editor_id ? document.querySelector('#' + editor_id)! : document)
 
-    const headers = elem.querySelectorAll('.md-header')
+    const headers = elem.querySelectorAll('.md-header') as NodeListOf<HTMLHeadingElement>
 
     if (editorInEditMode(elem)) {
         return
@@ -86,7 +88,27 @@ export function addAIButtonToHeaders(editor_id?: string) {
             return
         }
 
-        header.appendChild(createAIMainButton(header_key, `h${level}` as HeadingTag))
+        // clear existing event listeners through cloning
+        const new_header = header.cloneNode(true) as HTMLHeadingElement
+        header.replaceWith(new_header)
+
+        new_header.addEventListener('mouseenter', (_e) => {
+            const document_note_id = `${store.getState().home?.documents.active_document?.id}|${header_key}`
+            StandardConsole.log('mouse entered into ', header_key, 'setting note id to ', document_note_id)
+            store.dispatch(setHoveredDocumentNote(document_note_id))
+        })
+
+        new_header.addEventListener('mouseleave', (_e) => {
+            store.dispatch(setHoveredDocumentNote(null))
+        })
+
+        new_header.addEventListener('click', (_e) => {
+            StandardConsole.log('clicked on header key, setting active note to ', header_key)
+            store.dispatch(setActiveNote(header_key))
+        })
+
+        new_header.appendChild(createAIMainButton(header_key, `h${level}` as HeadingTag))
+
         StandardConsole.log('child appended')
     }, editor_id)
 }

@@ -2,7 +2,7 @@ import {Graphics as PixiGraphics} from '@pixi/graphics'
 import {BranchDirection, NormalBranchConfig, TrunkBranchConfig} from "../types.ts";
 import {Coords2D} from "../../types.ts";
 
-export function renderTrunk(u: Coords2D, g: PixiGraphics, config: TrunkBranchConfig): Coords2D {
+export function renderTrunk(u: Coords2D, g: PixiGraphics, config: TrunkBranchConfig, completion: number): Coords2D {
     const {girth, length, taper, roundness: b} = config
     const v: Coords2D = {x: u.x, y: u.y - length}
     const ru = girth / 2
@@ -56,7 +56,7 @@ export function renderTrunk(u: Coords2D, g: PixiGraphics, config: TrunkBranchCon
     return v
 }
 
-export function renderBranch(u: Coords2D, g: PixiGraphics, config: NormalBranchConfig, direction: BranchDirection): Coords2D {
+export function renderBranch(u: Coords2D, g: PixiGraphics, config: NormalBranchConfig, direction: BranchDirection, completion: number): Coords2D {
     const {girth: gu, inner_curve: bi, outer_curve: bo, taper, v_length: lv, h_length: lh} = config
     const ru = gu / 2
     const gv = gu * taper
@@ -102,8 +102,8 @@ export function renderBranch(u: Coords2D, g: PixiGraphics, config: NormalBranchC
     return v
 }
 
-export function renderBranchV2(u: Coords2D, g: PixiGraphics, config: NormalBranchConfig, direction: BranchDirection): Coords2D {
-    const {v_length: lv, h_length: lh, inner_curve,girth} = config
+export function renderBranchV2(u: Coords2D, g: PixiGraphics, config: NormalBranchConfig, direction: BranchDirection, completion: number): Coords2D {
+    const {v_length: lv, h_length: lh, inner_curve, girth} = config
 
     const mul = direction === 'left' ? 1 : -1
 
@@ -116,7 +116,7 @@ export function renderBranchV2(u: Coords2D, g: PixiGraphics, config: NormalBranc
     g.moveTo(u.x, u.y)
 
     // if the height of the branch is too low, do not draw a quadratic curve
-    if (u.y - v.y < girth * 1.1) {
+    if (u.y - v.y < girth * 1.1 || lh < girth) {
         g.lineTo(cp1.x, cp1.y)
     } else {
         g.lineTo(ub.x, ub.y)

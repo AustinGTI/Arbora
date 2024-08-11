@@ -26,6 +26,8 @@
 
       position: relative;
 
+      cursor: pointer;
+
       //$padding: 0.1em + $i * 0.75em; // Increase padding based on heading level
       padding-left: 2em;
 
@@ -110,6 +112,17 @@
   em {
     font-style: italic;
     color: #777777;
+  }
+
+  a {
+    color: $arbora-green-hard;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+
+    &:hover {
+      color: $arbora-green-loud;
+    }
   }
 
 }

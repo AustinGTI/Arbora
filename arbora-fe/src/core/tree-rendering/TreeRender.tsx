@@ -12,8 +12,10 @@ import {
 } from "../../pages/home/sections/all-documents/forest-canvas/motion-control/CanvasMotionController.tsx";
 
 interface TreeRenderProps {
-    is_interactive: boolean,
     tree_data: TreeData
+    is_interactive: boolean,
+    hovered_document_note_id: string | null
+    setHoveredDocumentNoteId: (id: string | null) => void
 }
 
 interface TreeRenderContextProps {
@@ -33,9 +35,11 @@ export const TreeRenderContext = React.createContext<TreeRenderContextProps>({
 
 export default function TreeRender({
                                        tree_data: {position, document, root_branches, dimensions},
-                                       is_interactive
+                                       is_interactive,
+                                       hovered_document_note_id,
+                                       setHoveredDocumentNoteId
                                    }: TreeRenderProps) {
-    const [hovered_branch_id, setHoveredBranchId] = React.useState<string | null>(null)
+    // const [hovered_branch_id, setHoveredBranchId] = React.useState<string | null>(null)
 
     const [tree_position, setTreePosition] = React.useState<Coords2D>(position)
 
@@ -65,6 +69,29 @@ export default function TreeRender({
         })
     })
 
+    const hovered_branch_id: string | null = React.useMemo(() => {
+        if (hovered_document_note_id === null) {
+            return null
+        } else {
+            // get the document id and compare it to the current tree's document id
+            const parts = hovered_document_note_id.split('|')
+            const document_id = parts.slice(0, -1).join('')
+            if (document_id !== document?.id) {
+                return null
+            }
+            return parts.slice(-1)[0]
+        }
+    }, [document.id, hovered_document_note_id]);
+
+    const setHoveredBranchId = React.useCallback((branch_id: string | null) => {
+        if (branch_id === null) {
+            setHoveredDocumentNoteId(null)
+        } else {
+            setHoveredDocumentNoteId(`${document?.id}|${branch_id}`)
+        }
+    }, [setHoveredDocumentNoteId, document?.id]);
+
+
     const context: TreeRenderContextProps = React.useMemo(() => {
         return {
             is_interactive,
@@ -91,13 +118,13 @@ export default function TreeRender({
                 return <BranchRender key={branch.id + '-branches'} position={{
                     x: tree_position.x + 200 * idx,
                     y: tree_position.y
-                }} tree_branch_data={branch} render_action={'branches'}/>
+                }} tree_branch_data={branch} render_action={'branches'} completion={1}/>
             })}
             {root_branches.map((branch, idx) => {
                 return <BranchRender key={branch.id + '-canopies'} position={{
                     x: tree_position.x + 200 * idx,
                     y: tree_position.y
-                }} tree_branch_data={branch} render_action={'canopies'}/>
+                }} tree_branch_data={branch} render_action={'canopies'} completion={1}/>
             })}
         </TreeRenderContext.Provider>
     )
