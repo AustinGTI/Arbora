@@ -10,7 +10,6 @@ import AllDocumentsSection from "./sections/all-documents";
 import {ARBORA_GREEN} from "../../core/constants/styling.ts";
 import TreeAnimationLoaderV2 from "../../core/graphics/loaders/TreeAnimationLoaderV2.tsx";
 import useGlobalHomeState from "../../core/redux/home/hooks/useGlobalHomeState.tsx";
-import {StandardConsole} from "../../core/helpers/logging.ts";
 
 
 function ArboraHomePageHeader() {
@@ -39,15 +38,14 @@ export default function ArboraHomePage() {
     const {documents_loading} = useDocuments()
     const {all_documents_view: {canvas_loading}} = useGlobalHomeState()
 
-    StandardConsole.log('rerendering home')
-
     return (
         <Box position={'absolute'} top={0} left={0} bg={ARBORA_GREEN.soft} w={'100vw'} h={'100vh'} p={0} m={0}>
             <VStack w={'100%'} h={'100%'}>
                 <ArboraHomePageHeader/>
                 <Box position={'relative'} w={'100%'} h={'calc(100% - 100px)'}>
                     {(documents_loading || canvas_loading) && (
-                        <TreeAnimationLoaderV2 position={'absolute'} top={0} left={0} w={'100%'} h={'100%'} text={'Documents Loading'}/>
+                        <TreeAnimationLoaderV2 position={'absolute'} top={0} left={0} w={'100%'} h={'100%'}
+                                               text={'Documents Loading'}/>
                     )}
                     {!documents_loading ? (
                         <HStack w={'100%'} h={'100%'}>

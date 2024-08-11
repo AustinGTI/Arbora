@@ -71,7 +71,11 @@ function SignUpFormLayer() {
             </HStack>
             <SignUpForm submitFunction={
                 async (signup_form_obj) => {
-                    await createUserService(signup_form_obj)
+                    await createUserService(signup_form_obj).then((response) => {
+                        if (response.is_successful) {
+                            goToLayer(LoginPageLayerKey.LOGIN_FORM)
+                        }
+                    })
                 }
             }/>
         </VStack>

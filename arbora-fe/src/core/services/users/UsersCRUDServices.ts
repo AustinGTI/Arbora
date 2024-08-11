@@ -22,6 +22,8 @@ export async function createUserService(request: CreateUserServiceRequest): Prom
         method: "POST",
         request,
         service_name: "createUserService",
+        display_success_alert: true,
+        success_message: 'User created successfully, you can now login',
         with_access_token: false
     })
 }

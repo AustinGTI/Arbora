@@ -37,7 +37,7 @@ export default function DocumentViewEditorTab() {
             StandardConsole.warn('No active document to update')
             return
         }
-        updateDocumentService({
+        await updateDocumentService({
             id: active_document.id,
             content
         }).then((response) => {
@@ -165,9 +165,7 @@ export default function DocumentViewEditorTab() {
                             variant={PiButtonVariant.SOLID}
                             icon_props={{fontSize: '25px'}}
                             px={'.7rem'}
-                            onClick={async () => {
-                                await updateActiveDocument()
-                            }}/>
+                            onClick={updateActiveDocument}/>
                         {/*<Box px={'.5rem'}>*/}
                         {/*    <PiPlainText value={`Last auto-saved ${AUTOSAVE_INTERVAL_IN_S - t_minus_autosave}s ago`}*/}
                         {/*                 fontSize={'13px'}/>*/}

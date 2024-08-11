@@ -10,6 +10,8 @@ import {TREE_EDGE_THRESHOLD} from "../../pages/home/sections/all-documents/fores
 import {
     CanvasMotionControllerContext
 } from "../../pages/home/sections/all-documents/forest-canvas/motion-control/CanvasMotionController.tsx";
+import {TREE_GROWTH_RATE} from "./constants.ts";
+
 
 interface TreeRenderProps {
     tree_data: TreeData
@@ -39,9 +41,8 @@ export default function TreeRender({
                                        hovered_document_note_id,
                                        setHoveredDocumentNoteId
                                    }: TreeRenderProps) {
-    // const [hovered_branch_id, setHoveredBranchId] = React.useState<string | null>(null)
-
     const [tree_position, setTreePosition] = React.useState<Coords2D>(position)
+    const [completion, setCompletion] = React.useState<number>(0)
 
     const {
         motion_speed, canvas_box_rect: rect,
@@ -67,6 +68,13 @@ export default function TreeRender({
             x: new_x,
             y: tree_position.y
         })
+
+        if (completion < 1) {
+            setCompletion(value => {
+                    return Math.min(1, value + TREE_GROWTH_RATE * delta / 60)
+                }
+            )
+        }
     })
 
     const hovered_branch_id: string | null = React.useMemo(() => {
@@ -118,13 +126,13 @@ export default function TreeRender({
                 return <BranchRender key={branch.id + '-branches'} position={{
                     x: tree_position.x + 200 * idx,
                     y: tree_position.y
-                }} tree_branch_data={branch} render_action={'branches'} completion={1}/>
+                }} tree_branch_data={branch} render_action={'branches'} completion={completion}/>
             })}
             {root_branches.map((branch, idx) => {
                 return <BranchRender key={branch.id + '-canopies'} position={{
                     x: tree_position.x + 200 * idx,
                     y: tree_position.y
-                }} tree_branch_data={branch} render_action={'canopies'} completion={1}/>
+                }} tree_branch_data={branch} render_action={'canopies'} completion={completion}/>
             })}
         </TreeRenderContext.Provider>
     )

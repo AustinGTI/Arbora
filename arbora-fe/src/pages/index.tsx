@@ -53,13 +53,16 @@ export default function ArboraWebApp() {
         }
     }, [user_logged_out]);
 
+
     return (
         !loading_user_data ? (
-            <Routes>
-                <Route path="/login" element={<ArboraLoginPage/>}/>
-                <Route path="/" element={<ArboraHomePage/>}/>
-                <Route path="/logout" element={<ArboraLogoutPage/>}/>
-            </Routes>
+            <React.Fragment>
+                <Routes>
+                    <Route path="/login" element={<ArboraLoginPage/>}/>
+                    <Route path="/" element={<ArboraHomePage/>}/>
+                    <Route path="/logout" element={<ArboraLogoutPage/>}/>
+                </Routes>
+            </React.Fragment>
         ) : (
             <TreeAnimationLoaderV2 text={'Planting Trees'} h={'100vh'} w={'100vw'} position={'absolute'} top={0}
                                    left={0} bg={ARBORA_GREEN.bg}/>

@@ -30,7 +30,7 @@ interface CanvasMotionControllerProps {
 }
 
 export default function CanvasMotionController({canvas_box_rect, children}: CanvasMotionControllerProps) {
-    const {documents: {active_document}, document_view: {collapsed}} = store.getState().home
+    const {documents: {active_document,hovered_document_note}, document_view: {collapsed}} = store.getState().home
     const [active_tree_x_pos, setActiveTreeXPos] = React.useState<number | null>(null)
 
     const {motion_speed, setMotionSpeed} = useMotionSpeed()
@@ -41,7 +41,7 @@ export default function CanvasMotionController({canvas_box_rect, children}: Canv
 
     // when idle and not collapsed, set motion to -1 else set motion to 0
     React.useEffect(() => {
-        if (is_idle && collapsed) {
+        if (is_idle && collapsed && !hovered_document_note) {
             setMotionSpeed(-0.5)
         } else {
             if (!active_document) {

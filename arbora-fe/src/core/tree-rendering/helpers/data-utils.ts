@@ -73,10 +73,14 @@ export function generateRawBranchDataMap(document: Document): Map<string, RawBra
     return map
 }
 
+export function getBranchWeight(gross_content_size: number, no_of_descendants: number): number {
+    return Math.sqrt((gross_content_size + 10) * (no_of_descendants + 1))
+}
+
 export function getMaxBranchVolume(root_branch_id: string, raw_branch_data_map: Map<string, RawBranchData>): number {
     // recursively get the max branch volume
     const root_branch_data = raw_branch_data_map.get(root_branch_id)!
-    const volume = root_branch_data.gross_content_size * root_branch_data.no_of_descendants
+    const volume = getBranchWeight(root_branch_data.gross_content_size, root_branch_data.no_of_descendants)
     let max_child_volume = 0
     root_branch_data.children.forEach(child_id => {
         max_child_volume = Math.max(max_child_volume, getMaxBranchVolume(child_id, raw_branch_data_map))

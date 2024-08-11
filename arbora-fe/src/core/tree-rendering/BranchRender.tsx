@@ -4,12 +4,13 @@ import {Graphics, useTick} from "@pixi/react";
 import {Graphics as PixiGraphics} from '@pixi/graphics'
 import '@pixi/events'
 import {Coords2D} from "../types.ts";
-import {renderBranchV2, renderCanopy, renderTrunk} from "./helpers/render.ts";
+import {renderBranchV3, renderCanopy, renderTrunk} from "./helpers/render.ts";
 import {TreeRenderContext} from "./TreeRender.tsx";
 import {collapseDocumentView, setActiveDocument, setActiveNote} from "../redux/home/home_slice.ts";
 import {store} from "../redux";
 import {Note} from "../services/documents/types.ts";
 import {recallProbabilityToColor} from "./helpers/color.ts";
+import {CANOPY_GROWTH_RATE} from "./constants.ts";
 
 interface BranchRenderProps {
     completion: number
@@ -37,7 +38,6 @@ function calculateCanopyColor(note_id: string, note: Note | undefined): string {
 
 }
 
-
 export default function BranchRender({completion, position, tree_branch_data, render_action}: BranchRenderProps) {
     const {document, hovered_branch_id, setHoveredBranchId, is_interactive} = React.useContext(TreeRenderContext)
     const branch_state: BranchState = React.useMemo(() => {
@@ -52,6 +52,7 @@ export default function BranchRender({completion, position, tree_branch_data, re
 
     const [branch_opacity, setBranchOpacity] = React.useState<number>(1)
     const [canopy_opacity, setCanopyOpacity] = React.useState<number>(0.8)
+    const [canopy_completion, setCanopyCompletion] = React.useState<number>(0)
 
     const local_completion: number = React.useMemo(() => {
         return Math.max(0, Math.min(1, (completion - tree_branch_data.completion_window.start) / (tree_branch_data.completion_window.end - tree_branch_data.completion_window.start)))
@@ -79,6 +80,11 @@ export default function BranchRender({completion, position, tree_branch_data, re
             default:
                 adjustBranchAndCanopyOpacity(1, 0.8, delta)
         }
+        if (local_completion >= 1 && canopy_completion < 1) {
+            setCanopyCompletion(value => {
+                return Math.min(1, value + CANOPY_GROWTH_RATE * delta / 60)
+            })
+        }
     })
 
     const drawBranch = React.useCallback((g: PixiGraphics) => {
@@ -88,10 +94,8 @@ export default function BranchRender({completion, position, tree_branch_data, re
             renderTrunk(position, g, tree_branch_data.branch_config, local_completion)
             g.endFill()
         } else {
-            const girth = tree_branch_data.branch_config.girth
-            g.beginFill('#704241', 0)
-            g.lineStyle(girth, '#704241', branch_opacity)
-            renderBranchV2(position, g, tree_branch_data.branch_config, tree_branch_data.branch_direction, local_completion)
+            g.beginFill('#704241', branch_opacity)
+            renderBranchV3(position, g, tree_branch_data.branch_config, tree_branch_data.branch_direction, local_completion)
             g.endFill()
         }
     }, [tree_branch_data.branch_config, tree_branch_data.branch_direction, position, branch_opacity, local_completion])
@@ -105,12 +109,11 @@ export default function BranchRender({completion, position, tree_branch_data, re
         }
         g.clear()
         g.beginFill(calculateCanopyColor(tree_branch_data.id, document?.notes[tree_branch_data.id]), canopy_opacity)
-        renderCanopy(branch_end, g, tree_branch_data.canopy_radius)
+        renderCanopy(branch_end, g, tree_branch_data.canopy_radius * canopy_completion)
         g.endFill()
-    }, [tree_branch_data.canopy_radius, canopy_opacity, tree_branch_data.id, document?.notes, tree_branch_data.branch_direction, tree_branch_data.branch_config, position.x, position.y])
+    }, [tree_branch_data.canopy_radius, canopy_opacity, tree_branch_data.id, document?.notes, tree_branch_data.branch_direction, tree_branch_data.branch_config, position.x, position.y, canopy_completion])
 
     const selectBranch = React.useCallback(() => {
-        console.log('selecting branch and document')
         store.dispatch(setActiveDocument(document))
         store.dispatch(setActiveNote(tree_branch_data.id))
         setTimeout(() => {
@@ -125,7 +128,7 @@ export default function BranchRender({completion, position, tree_branch_data, re
                           eventMode={'dynamic'}
                           isInteractive={() => is_interactive}
                           onmouseenter={() => setHoveredBranchId(tree_branch_data.id)}
-                          pointerdown={() => console.log('tapped')}
+                          pointerdown={selectBranch}
                           onmouseleave={() => setHoveredBranchId(null)}/>
             )}
 

@@ -3,6 +3,7 @@ import {Button, ButtonProps, Icon, Tooltip, useDisclosure} from "@chakra-ui/reac
 import {ButtonActionProps, GenericButtonProps, PiButtonPalette, PiButtonVariant} from "./types.ts";
 import ButtonConfirmationModal from "./components/ButtonConfirmationModal.tsx";
 import {convertIconStringToIconComponent, variantAndPaletteToStylingProps} from "./helpers.ts";
+import {StandardConsole} from "../../../core/helpers/logging.ts";
 
 
 export type PiButtonProps = ButtonActionProps & GenericButtonProps
@@ -80,7 +81,9 @@ const PiButton = React.forwardRef<HTMLButtonElement, PiButtonProps>
                                     return;
                                 }
                                 setLoadingState(true)
-                                await onClick?.(e);
+                                StandardConsole.log('set to is loading')
+                                await onClick?.(e)
+                                StandardConsole.log('set to not loading')
                                 setLoadingState(false)
                             }
                     }

@@ -34,12 +34,15 @@ interface CreateDocumentServiceResponse extends GenericServiceResponseData {
  * create a new document
  */
 export async function createDocumentService(request: CreateDocumentServiceRequest): Promise<GenericServiceResponse<CreateDocumentServiceResponse>> {
-    return makeServiceCall<CreateDocumentServiceRequest,CreateDocumentServiceResponse>
+    return makeServiceCall<CreateDocumentServiceRequest, CreateDocumentServiceResponse>
     ({
         url: `${BACKEND_URL}/create-document`,
         method: "POST",
         request,
         service_name: "createDocumentService",
+        display_success_alert: true,
+        display_error_alert: true,
+        success_message: 'Document created successfully',
         with_access_token: true
     })
 }
@@ -58,11 +61,14 @@ interface UpdateDocumentServiceResponse extends GenericServiceResponseData {
  * update an existing document
  */
 export async function updateDocumentService(request: UpdateDocumentServiceRequest): Promise<GenericServiceResponse<UpdateDocumentServiceResponse>> {
-    return makeServiceCall<UpdateDocumentServiceRequest,UpdateDocumentServiceResponse>
+    return makeServiceCall<UpdateDocumentServiceRequest, UpdateDocumentServiceResponse>
     ({
         url: `${BACKEND_URL}/update-document`,
         method: "PUT",
         request,
+        display_success_alert: true,
+        display_error_alert: true,
+        success_message: 'Document updated successfully',
         service_name: "updateDocumentService",
         with_access_token: true
     })
@@ -81,6 +87,9 @@ export async function deleteDocumentService(request: DeleteDocumentServiceReques
         url: `${BACKEND_URL}/delete-document`,
         method: "DELETE",
         request: request,
+        display_success_alert: true,
+        display_error_alert: true,
+        success_message: 'Document deleted successfully',
         service_name: "deleteDocumentService",
         with_access_token: true
     })

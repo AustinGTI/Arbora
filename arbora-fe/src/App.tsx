@@ -8,7 +8,7 @@ import {ChakraProvider, extendTheme} from "@chakra-ui/react";
 
 /// <reference types="vite-plugin-svgr/client" />
 
-const APP_THEME = extendTheme({
+export const APP_THEME = extendTheme({
     fonts: {
         body: 'Quicksand',
         heading: 'Quicksand',
