@@ -83,7 +83,7 @@ export default function DocumentSelector() {
         <VStack
             ref={selector_ref}
             transition={'height 0.3s'}
-            bg={ARBORA_GREEN.fg} rounded={'10px'} spacing={0} pr={'0.1rem'}>
+            bg={ARBORA_GREEN.fg} rounded={'10px'} spacing={0} pr={'0.1rem'} w={'100%'}>
             <HStack
                 cursor={'pointer'}
                 onClick={() => setDropdownOpen(state => !state)}
@@ -111,11 +111,12 @@ export default function DocumentSelector() {
                         animate={{height: 'fit-content'}}
                         exit={{height: 0}}
                         transition={{duration: 0.4}}
-                        style={{overflow: "hidden"}}
+                        style={{
+                            overflow: "hidden",
+                            width: '100%'
+                        }}
                     >
-                        <div>
-                            <DropdownContent/>
-                        </div>
+                        <DropdownContent/>
                     </motion.div>
                 )}
             </AnimatePresence>

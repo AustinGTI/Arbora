@@ -1,6 +1,6 @@
 export const GROUND_LEVEL_CONSTANT = 0.95
 
-export const MIN_CANVAS_WIDTH = 2000
+export const MIN_CANVAS_WIDTH = 1800
 
 export const MAX_CANVAS_WIDTH = 5000
 

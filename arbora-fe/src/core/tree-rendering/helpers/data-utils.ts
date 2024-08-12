@@ -137,9 +137,14 @@ export function calculateTreeDimensionsV2(tree_data: TreeBranchData[]): BoxDimen
     let min_y = 0
 
     function calculateBranchDimensions(branch_data: TreeBranchData) {
-        min_x = Math.min(min_x, branch_data.rel_position.x - branch_data.canopy_radius)
-        max_x = Math.max(max_x, branch_data.rel_position.x + branch_data.canopy_radius)
-        min_y = Math.min(min_y, branch_data.rel_position.y - branch_data.canopy_radius)
+        const v_length = branch_data.branch_config.branch_type === BranchType.TRUNK ? branch_data.branch_config.length : branch_data.branch_config.v_length
+        let h_length = branch_data.branch_config.branch_type === BranchType.TRUNK ? 0 : branch_data.branch_config.h_length
+        h_length = branch_data.branch_direction === 'left' ? -h_length : h_length
+
+
+        min_x = Math.min(min_x, branch_data.rel_position.x + h_length - branch_data.canopy_radius)
+        max_x = Math.max(max_x, branch_data.rel_position.x + h_length + branch_data.canopy_radius)
+        min_y = Math.min(min_y, branch_data.rel_position.y - v_length - branch_data.canopy_radius)
 
         branch_data.children.forEach(child_branch_data => {
             calculateBranchDimensions(child_branch_data)

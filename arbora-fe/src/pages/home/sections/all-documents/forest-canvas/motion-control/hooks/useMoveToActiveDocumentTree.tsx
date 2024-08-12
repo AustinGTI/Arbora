@@ -1,8 +1,9 @@
 import React from 'react';
-import {MOTION_ACCELERATION, UPDATES_PER_SECOND} from "../constants.ts";
+import {FAST_MOTION_ACCELERATION, UPDATES_PER_SECOND} from "../constants.ts";
 import {TREE_EDGE_THRESHOLD} from "../../constants.ts";
-import {RectProps} from "../../../../../../../core/types.ts";
 import {StandardConsole} from "../../../../../../../core/helpers/logging.ts";
+import {CanvasBoxRect} from "../../../../../../../core/redux/home/home_slice.ts";
+import {MotionType} from "./useMotionSpeed.tsx";
 
 
 /**
@@ -15,7 +16,7 @@ function calculateSpeedChangeTimeAndDist(initial_speed: number, final_speed: num
     let t = 0
     const change_sign = Math.sign(final_speed - initial_speed)
     while (final_speed * change_sign > initial_speed * change_sign) {
-        initial_speed += MOTION_ACCELERATION / UPDATES_PER_SECOND * change_sign
+        initial_speed += FAST_MOTION_ACCELERATION / UPDATES_PER_SECOND * change_sign
         if (initial_speed * change_sign > final_speed * change_sign) {
             initial_speed = final_speed
         }
@@ -71,15 +72,15 @@ StandardConsole.log(calculateSpeedChangeTimeAndDist(0, 5))
 export default function useMoveToActiveDocumentTree(
     active_tree_x: number | null,
     motion_speed: number,
-    setMotionSpeed: (speed: number) => void,
-    canvas_box_rect: RectProps
+    setMotionSpeed: (speed: number, type: MotionType) => void,
+    canvas_box_rect: CanvasBoxRect
 ) {
     React.useEffect(() => {
         if (!active_tree_x) return
 
-        const real_canvas_width = canvas_box_rect.width + 2 * TREE_EDGE_THRESHOLD
+        const real_canvas_width = canvas_box_rect.canvas_width + 2 * TREE_EDGE_THRESHOLD
 
-        const target_x = 350
+        const target_x = canvas_box_rect.window_width / 4
 
         if (target_x === active_tree_x) return
 
@@ -105,10 +106,10 @@ export default function useMoveToActiveDocumentTree(
         StandardConsole.log('real canvas width is ', real_canvas_width, 'active tree x is ', active_tree_x, 'target x is ', target_x)
         StandardConsole.log('diff to target is ', diff, ' calculated that ideal target speed is ', target_speed, 'with a stop in ', stop_time, 'seconds')
 
-        setMotionSpeed(target_speed)
+        setMotionSpeed(target_speed, 'fast')
 
         const timeout_ref = setTimeout(() => {
-            setMotionSpeed(0)
+            setMotionSpeed(0, 'fast')
         }, stop_time * 1000)
 
         return () => {

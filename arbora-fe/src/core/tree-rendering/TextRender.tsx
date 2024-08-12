@@ -19,7 +19,7 @@ const OPACITY_SPEED = 0.02
 
 export default function TextRender
 ({
-     position, document, note, starting_y_offset = 20, y_padding = 75
+     position, document, note, starting_y_offset = 20, y_padding = 40
  }: TextRenderProps) {
     const [opacity, setOpacity] = React.useState<number>(0)
     const [y_offset, setYOffset] = React.useState<number>(starting_y_offset)

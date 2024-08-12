@@ -1,13 +1,18 @@
 import {Document} from "../../services/documents/types.ts";
 import {createSlice} from "@reduxjs/toolkit";
 import {generateRandomString} from "../../helpers/strings.ts";
-import {RectProps} from "../../types.ts";
 
 export enum DocumentViewTabKey {
     EDITOR = 'editor',
     FLASH_CARDS = 'flash_cards',
     QA = 'qa',
     EXPLAIN = 'explain'
+}
+
+export interface CanvasBoxRect {
+    canvas_width: number
+    window_width: number
+    window_height: number
 }
 
 export interface GlobalHomeState {
@@ -31,7 +36,7 @@ export interface GlobalHomeState {
     all_documents_view: {
         canvas_loading: boolean
         canvas_interactive: boolean
-        canvas_box_rect: RectProps | null
+        canvas_box_rect: CanvasBoxRect | null
     }
 }
 
@@ -105,7 +110,7 @@ export const HomeSlice = createSlice({
         setCanvasLoadingState: (state, action: { payload: boolean }) => {
             state.all_documents_view.canvas_loading = action.payload
         },
-        setCanvasBoxRect: (state, action: { payload: RectProps }) => {
+        setCanvasBoxRect: (state, action: { payload: CanvasBoxRect }) => {
             state.all_documents_view.canvas_box_rect = action.payload
         },
         setCanvasInteractivity: (state, action: { payload: boolean }) => {

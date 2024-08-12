@@ -58,11 +58,11 @@ export default function TreeRender({
     useTick((delta) => {
         let new_x = tree_position.x + motion_speed * delta
         // if x is past the width of the canvas, reset it to the start
-        if (rect && new_x > rect.width + TREE_EDGE_THRESHOLD) {
+        if (rect && new_x > rect.canvas_width + TREE_EDGE_THRESHOLD) {
             new_x = -TREE_EDGE_THRESHOLD
         }
         if (rect && new_x < -TREE_EDGE_THRESHOLD) {
-            new_x = rect.width + TREE_EDGE_THRESHOLD
+            new_x = rect.canvas_width + TREE_EDGE_THRESHOLD
         }
         setTreePosition({
             x: new_x,

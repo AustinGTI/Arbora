@@ -66,6 +66,7 @@ export async function makeServiceCall<Request extends Object, Response extends G
         });
     } catch (e) {
         StandardConsole.error('Error occurred while making service call: ', e)
+        showErrorAlert(`A server error occurred : ${e}`)
         return {
             data: null,
             is_successful: false,
