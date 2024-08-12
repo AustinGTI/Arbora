@@ -90,6 +90,8 @@ export const HomeSlice = createSlice({
             state.documents.reload_state = 'reload.' + generateRandomString(5)
             if (action.payload.with_note_reset) {
                 state.documents.active_note = null
+            } else {
+                state.documents.reload_state += '.note'
             }
             if (action.payload.with_site_reload) {
                 state.documents.reload_state += '.site'

@@ -18,8 +18,8 @@ export const MIN_BRANCH_TAPER: number = 0.7
  * tree length in px per descendant
  */
 const TREE_BASE_HEIGHT: number = 50
-const TRUNK_LENGTH_CONSTANT: number = 1.2
-const MAX_TRUNK_LENGTH: number = 300
+const TRUNK_LENGTH_CONSTANT: number = 1.5
+const MAX_TRUNK_LENGTH: number = 600
 export const TRUNK_ROUNDNESS: number = 0.6
 const TRUNK_LENGTH_NOISE: number = 0.1
 

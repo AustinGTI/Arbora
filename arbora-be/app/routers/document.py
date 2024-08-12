@@ -35,9 +35,9 @@ async def create_document(request: Request, document_params: CreateDocumentReque
         response = CreateDocumentResponse(message="Invalid access token", is_successful=False)
         return CreateDocumentResponse(content=response.dict(), status_code=status.HTTP_404_NOT_FOUND)
 
-    # there is a limit of 7000 characters per document
-    if len(document_params.content) > 7000:
-        response = CreateDocumentResponse(is_successful=False, message="Document content is too long (max : 7000)")
+    # there is a limit of 10000 characters per document
+    if len(document_params.content) > 10000:
+        response = CreateDocumentResponse(is_successful=False, message="Document content is too long (max : 10000)")
         return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
 
     document = Document(
@@ -98,9 +98,9 @@ async def update_document(request: Request, document_params: UpdateDocumentReque
         response = UpdateDocumentResponse(message="Unauthorized", is_successful=False)
         return JSONResponse(content=response.dict(), status_code=status.HTTP_401_UNAUTHORIZED)
 
-    # there is a limit of 7000 characters per document
-    if len(document_params.content) > 7000:
-        response = CreateDocumentResponse(is_successful=False, message="Document content is too long (max : 7000)")
+    # there is a limit of 10000 characters per document
+    if len(document_params.content) > 10000:
+        response = CreateDocumentResponse(is_successful=False, message="Document content is too long (max : 10000)")
         return JSONResponse(content=response.dict(), status_code=status.HTTP_400_BAD_REQUEST)
 
     # check if there is a difference in content, if not, no need to update

@@ -152,7 +152,7 @@ export default function ExplainTabChatSection({...box_props}: ExplainTabChatSect
                     </HStack>
                 </HStack>
                 <Box flex={1}/>
-                <VStack ref={chat_box_ref} w={'100%'} maxH={'85%'} h={'fit-content'} spacing={'1rem'} p={'1rem'}
+                <VStack className={'arbora-scrollbar'} ref={chat_box_ref} w={'100%'} maxH={'85%'} h={'fit-content'} spacing={'1rem'} p={'1rem'}
                         overflowY={'auto'}>
                     {
                         chat_messages.map((chat_message) => (

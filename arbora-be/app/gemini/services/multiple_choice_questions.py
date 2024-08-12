@@ -35,7 +35,7 @@ INPUT_OUTPUT_EXAMPLES = [
 
 SYSTEM_INSTRUCTION: str = '''
     Your task is to generate multiple choice questions based on the given content and number of questions requested. 
-    Each question should have one correct answer and three wrong but plausible answers. 
+    Each question should have one correct answer and three wrong but plausible answers. THERE SHOULD ABSOLUTELY NO REPEATED CHOICES.
     The questions should cover important information in the content that would be suitable for testing knowledge and understanding.
     You may use your own knowledge of the content to generate the questions, but prioritize information from the given content. If there is not
     much information in the content, ask questions from your own knowledge of the subject matter. DO NOT GET REPETITIVE.

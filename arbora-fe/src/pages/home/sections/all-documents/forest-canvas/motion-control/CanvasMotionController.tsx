@@ -42,7 +42,7 @@ export default function CanvasMotionController({canvas_box_rect, children}: Canv
     // when idle and not collapsed, set motion to -1 else set motion to 0
     React.useEffect(() => {
         if (is_idle && collapsed && !hovered_document_note) {
-            setMotionSpeed(-0.5, 'slow')
+            setMotionSpeed(-1, 'slow')
         } else {
             if (!active_document) {
                 setMotionSpeed(0, 'slow')
